@@ -2,123 +2,275 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>F2K MARKET</title>
+<title>F2K MARKET | Produits numériques</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- FedaPay Checkout -->
 <script src="https://cdn.fedapay.com/checkout.js"></script>
 
 <style>
-body{margin:0;font-family:Arial;background:#f4f4f4}
-header{position:fixed;top:0;width:100%;background:#000;color:#fff;padding:10px;z-index:1000}
-nav a{color:#fff;margin:0 10px;text-decoration:none;font-weight:bold}
-section{padding:80px 15px}
-.product{background:#fff;padding:15px;margin-bottom:15px;border-radius:8px;position:relative}
-.badge{position:absolute;top:10px;right:10px;padding:5px 8px;font-size:12px;color:#fff;border-radius:5px}
-.new{background:green}
-.promo{background:red}
-button{background:#000;color:#fff;border:none;padding:10px;border-radius:5px}
-.whatsapp{position:fixed;bottom:20px;right:20px;background:#25D366;color:#fff;padding:12px;border-radius:50px;text-decoration:none}
-.countdown{color:red;font-weight:bold}
+:root{
+  --main:#000;
+  --accent:#f2c94c;
+  --bg:#f4f4f4;
+  --white:#fff;
+}
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:var(--bg);
+}
+header{
+  position:fixed;
+  top:0; width:100%;
+  background:var(--main);
+  color:#fff;
+  padding:15px;
+  z-index:1000;
+  text-align:center;
+}
+nav a{
+  color:#fff;
+  margin:0 10px;
+  text-decoration:none;
+  font-weight:bold;
+}
+section{
+  padding:20px;
+  margin-top:90px;
+}
+.product{
+  background:var(--white);
+  padding:15px;
+  margin-bottom:20px;
+  border-radius:10px;
+  position:relative;
+}
+.badge{
+  position:absolute;
+  top:10px;
+  left:10px;
+  background:red;
+  color:#fff;
+  font-size:12px;
+  padding:4px 6px;
+  border-radius:4px;
+}
+.btn{
+  background:var(--main);
+  color:#fff;
+  border:none;
+  padding:10px 15px;
+  border-radius:6px;
+  cursor:pointer;
+}
+.btn:active{transform:scale(0.96)}
+input[type=text]{
+  width:100%;
+  padding:10px;
+  margin-bottom:15px;
+  border-radius:5px;
+  border:1px solid #ccc;
+}
+.notification{
+  background:var(--accent);
+  padding:10px;
+  border-radius:6px;
+  font-weight:bold;
+  text-align:center;
+}
+.whatsapp{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#25D366;
+  color:#fff;
+  padding:12px 16px;
+  border-radius:50px;
+  text-decoration:none;
+  font-weight:bold;
+}
+footer{
+  background:#ddd;
+  padding:15px;
+  text-align:center;
+}
+img{
+  width:100%;
+  border-radius:6px;
+  margin-top:10px;
+}
 </style>
-
 </head>
+
 <body oncontextmenu="return false">
 
 <header>
+<h1>F2K MARKET</h1>
 <nav>
-<a href="#accueil">Accueil</a>
 <a href="#boutique">Boutique</a>
+<a href="#apropos">À propos</a>
 <a href="#faq">FAQ</a>
 <a href="#contact">Contact</a>
 </nav>
 </header>
 
-<section id="accueil">
-<h2>Bienvenue sur F2K MARKET</h2>
-<p>Produits digitaux – eBooks & Formations IA</p>
-<p class="countdown">🔥 Promo se termine dans <span id="timer"></span></p>
+<section id="boutique">
+<h2>Boutique</h2>
+
+<input type="text" id="search" placeholder="Rechercher un produit...">
+
+<!-- ===== EBOOKS ===== -->
+
+<div class="product">
+<span class="badge">Nouveau</span>
+<h3>📘 eBook – Business Digital en Afrique</h3>
+<p>Créer un business rentable avec peu de moyens.</p>
+<strong>5 000 FCFA</strong><br><br>
+<button class="btn" onclick="payer(5000,'eBook Business Digital Afrique')">Payer</button>
+<p style="color:red;font-weight:bold">Stock limité</p>
+<img src="https://via.placeholder.com/400x200?text=eBook+Business">
+</div>
+
+<div class="product">
+<span class="badge">Promo</span>
+<h3>📘 eBook – Marketing WhatsApp Pro</h3>
+<p>Vendre efficacement grâce à WhatsApp.</p>
+<strong>4 000 FCFA</strong><br><br>
+<button class="btn" onclick="payer(4000,'eBook Marketing WhatsApp Pro')">Payer</button>
+<img src="https://via.placeholder.com/400x200?text=WhatsApp+Marketing">
+</div>
+
+<div class="product">
+<h3>📘 eBook – Gagner de l’argent en ligne</h3>
+<p>Méthodes simples pour débutants.</p>
+<strong>3 000 FCFA</strong><br><br>
+<button class="btn" onclick="payer(3000,'eBook Gagner argent en ligne')">Payer</button>
+<img src="https://via.placeholder.com/400x200?text=Argent+en+ligne">
+</div>
+
+<!-- ===== FORMATIONS WEB ===== -->
+
+<div class="product">
+<span class="badge">Nouveau</span>
+<h3>🎓 Formation – Création de sites web</h3>
+<p>Créer un site professionnel avec HTML et GitHub Pages.</p>
+<strong>15 000 FCFA</strong><br><br>
+<button class="btn" onclick="payer(15000,'Formation Création de sites web')">Payer</button>
+<img src="https://via.placeholder.com/400x200?text=Site+Web">
+</div>
+
+<div class="product">
+<h3>🎓 Formation – Site e-commerce gratuit</h3>
+<p>Créer un site de vente sans coder.</p>
+<strong>18 000 FCFA</strong><br><br>
+<button class="btn" onclick="payer(18000,'Formation E-commerce gratuit')">Payer</button>
+<img src="https://via.placeholder.com/400x200?text=Ecommerce">
+</div>
+
+<!-- ===== FORMATIONS IA ===== -->
+
+<div class="product">
+<span class="badge">Promo</span>
+<h3>🤖 Formation IA – Chansons personnalisées</h3>
+<p>Créer des chansons avec l’IA sans studio.</p>
+<strong>20 000 FCFA</strong><br><br>
+<button class="btn" onclick="payer(20000,'Formation IA Chansons')">Payer</button>
+<img src="https://via.placeholder.com/400x200?text=IA+Musique">
+</div>
+
+<div class="product">
+<span class="badge">Nouveau</span>
+<h3>🤖 Formation IA – Images et affiches pro</h3>
+<p>Créer des visuels professionnels avec l’IA.</p>
+<strong>18 000 FCFA</strong><br><br>
+<button class="btn" onclick="payer(18000,'Formation IA Images professionnelles')">Payer</button>
+<img src="https://via.placeholder.com/400x200?text=IA+Images">
+</div>
+
+<div class="product">
+<h3>🤖 Formation IA – Vidéos publicitaires</h3>
+<p>Créer des vidéos marketing avec l’IA.</p>
+<strong>25 000 FCFA</strong><br><br>
+<button class="btn" onclick="payer(25000,'Formation IA Vidéos publicitaires')">Payer</button>
+<img src="https://via.placeholder.com/400x200?text=IA+Video">
+</div>
+
+<div class="notification" id="countdown"></div>
 </section>
 
-<section id="boutique">
-
-<div class="product">
-<span class="badge promo">PROMO</span>
-<h3>eBook – Business Digital Afrique</h3>
-<p>5 000 FCFA</p>
-<button onclick="payer(5000,'eBook Business Digital Afrique')">Payer</button>
-</div>
-
-<div class="product">
-<span class="badge new">NOUVEAU</span>
-<h3>Formation Création de sites web</h3>
-<p>15 000 FCFA</p>
-<button onclick="payer(15000,'Formation Création de sites web')">Payer</button>
-</div>
-
-<div class="product">
-<span class="badge promo">PROMO</span>
-<h3>Formation IA – Chansons personnalisées</h3>
-<p>20 000 FCFA</p>
-<button onclick="payer(20000,'Formation IA Chansons')">Payer</button>
-</div>
-
-<div class="product">
-<span class="badge new">NOUVEAU</span>
-<h3>Formation IA – Images & Affiches pro</h3>
-<p>18 000 FCFA</p>
-<button onclick="payer(18000,'Formation IA Images pro')">Payer</button>
-</div>
-
-<div class="product">
-<h3>Formation IA – Vidéos publicitaires</h3>
-<p>25 000 FCFA</p>
-<button onclick="payer(25000,'Formation IA Vidéos')">Payer</button>
-</div>
-
+<section id="apropos">
+<h2>À propos</h2>
+<p>F2K MARKET est une plateforme spécialisée dans la vente de produits numériques et de formations pratiques.</p>
+<p><strong>Promoteur :</strong> Kouessi Franck Kevin ADRE</p>
 </section>
 
 <section id="faq">
 <h2>FAQ</h2>
-<p>✔ Paiement sécurisé FedaPay</p>
-<p>✔ Livraison via WhatsApp</p>
-<p>✔ Produits 100 % digitaux</p>
+<p><strong>Comment je reçois le produit ?</strong><br>Après paiement, via WhatsApp.</p>
+<p><strong>Paiement sécurisé ?</strong><br>Oui, via FedaPay.</p>
 </section>
 
 <section id="contact">
-<p><strong>Promoteur :</strong> Kouessi Franck Kevin ADRE</p>
+<h2>Contact</h2>
 <p>Email : f2kservice@gmail.com</p>
 <p>WhatsApp : +2290158070708</p>
 </section>
 
-<a class="whatsapp" href="https://wa.me/2290158070708">WhatsApp</a>
+<footer>
+© 2026 F2K MARKET – Tous droits réservés
+</footer>
+
+<a class="whatsapp" href="https://wa.me/2290158070708" target="_blank">WhatsApp</a>
 
 <script>
-function payer(montant, produit){
-FedaPay.init({
-public_key: 'pk_live_6hRyouvpzROyDab9rBkqzfON',
-transaction:{
-amount: montant,
-description: produit
-},
-customer:{
-email: 'client@f2kmarket.com'
-},
-onComplete:function(response){
-if(response.reason === 'CHECKOUT_COMPLETED'){
-alert('Paiement réussi');
-window.location.href="https://wa.me/2290158070708?text=Paiement%20effectué%20pour%20"+encodeURIComponent(produit);
-}
-}
+// Recherche
+document.getElementById("search").addEventListener("keyup",function(){
+  let v=this.value.toLowerCase();
+  document.querySelectorAll(".product").forEach(p=>{
+    p.style.display=p.textContent.toLowerCase().includes(v)?"":"none";
+  });
 });
+
+// Compte à rebours promo
+let end=new Date("Jan 31, 2026 23:59:59").getTime();
+setInterval(()=>{
+  let d=end-new Date().getTime();
+  if(d<=0){
+    document.getElementById("countdown").innerText="Promo terminée";
+    return;
+  }
+  let h=Math.floor(d/3600000);
+  let m=Math.floor((d%3600000)/60000);
+  let s=Math.floor((d%60000)/1000);
+  document.getElementById("countdown").innerText=
+  `⏳ Promo se termine dans ${h}h ${m}m ${s}s`;
+},1000);
+
+// Paiement FedaPay (CORRECT)
+function payer(montant, produit){
+  FedaPay.init({
+    public_key: "pk_live_6hRyouvpzROyDab9rBkqzfON",
+    transaction: {
+      amount: montant,
+      description: produit
+    },
+    customer: {
+      email: "client@f2kmarket.com"
+    },
+    onComplete: function(response){
+      if(response.reason === "CHECKOUT_COMPLETED"){
+        window.location.href =
+        "https://wa.me/2290158070708?text=Paiement%20effectué%20pour%20"+encodeURIComponent(produit);
+      }
+    }
+  });
 }
 
-let end = new Date().getTime() + 86400000;
-setInterval(()=>{
-let now=new Date().getTime();
-let d=end-now;
-document.getElementById("timer").innerHTML =
-Math.floor(d/3600000)+"h "+Math.floor((d%3600000)/60000)+"m";
-},1000);
+// Anti-copie basique
+document.addEventListener("keydown",e=>{
+  if(e.ctrlKey&&(e.key==="c"||e.key==="u")) e.preventDefault();
+});
 </script>
 
 </body>
