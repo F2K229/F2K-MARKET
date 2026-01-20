@@ -4,173 +4,236 @@
 <meta charset="UTF-8">
 <title>F2K MARKET | Produits numériques</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- KKIAPAY -->
 <script src="https://cdn.kkiapay.me/k.js"></script>
-
 <style>
-:root { --main:#000; --accent:#f2c94c; --light:#fff; --dark:#222; }
-body {font-family:Arial, sans-serif; margin:0; background:#f4f4f4;}
-header {background:var(--main); color:#fff; padding:20px; text-align:center; position:fixed; top:0; width:100%; z-index:1000;}
-nav a {color:#fff; margin:0 10px; text-decoration:none; font-weight:bold;}
-section {padding:20px; margin-top:90px;}
-.product, .box {background:#fff; padding:15px; margin-bottom:20px; border-radius:10px; position:relative;}
-.btn {padding:10px 15px; background:var(--main); color:#fff; border:none; border-radius:6px; cursor:pointer;}
-.badge {position:absolute; top:10px; left:10px; background:red; color:#fff; padding:3px 8px; border-radius:4px; font-size:12px;}
-footer {background:#ddd; text-align:center; padding:15px; font-size:14px;}
-.whatsapp {position:fixed; bottom:20px; right:20px; background:#25D366; color:#fff; padding:12px 16px; border-radius:50px; text-decoration:none; font-weight:bold; z-index:1000;}
-input[type=text] {width:100%; padding:10px; margin-bottom:15px; border-radius:5px; border:1px solid #ccc;}
-.notification {background:var(--accent); padding:10px; text-align:center; border-radius:5px; margin-bottom:15px;}
-img {max-width:100%; border-radius:5px;}
-.dark-mode {background:#222; color:#fff;}
+:root{--main:#000;--accent:#f2c94c;--light:#fff;--dark:#222;}
+body{font-family:Arial,sans-serif;margin:0;background:#f4f4f4;transition:0.3s;}
+header{background:var(--main);color:#fff;padding:20px;text-align:center;position:fixed;top:0;width:100%;z-index:1000;}
+nav a{color:#fff;margin:0 10px;text-decoration:none;font-weight:bold;}
+section{padding:20px;margin-top:90px;}
+.product,.box{background:#fff;padding:15px;margin-bottom:20px;border-radius:10px;position:relative;}
+.btn{padding:10px 15px;background:var(--main);color:#fff;border:none;border-radius:6px;cursor:pointer;transition:0.1s;}
+.btn:active{transform:scale(0.95);}
+.badge{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:3px 8px;border-radius:4px;font-size:12px;}
+.badge.promo{background:green;}
+.badge.best{background:orange;}
+footer{background:#ddd;text-align:center;padding:15px;font-size:14px;}
+.whatsapp{position:fixed;bottom:20px;right:20px;background:#25D366;color:#fff;padding:12px 16px;border-radius:50px;text-decoration:none;font-weight:bold;z-index:1000;}
+input[type=text]{width:100%;padding:10px;margin-bottom:15px;border-radius:5px;border:1px solid #ccc;}
+.notification{background:var(--accent);padding:10px;text-align:center;border-radius:5px;margin-bottom:15px;}
+img{max-width:100%;border-radius:5px;}
+.dark-mode{background:var(--dark);color:var(--light);}
+.slider{display:flex;overflow-x:auto;scroll-behavior:smooth;}
+.slider .product{min-width:300px;margin-right:15px;}
+#popup{position:fixed;bottom:100px;left:20px;background:#fffae6;color:#000;padding:12px 18px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.3);display:none;z-index:2000;}
+.sale-count{position:absolute;bottom:10px;right:10px;background:#f2c94c;color:#000;padding:4px 8px;border-radius:5px;font-size:12px;}
 </style>
 </head>
-
 <body>
 
-<script>
-alert("🎉 Bienvenue sur F2K MARKET — Produits numériques professionnels !");
-</script>
+<script>alert("🎉 Bienvenue sur F2K MARKET — Produits numériques professionnels !");</script>
 
 <header>
 <h1>F2K MARKET</h1>
 <nav>
 <a href="#boutique">Boutique</a>
-<a href="#recevoir">Livraison</a>
-<a href="#apropos">À propos</a>
+<a href="#livraison">Livraison</a>
+<a href="#formations">Formations</a>
+<a href="#temoignages">Témoignages</a>
 <a href="#faq">FAQ</a>
 <a href="#contact">Contact</a>
 <button onclick="toggleDarkMode()">🌓</button>
 </nav>
 </header>
 
+<div id="popup"></div>
+
+<!-- BOUTIQUE -->
 <section id="boutique">
 <h2>Boutique</h2>
 <input type="text" id="search" placeholder="Rechercher un produit...">
-
 <div id="countdown" class="notification"></div>
 
-<!-- PRODUITS -->
-
-<div class="product">
+<div class="slider">
+<div class="product" data-name="eBook Business Digital" data-sales="25">
 <span class="badge">Nouveau</span>
 <h3>📘 eBook Business Digital</h3>
-<p>Lancer et monétiser un business en ligne</p>
+<p>Créer et vendre en ligne efficacement</p>
 <strong>5 000 FCFA</strong><br><br>
 <button class="btn" onclick="payer(5000,'eBook Business Digital')">Payer</button>
-<p style="color:red;font-weight:bold">Stock limité</p>
+<div class="sale-count" id="sale-eBook-Business-Digital">25 ventes</div>
 </div>
 
-<div class="product">
-<span class="badge">Promo</span>
-<h3>🌐 Formation Création de sites web</h3>
-<p>Créer des sites professionnels sans coder</p>
-<strong>15 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(15000,'Formation Création de sites web')">Payer</button>
+<div class="product" data-name="Marketing WhatsApp" data-sales="40">
+<span class="badge best">Best-seller</span>
+<h3>📕 eBook Marketing WhatsApp</h3>
+<p>Vendre avec WhatsApp Business</p>
+<strong>4 000 FCFA</strong><br><br>
+<button class="btn" onclick="payer(4000,'Marketing WhatsApp')">Payer</button>
+<div class="sale-count" id="sale-Marketing-WhatsApp">40 ventes</div>
 </div>
 
-<div class="product">
-<span class="badge">IA</span>
-<h3>🎵 Formation IA – Chansons personnalisées</h3>
-<p>Créer des chansons avec l’IA sans studio</p>
-<strong>12 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(12000,'Formation IA Chansons')">Payer</button>
+<div class="product" data-name="Argent sur Internet" data-sales="30">
+<span class="badge promo">Promo</span>
+<h3>📗 eBook Argent sur Internet</h3>
+<p>Méthodes adaptées à l’Afrique</p>
+<strong>3 000 FCFA</strong><br><br>
+<button class="btn" onclick="payer(3000,'Argent sur Internet')">Payer</button>
+<div class="sale-count" id="sale-Argent-sur-Internet">30 ventes</div>
 </div>
-
-<div class="product">
-<span class="badge">IA</span>
-<h3>🖼️ Formation IA – Images & Affiches pro</h3>
-<p>Photos, covers et visuels publicitaires</p>
-<strong>10 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(10000,'Formation IA Images')">Payer</button>
 </div>
-
-<div class="product">
-<span class="badge">IA</span>
-<h3>🎬 Formation IA – Vidéos publicitaires</h3>
-<p>Créer des vidéos marketing professionnelles</p>
-<strong>18 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(18000,'Formation IA Vidéos')">Payer</button>
-</div>
-
 </section>
 
-<section class="box" id="recevoir">
-<h2>📥 Comment recevoir le produit</h2>
+<!-- FORMATIONS -->
+<section id="formations" class="box">
+<h2>Formations</h2>
+<div class="slider">
+<div class="product" data-name="Création de sites web" data-sales="15">
+<span class="badge">Nouveau</span>
+<h3>🌐 Création de sites web</h3>
+<p>Créer des sites pro sans coder</p>
+<strong>20 000 FCFA</strong><br><br>
+<button class="btn" onclick="payer(20000,'Création de sites web')">Payer</button>
+<div class="sale-count" id="sale-Création-de-sites-web">15 ventes</div>
+</div>
+
+<div class="product" data-name="IA Chansons" data-sales="10">
+<span class="badge promo">Promo</span>
+<h3>🎵 IA – Chansons personnalisées</h3>
+<p>Créer des chansons sans studio</p>
+<strong>15 000 FCFA</strong><br><br>
+<button class="btn" onclick="payer(15000,'IA Chansons')">Payer</button>
+<div class="sale-count" id="sale-IA-Chansons">10 ventes</div>
+</div>
+
+<div class="product" data-name="IA Images" data-sales="12">
+<span class="badge">Nouveau</span>
+<h3>🖼️ IA – Images & Affiches</h3>
+<p>Photos pro, flyers, covers</p>
+<strong>12 000 FCFA</strong><br><br>
+<button class="btn" onclick="payer(12000,'IA Images')">Payer</button>
+<div class="sale-count" id="sale-IA-Images">12 ventes</div>
+</div>
+
+<div class="product" data-name="IA Vidéos" data-sales="8">
+<span class="badge best">Best-seller</span>
+<h3>🎬 IA – Vidéos publicitaires</h3>
+<p>Créer des vidéos marketing</p>
+<strong>25 000 FCFA</strong><br><br>
+<button class="btn" onclick="payer(25000,'IA Vidéos')">Payer</button>
+<div class="sale-count" id="sale-IA-Vidéos">8 ventes</div>
+</div>
+</div>
+</section>
+
+<!-- LIVRAISON -->
+<section id="livraison" class="box">
+<h2>📥 Livraison</h2>
 <ol>
-<li>Paiement sécurisé en ligne</li>
+<li>Paiement en ligne sécurisé</li>
 <li>Redirection automatique vers WhatsApp</li>
 <li>Livraison manuelle immédiate</li>
 </ol>
 </section>
 
-<section class="box" id="apropos">
-<h2>⭐ À propos</h2>
-<p>F2K MARKET est une plateforme de vente de produits numériques et formations professionnelles.</p>
-<p><strong>Promoteur :</strong> Kouessi Franck Kevin ADRE</p>
+<!-- TÉMOIGNAGES -->
+<section id="temoignages" class="box">
+<h2>💬 Témoignages</h2>
+<div class="slider">
+<div class="product">
+<p>"J'ai acheté l'eBook Business Digital et j'ai doublé mes ventes !"</p>
+<p><b>- Alice</b></p>
+</div>
+<div class="product">
+<p>"La formation IA chansons est incroyable !"</p>
+<p><b>- Marc</b></p>
+</div>
+<div class="product">
+<p>"Les vidéos publicitaires IA m'ont sauvé du temps !"</p>
+<p><b>- Sophie</b></p>
+</div>
+</div>
 </section>
 
-<section class="box" id="faq">
+<!-- FAQ -->
+<section id="faq" class="box">
 <h2>📌 FAQ</h2>
-<p><strong>Le paiement est-il sécurisé ?</strong><br>Oui, paiement en ligne sécurisé.</p>
-<p><strong>Comment je reçois le produit ?</strong><br>Via WhatsApp après paiement.</p>
+<p><b>Paiement sécurisé ?</b><br>Oui, paiement KKIAPAY réel.</p>
+<p><b>Comment recevoir ?</b><br>Via WhatsApp après paiement.</p>
+<p><b>Comment contacter le support ?</b><br>WhatsApp ou email.</p>
 </section>
 
-<section class="box" id="contact">
+<!-- CONTACT -->
+<section id="contact" class="box">
 <h2>Contact</h2>
-<p>Email : <a href="mailto:f2kmultiservice@gmail.com">f2kmultiservice@gmail.com</a></p>
+<p>Email : f2kmultiservice@gmail.com</p>
 <p>WhatsApp : <a href="https://wa.me/2290158070708" target="_blank">+229 01 58 07 07 08</a></p>
+<p>Promoteur : Kouessi Franck Kevin ADRE</p>
 </section>
 
-<footer>
-© 2026 F2K MARKET — Tous droits réservés
-</footer>
-
+<footer>© 2026 F2K MARKET — Tous droits réservés</footer>
 <a class="whatsapp" href="https://wa.me/2290158070708" target="_blank">WhatsApp</a>
 
 <script>
 // Mode sombre
-function toggleDarkMode(){ document.body.classList.toggle("dark-mode"); }
+function toggleDarkMode(){document.body.classList.toggle("dark-mode");}
 
-// Recherche
-document.getElementById("search").addEventListener("keyup", function(){
+// Recherche globale
+document.getElementById("search").addEventListener("keyup",function(){
 let v=this.value.toLowerCase();
 document.querySelectorAll(".product").forEach(p=>{
 p.style.display=p.textContent.toLowerCase().includes(v)?"":"none";
 });
 });
 
-// Compte à rebours promo
+// Compte à rebours
 let promoDate=new Date("Jan 31, 2026 23:59:59").getTime();
 setInterval(()=>{
-let n=new Date().getTime(),d=promoDate-n;
-if(d>0){
-let j=Math.floor(d/(1000*60*60*24));
-let h=Math.floor((d%(1000*60*60*24))/(1000*60*60));
-document.getElementById("countdown").innerHTML=`⏳ Promo se termine dans ${j}j ${h}h`;
-}else{
-document.getElementById("countdown").innerHTML="Promo terminée";
-}
+let now=new Date().getTime(),x=promoDate-now;
+document.getElementById("countdown").innerHTML=
+x>0?`⏳ Promo : ${Math.floor(x/86400000)} jours restants`:"Promo terminée";
 },1000);
 
-// Paiement KKIAPAY (LIVE)
-function payer(montant, produit){
+// Paiement KKIAPAY réel
+function payer(montant,produit){
 openKkiapayWidget({
-amount: montant,
-position: "center",
-theme: "dark",
-key: "14571f1e61e7049fd8dc3332a0843c342732b2dc",
-callback: function(){
-window.location.href="https://wa.me/2290158070708?text=Bonjour%20je%20viens%20de%20payer%20le%20produit%20:"+encodeURIComponent(produit);
+amount:montant,
+key:"14571f1e61e7049fd8dc3332a0843c342732b2dc",
+callback:function(){
+location.href="https://wa.me/2290158070708?text=Paiement effectué pour "+encodeURIComponent(produit);
+incrementSales(produit);
 }
 });
 }
 
 // Anti-copie basique
-document.addEventListener("contextmenu", e=>e.preventDefault());
-document.onkeydown=e=>{if(e.ctrlKey&&(e.key=="c"||e.key=="u"))return false;}
-</script>
+document.addEventListener("contextmenu",e=>e.preventDefault());
 
+// Pop-up dynamique "X personnes ont acheté"
+const popup=document.getElementById("popup");
+let ventes=[5,12,7,9,3,15,4];
+let produits=["eBook Business Digital","Marketing WhatsApp","Argent sur Internet","Création de sites web","IA Chansons","IA Images","IA Vidéos"];
+function showPopup(){
+let idx=Math.floor(Math.random()*produits.length);
+let num=ventes[Math.floor(Math.random()*ventes.length)];
+popup.textContent=`🔥 ${num} personnes ont acheté ${produits[idx]} récemment`;
+popup.style.display="block";
+setTimeout(()=>popup.style.display="none",4000);
+}
+setInterval(showPopup,7000);
+
+// Compteur d'achats dynamique
+function incrementSales(produit){
+let id="sale-"+produit.replace(/\s+/g,'-');
+let elem=document.getElementById(id);
+if(elem){
+let text=elem.textContent;
+let current=parseInt(text.replace(/\D/g,''))||0;
+current+=1;
+elem.textContent=current+" ventes";
+}
+}
+</script>
 </body>
-  </html>
+                             </html>
   
