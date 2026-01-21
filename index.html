@@ -23,8 +23,8 @@ input[type=text]{width:100%;padding:10px;margin-bottom:15px;border-radius:5px;bo
 .notification{background:var(--accent);padding:10px;text-align:center;border-radius:5px;margin-bottom:15px;}
 img{max-width:100%;border-radius:5px;}
 .dark-mode{background:var(--dark);color:var(--light);}
-.slider{display:flex;overflow-x:auto;scroll-behavior:smooth;gap:15px;}
-.slider .product{min-width:300px;}
+.slider{display:block; /* produit empilés verticalement */ }
+.slider .product{width:100%; margin-bottom:15px;} 
 #popup{position:fixed;bottom:100px;left:20px;background:#fffae6;color:#000;padding:12px 18px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.3);display:none;z-index:2000;}
 .sale-count{position:absolute;bottom:10px;right:10px;background:#f2c94c;color:#000;padding:4px 8px;border-radius:5px;font-size:12px;}
 </style>
@@ -295,25 +295,6 @@ function showPopup(){
 setInterval(showPopup,7000);
 
 // PAIEMENT KKIAPAY AVEC REDIRECTION WHATSAPP
-const whatsappMessages = {
-"eBook Business Digital":"Merci pour votre achat de l’eBook Business Digital.",
-"eBook Marketing WhatsApp":"Merci pour votre achat de l’eBook Marketing WhatsApp.",
-"eBook Argent sur Internet":"Merci pour votre achat de l’eBook Argent sur Internet.",
-"eBook Réseaux Sociaux":"Merci pour votre achat de l’eBook Réseaux Sociaux.",
-"eBook IA Création Contenu":"Merci pour votre achat de l’eBook IA Création Contenu.",
-"eBook Marketing Instagram":"Merci pour votre achat de l’eBook Marketing Instagram.",
-"eBook IA Publicité":"Merci pour votre achat de l’eBook IA Publicité.",
-"eBook SEO Avancé":"Merci pour votre achat de l’eBook SEO Avancé.",
-"Formation SEO":"Merci pour votre achat de la Formation SEO.",
-"Formation Email Marketing":"Merci pour votre achat de la Formation Email Marketing.",
-"Formation Création Logo IA":"Merci pour votre achat de la Formation Création Logo IA.",
-"Formation Affiches Publicitaires IA":"Merci pour votre achat de la Formation Affiches Publicitaires IA.",
-"Formation Vidéo Publicité IA":"Merci pour votre achat de la Formation Vidéo Publicité IA.",
-"Formation TikTok Marketing":"Merci pour votre achat de la Formation TikTok Marketing.",
-"Formation Podcast IA":"Merci pour votre achat de la Formation Podcast IA.",
-"Formation YouTube IA":"Merci pour votre achat de la Formation YouTube IA."
-};
-
 function nowDate(){ return new Date().toLocaleString(); }
 function generateRef(){ return "F2K-"+Date.now(); }
 
@@ -321,7 +302,19 @@ function payer(montant,produit){
  openKkiapayWidget({
   amount:montant,
   key:"14571f1e61e7049fd8dc3332a0843c342732b2dc",
-  successCallback:function(){
-    const ref=generateRef(); const date=nowDate();
+  callback:function(){
     incrementSales(produit);
+    savePurchase({produit:produit,montant:montant,date:nowDate(),ref:generateRef()});
+    // Redirection WhatsApp personnalisée
+    const msg = encodeURIComponent("Bonjour, j'aimerais savoir comment procéder pour bénéficier de vos offres");
+    window.location.href="https://wa.me/2290158070708?text="+msg;
+  }
+ });
+}
+
+// CONDITIONS DE VENTE DISCRÈTES
+console.log("📌 Conditions de vente : Paiement sécurisé, livraison via WhatsApp, aucun remboursement après livraison.");
+</script>
+</body>
+                                </html>
  
