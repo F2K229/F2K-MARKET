@@ -2,319 +2,251 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>F2K MARKET | Produits numériques</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://cdn.kkiapay.me/k.js"></script>
+<title>F2K MARKET</title>
+
+<!-- PayDunya -->
+<script src="https://paydunya.com/assets/psr/js/checkout.min.js"></script>
+
 <style>
-:root{--main:#000;--accent:#f2c94c;--light:#fff;--dark:#222;}
-body{font-family:Arial,sans-serif;margin:0;background:#f4f4f4;transition:0.3s;}
-header{background:var(--main);color:#fff;padding:20px;text-align:center;position:fixed;top:0;width:100%;z-index:1000;}
-nav a{color:#fff;margin:0 10px;text-decoration:none;font-weight:bold;}
-section{padding:20px;margin-top:90px;}
-.product,.box{background:#fff;padding:15px;margin-bottom:20px;border-radius:10px;position:relative;}
-.btn{padding:10px 15px;background:var(--main);color:#fff;border:none;border-radius:6px;cursor:pointer;transition:0.1s;}
-.btn:active{transform:scale(0.95);}
-.badge{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:3px 8px;border-radius:4px;font-size:12px;}
-.badge.promo{background:green;}
-.badge.best{background:orange;}
-footer{background:#ddd;text-align:center;padding:15px;font-size:14px;}
-.whatsapp{position:fixed;bottom:20px;right:20px;background:#25D366;color:#fff;padding:12px 16px;border-radius:50px;text-decoration:none;font-weight:bold;z-index:1000;}
-input[type=text]{width:100%;padding:10px;margin-bottom:15px;border-radius:5px;border:1px solid #ccc;}
-.notification{background:var(--accent);padding:10px;text-align:center;border-radius:5px;margin-bottom:15px;}
-img{max-width:100%;border-radius:5px;}
-.dark-mode{background:var(--dark);color:var(--light);}
-.slider{display:block; /* produit empilés verticalement */ }
-.slider .product{width:100%; margin-bottom:15px;} 
-#popup{position:fixed;bottom:100px;left:20px;background:#fffae6;color:#000;padding:12px 18px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.3);display:none;z-index:2000;}
-.sale-count{position:absolute;bottom:10px;right:10px;background:#f2c94c;color:#000;padding:4px 8px;border-radius:5px;font-size:12px;}
+body{
+  font-family: Arial, sans-serif;
+  background:#f5f5f5;
+  margin:0;
+  padding:0;
+}
+header{
+  background:#111;
+  color:#fff;
+  padding:15px;
+  text-align:center;
+}
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+.product{
+  background:#fff;
+  margin-bottom:20px;
+  padding:15px;
+  border-radius:8px;
+  box-shadow:0 2px 5px rgba(0,0,0,.1);
+}
+.badge{
+  display:inline-block;
+  background:#e91e63;
+  color:#fff;
+  padding:3px 8px;
+  border-radius:5px;
+  font-size:12px;
+}
+.price{
+  font-size:20px;
+  font-weight:bold;
+  margin:10px 0;
+}
+button{
+  background:#25D366;
+  border:none;
+  padding:10px 15px;
+  color:#fff;
+  font-size:16px;
+  border-radius:5px;
+  cursor:pointer;
+}
+button.pay{
+  background:#000;
+  margin-left:10px;
+}
+footer{
+  text-align:center;
+  padding:10px;
+  font-size:12px;
+  color:#666;
+}
+.whatsapp-float{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#25D366;
+  color:#fff;
+  padding:15px;
+  border-radius:50%;
+  text-decoration:none;
+  font-size:22px;
+}
+.conditions{
+  font-size:11px;
+  color:#777;
+  margin-top:10px;
+}
 </style>
 </head>
-<body>
 
-<script>alert("🎉 Bienvenue sur F2K MARKET — Produits numériques professionnels !");</script>
+<body>
 
 <header>
 <h1>F2K MARKET</h1>
-<nav>
-<a href="#boutique">Boutique</a>
-<a href="#livraison">Livraison</a>
-<a href="#formations">Formations</a>
-<a href="#temoignages">Témoignages</a>
-<a href="#faq">FAQ</a>
-<a href="#contact">Contact</a>
-<button onclick="toggleDarkMode()">🌓</button>
-</nav>
+<p>Formations & eBooks numériques</p>
 </header>
 
-<div id="popup"></div>
+<div class="container">
 
-<!-- BOUTIQUE -->
-<section id="boutique">
-<h2>Boutique</h2>
-<input type="text" id="search" placeholder="Rechercher un produit...">
-<div id="countdown" class="notification"></div>
+<!-- ===== EBOOKS ===== -->
+<h2>📘 eBooks</h2>
 
-<div class="slider">
-<!-- 8 EBOOKS -->
-<div class="product" data-name="eBook Business Digital" data-sales="25">
-<span class="badge">Nouveau</span>
-<h3>📘 eBook Business Digital</h3>
+<div class="product">
+<span class="badge">BEST SELLER</span>
+<h3>eBook Business Digital</h3>
 <p>Créer et vendre en ligne efficacement</p>
-<strong>5 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(5000,'eBook Business Digital')">Payer</button>
-<div class="sale-count" id="sale-eBook-Business-Digital">25 ventes</div>
+<div class="price">5 000 FCFA</div>
+<button onclick="payer('eBook Business Digital',5000)">Payer</button>
 </div>
 
-<div class="product" data-name="eBook Marketing WhatsApp" data-sales="40">
-<span class="badge best">Best-seller</span>
-<h3>📕 eBook Marketing WhatsApp</h3>
+<div class="product">
+<span class="badge">NOUVEAU</span>
+<h3>eBook Marketing WhatsApp</h3>
 <p>Vendre avec WhatsApp Business</p>
-<strong>4 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(4000,'eBook Marketing WhatsApp')">Payer</button>
-<div class="sale-count" id="sale-eBook-Marketing-WhatsApp">40 ventes</div>
+<div class="price">4 000 FCFA</div>
+<button onclick="payer('eBook Marketing WhatsApp',4000)">Payer</button>
 </div>
 
-<div class="product" data-name="eBook Argent sur Internet" data-sales="30">
-<span class="badge promo">Promo</span>
-<h3>📗 eBook Argent sur Internet</h3>
-<p>Méthodes adaptées à l’Afrique</p>
-<strong>3 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(3000,'eBook Argent sur Internet')">Payer</button>
-<div class="sale-count" id="sale-eBook-Argent-sur-Internet">30 ventes</div>
-</div>
-
-<div class="product" data-name="eBook Réseaux Sociaux" data-sales="20">
-<span class="badge">Nouveau</span>
-<h3>📙 eBook Réseaux Sociaux</h3>
-<p>Augmentez votre audience facilement</p>
-<strong>6 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(6000,'eBook Réseaux Sociaux')">Payer</button>
-<div class="sale-count" id="sale-eBook-Réseaux-Sociaux">20 ventes</div>
-</div>
-
-<div class="product" data-name="eBook IA Création Contenu" data-sales="18">
-<span class="badge promo">Promo</span>
-<h3>📓 eBook IA Création Contenu</h3>
-<p>Créer du contenu automatiquement avec IA</p>
-<strong>7 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(7000,'eBook IA Création Contenu')">Payer</button>
-<div class="sale-count" id="sale-eBook-IA-Création-Contenu">18 ventes</div>
-</div>
-
-<div class="product" data-name="eBook Marketing Instagram" data-sales="22">
-<span class="badge best">Best-seller</span>
-<h3>📖 eBook Marketing Instagram</h3>
-<p>Attirez plus de clients via Instagram</p>
-<strong>5 500 FCFA</strong><br><br>
-<button class="btn" onclick="payer(5500,'eBook Marketing Instagram')">Payer</button>
-<div class="sale-count" id="sale-eBook-Marketing-Instagram">22 ventes</div>
-</div>
-
-<div class="product" data-name="eBook IA Publicité" data-sales="15">
-<span class="badge promo">Promo</span>
-<h3>📘 eBook IA Publicité</h3>
-<p>Créer des publicités efficaces avec IA</p>
-<strong>8 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(8000,'eBook IA Publicité')">Payer</button>
-<div class="sale-count" id="sale-eBook-IA-Publicité">15 ventes</div>
-</div>
-
-<div class="product" data-name="eBook SEO Avancé" data-sales="10">
-<span class="badge best">Best-seller</span>
-<h3>📕 eBook SEO Avancé</h3>
-<p>Maîtriser le référencement Google</p>
-<strong>6 500 FCFA</strong><br><br>
-<button class="btn" onclick="payer(6500,'eBook SEO Avancé')">Payer</button>
-<div class="sale-count" id="sale-eBook-SEO-Avancé">10 ventes</div>
-</div>
-
-<!-- 8 FORMATIONS -->
-<div class="product" data-name="Formation SEO" data-sales="12">
-<span class="badge">Nouveau</span>
-<h3>💻 Formation SEO</h3>
-<p>Optimiser votre site pour Google</p>
-<strong>20 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(20000,'Formation SEO')">Payer</button>
-<div class="sale-count" id="sale-Formation-SEO">12 ventes</div>
-</div>
-
-<div class="product" data-name="Formation Email Marketing" data-sales="10">
-<span class="badge promo">Promo</span>
-<h3>💌 Formation Email Marketing</h3>
-<p>Convertir vos abonnés en clients</p>
-<strong>15 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(15000,'Formation Email Marketing')">Payer</button>
-<div class="sale-count" id="sale-Formation-Email-Marketing">10 ventes</div>
-</div>
-
-<div class="product" data-name="Formation Création Logo IA" data-sales="8">
-<span class="badge best">Best-seller</span>
-<h3>🎨 Formation Création Logo IA</h3>
-<p>Créer des logos professionnels rapidement</p>
-<strong>12 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(12000,'Formation Création Logo IA')">Payer</button>
-<div class="sale-count" id="sale-Formation-Création-Logo-IA">8 ventes</div>
-</div>
-
-<div class="product" data-name="Formation Affiches Publicitaires IA" data-sales="7">
-<span class="badge promo">Promo</span>
-<h3>🖼️ Formation Affiches Publicitaires IA</h3>
-<p>Créer des affiches professionnelles facilement</p>
-<strong>14 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(14000,'Formation Affiches Publicitaires IA')">Payer</button>
-<div class="sale-count" id="sale-Formation-Affiches-Publicitaires-IA">7 ventes</div>
-</div>
-
-<div class="product" data-name="Formation Vidéo Publicité IA" data-sales="6">
-<span class="badge">Nouveau</span>
-<h3>🎬 Formation Vidéo Publicité IA</h3>
-<p>Créer des vidéos marketing rapidement</p>
-<strong>18 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(18000,'Formation Vidéo Publicité IA')">Payer</button>
-<div class="sale-count" id="sale-Formation-Vidéo-Publicité-IA">6 ventes</div>
-</div>
-
-<div class="product" data-name="Formation TikTok Marketing" data-sales="5">
-<span class="badge best">Best-seller</span>
-<h3>🎥 Formation TikTok Marketing</h3>
-<p>Attirez des milliers de vues et clients</p>
-<strong>15 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(15000,'Formation TikTok Marketing')">Payer</button>
-<div class="sale-count" id="sale-Formation-TikTok-Marketing">5 ventes</div>
-</div>
-
-<div class="product" data-name="Formation Podcast IA" data-sales="4">
-<span class="badge promo">Promo</span>
-<h3>🎤 Formation Podcast IA</h3>
-<p>Créer des podcasts professionnels avec IA</p>
-<strong>10 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(10000,'Formation Podcast IA')">Payer</button>
-<div class="sale-count" id="sale-Formation-Podcast-IA">4 ventes</div>
-</div>
-
-<div class="product" data-name="Formation YouTube IA" data-sales="3">
-<span class="badge best">Best-seller</span>
-<h3>🎬 Formation YouTube IA</h3>
-<p>Créer des vidéos YouTube sans effort</p>
-<strong>22 000 FCFA</strong><br><br>
-<button class="btn" onclick="payer(22000,'Formation YouTube IA')">Payer</button>
-<div class="sale-count" id="sale-Formation-YouTube-IA">3 ventes</div>
-</div>
-
-</div>
-</section>
-
-<!-- LES AUTRES SECTIONS SONT LES MÊMES -->
-<section id="livraison" class="box">
-<h2>📥 Livraison</h2>
-<ol>
-<li>Paiement en ligne sécurisé</li>
-<li>Redirection automatique vers WhatsApp</li>
-<li>Livraison manuelle immédiate</li>
-</ol>
-</section>
-
-<section id="temoignages" class="box">
-<h2>💬 Témoignages</h2>
-<div class="slider">
 <div class="product">
-<p>"J'ai acheté l'eBook Business Digital et j'ai doublé mes ventes !"</p>
-<p><b>- Alice</b></p>
+<h3>eBook Canva Pro</h3>
+<p>Design pro sans graphiste</p>
+<div class="price">3 500 FCFA</div>
+<button onclick="payer('eBook Canva Pro',3500)">Payer</button>
 </div>
+
 <div class="product">
-<p>"La formation IA chansons est incroyable !"</p>
-<p><b>- Marc</b></p>
+<h3>eBook Facebook Ads</h3>
+<p>Publicité rentable</p>
+<div class="price">6 000 FCFA</div>
+<button onclick="payer('eBook Facebook Ads',6000)">Payer</button>
 </div>
+
 <div class="product">
-<p>"Les vidéos publicitaires IA m'ont sauvé du temps !"</p>
-<p><b>- Sophie</b></p>
+<h3>eBook Freelance Afrique</h3>
+<p>Gagner en ligne depuis l’Afrique</p>
+<div class="price">5 500 FCFA</div>
+<button onclick="payer('eBook Freelance Afrique',5500)">Payer</button>
 </div>
+
+<div class="product">
+<h3>eBook Dropshipping</h3>
+<p>Lancer sans stock</p>
+<div class="price">7 000 FCFA</div>
+<button onclick="payer('eBook Dropshipping',7000)">Payer</button>
 </div>
-</section>
 
-<section id="faq" class="box">
-<h2>📌 FAQ</h2>
-<p><b>Paiement sécurisé ?</b><br>Oui, paiement KKIAPAY réel.</p>
-<p><b>Comment recevoir ?</b><br>Via WhatsApp après paiement.</p>
-<p><b>Comment contacter le support ?</b><br>WhatsApp ou email.</p>
-</section>
+<div class="product">
+<h3>eBook Création Site Web</h3>
+<p>Sites gratuits et pros</p>
+<div class="price">4 500 FCFA</div>
+<button onclick="payer('eBook Création Site Web',4500)">Payer</button>
+</div>
 
-<section id="contact" class="box">
-<h2>Contact</h2>
-<p>Email : f2kmultiservice@gmail.com</p>
-<p>WhatsApp : <a href="https://wa.me/2290158070708" target="_blank">+229 01 58 07 07 08</a></p>
-<p>Promoteur : Kouessi Franck Kevin ADRE</p>
-</section>
+<div class="product">
+<h3>eBook Intelligence Artificielle</h3>
+<p>IA pour le business</p>
+<div class="price">8 000 FCFA</div>
+<button onclick="payer('eBook IA',8000)">Payer</button>
+</div>
 
-<footer>© 2026 F2K MARKET — Tous droits réservés</footer>
-<a class="whatsapp" href="https://wa.me/2290158070708?text=Bonjour,%20j'aimerais%20savoir%20comment%20procéder%20pour%20bénéficier%20de%20vos%20offres" target="_blank">WhatsApp</a>
+<!-- ===== FORMATIONS ===== -->
+<h2>🎓 Formations</h2>
+
+<div class="product">
+<span class="badge">POPULAIRE</span>
+<h3>Formation Business Digital</h3>
+<div class="price">25 000 FCFA</div>
+<button onclick="payer('Formation Business Digital',25000)">Payer</button>
+</div>
+
+<div class="product">
+<h3>Formation WhatsApp Pro</h3>
+<div class="price">15 000 FCFA</div>
+<button onclick="payer('Formation WhatsApp Pro',15000)">Payer</button>
+</div>
+
+<div class="product">
+<h3>Formation Canva Avancé</h3>
+<div class="price">12 000 FCFA</div>
+<button onclick="payer('Formation Canva Avancé',12000)">Payer</button>
+</div>
+
+<div class="product">
+<h3>Formation Création Site Web</h3>
+<div class="price">30 000 FCFA</div>
+<button onclick="payer('Formation Site Web',30000)">Payer</button>
+</div>
+
+<div class="product">
+<h3>Formation Facebook Ads</h3>
+<div class="price">20 000 FCFA</div>
+<button onclick="payer('Formation Facebook Ads',20000)">Payer</button>
+</div>
+
+<div class="product">
+<h3>Formation Freelance</h3>
+<div class="price">18 000 FCFA</div>
+<button onclick="payer('Formation Freelance',18000)">Payer</button>
+</div>
+
+<div class="product">
+<h3>Formation Dropshipping</h3>
+<div class="price">35 000 FCFA</div>
+<button onclick="payer('Formation Dropshipping',35000)">Payer</button>
+</div>
+
+<div class="product">
+<h3>Formation Intelligence Artificielle</h3>
+<div class="price">40 000 FCFA</div>
+<button onclick="payer('Formation IA',40000)">Payer</button>
+</div>
+
+<p class="conditions">
+Paiement sécurisé – Livraison via WhatsApp – Aucun remboursement après livraison.
+</p>
+
+</div>
+
+<footer>
+© F2K MULTISERVICE
+</footer>
+
+<a class="whatsapp-float"
+href="https://wa.me/2290158070708?text=Bonjour%20j'aimerais%20savoir%20comment%20procéder%20pour%20bénéficier%20de%20vos%20offres">
+💬
+</a>
 
 <script>
-// MODE SOMBRE
-function toggleDarkMode(){document.body.classList.toggle("dark-mode");}
-
-// RECHERCHE
-document.getElementById("search").addEventListener("keyup",function(){
-let v=this.value.toLowerCase();
-document.querySelectorAll(".product").forEach(p=>{
-p.style.display=p.textContent.toLowerCase().includes(v)?"block":"none";
-});
-});
-
-// COMPTE À REBOURS
-let promoDate=new Date("2026-01-31T23:59:59").getTime();
-setInterval(()=>{
-let now=Date.now(),d=promoDate-now;
-let c=document.getElementById("countdown");
-if(c) c.innerHTML=d>0?`⏳ Promo : ${Math.floor(d/86400000)} jours restants`:"Promo terminée";
-},1000);
-
-// HISTORIQUE ET VENTES
-function slugify(t){ return t.replace(/\s+/g,'-'); }
-function incrementSales(produit){
-let el=document.getElementById("sale-"+slugify(produit));
-if(el){ let n=parseInt(el.textContent.replace(/\D/g,''))||0; el.textContent=(n+1)+" ventes"; }
+function payer(produit, montant){
+  PayDunya.setup({
+    selector: null,
+    url: null,
+    method: "GET",
+    displayMode: PayDunya.DISPLAY_IN_POPUP,
+    checkoutType: PayDunya.CHECKOUT_INVOICE,
+    publicKey: "live_public_0tcwPCc1asd9iZEL5WvmkSD2wxI",
+    invoice: {
+      totalAmount: montant,
+      description: produit
+    },
+    onSuccess: function(){
+      window.location.href =
+      "https://wa.me/2290158070708?text=" +
+      encodeURIComponent("Paiement effectué avec succès pour : " + produit);
+    },
+    onError: function(){
+      alert("Paiement annulé");
+    }
+  });
+  PayDunya.start();
 }
-function savePurchase(data){
- let h = JSON.parse(localStorage.getItem("f2k_history"))||[];
- h.push(data); localStorage.setItem("f2k_history", JSON.stringify(h));
-}
-
-// POPUP SOCIAL
-const popup=document.getElementById("popup");
-const produitsPopup=document.querySelectorAll(".product h3");
-function showPopup(){
- if(produitsPopup.length===0) return;
- let idx=Math.floor(Math.random()*produitsPopup.length);
- let p=produitsPopup[idx].textContent;
- let n=Math.floor(Math.random()*15)+1;
- popup.textContent=`🔥 ${n} personnes ont acheté ${p} récemment`;
- popup.style.display="block";
- setTimeout(()=>popup.style.display="none",4000);
-}
-setInterval(showPopup,7000);
-
-// PAIEMENT KKIAPAY AVEC REDIRECTION WHATSAPP
-function nowDate(){ return new Date().toLocaleString(); }
-function generateRef(){ return "F2K-"+Date.now(); }
-
-function payer(montant,produit){
- openKkiapayWidget({
-  amount:montant,
-  key:"14571f1e61e7049fd8dc3332a0843c342732b2dc",
-  callback:function(){
-    incrementSales(produit);
-    savePurchase({produit:produit,montant:montant,date:nowDate(),ref:generateRef()});
-    // Redirection WhatsApp personnalisée
-    const msg = encodeURIComponent("Bonjour, j'aimerais savoir comment procéder pour bénéficier de vos offres");
-    window.location.href="https://wa.me/2290158070708?text="+msg;
-  }
- });
-}
-
-// CONDITIONS DE VENTE DISCRÈTES
-console.log("📌 Conditions de vente : Paiement sécurisé, livraison via WhatsApp, aucun remboursement après livraison.");
 </script>
+
 </body>
-                                </html>
+ </html>
  
