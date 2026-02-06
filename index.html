@@ -5,34 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>F2K MARKET</title>
 
-<script src="https://paydunya.com/assets/psr/js/checkout.min.js"></script>
-
 <style>
-body{font-family:Arial;background:#f4f4f4;margin:0}
+body{font-family:Arial;margin:0;background:#f4f4f4}
 header{background:#111;color:#fff;padding:15px}
-header h1{margin:0}
-nav{margin-top:10px}
-nav a{color:#fff;margin-right:15px;text-decoration:none;font-size:14px}
-.container{max-width:1000px;margin:auto;padding:15px}
+nav a{color:#fff;margin-right:15px;text-decoration:none;font-weight:bold}
+section{padding:20px}
+h2{border-bottom:2px solid #ddd;padding-bottom:5px}
 
-.search{margin:15px 0}
-.search input{width:100%;padding:10px;font-size:16px}
+.product{background:#fff;padding:15px;margin-bottom:15px;border-radius:8px}
+.badge{background:#e91e63;color:#fff;padding:3px 8px;border-radius:4px;font-size:12px}
+.price{font-weight:bold;font-size:18px;margin:8px 0}
+button{padding:8px 12px;border:none;border-radius:5px;cursor:pointer}
+.btn-pay{background:#000;color:#fff}
+.btn-cart{background:#25D366;color:#fff;margin-left:10px}
 
-.product{background:#fff;padding:15px;margin-bottom:20px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,.1)}
-.badge{background:#e91e63;color:#fff;font-size:12px;padding:3px 8px;border-radius:5px}
-.price{font-size:20px;font-weight:bold;margin:10px 0}
-button{padding:10px 15px;border:none;border-radius:5px;cursor:pointer}
-.pay{background:#000;color:#fff}
+input{width:100%;padding:8px;margin:5px 0}
 
-.whatsapp-float{position:fixed;bottom:20px;right:20px;background:#25D366;color:#fff;padding:15px;border-radius:50%;font-size:22px;text-decoration:none}
+.popup{position:fixed;bottom:90px;left:20px;background:#111;color:#fff;padding:10px;border-radius:5px;display:none}
+.whatsapp{position:fixed;bottom:20px;right:20px;background:#25D366;color:#fff;padding:15px;border-radius:50%;text-decoration:none}
 
-footer{text-align:center;font-size:12px;color:#666;padding:15px}
-
-.popup{position:fixed;bottom:90px;left:20px;background:#111;color:#fff;padding:10px 15px;border-radius:5px;font-size:13px;display:none}
-
-.testimonial{background:#fff;padding:10px;margin-bottom:10px;border-left:4px solid #25D366}
-
-.conditions{font-size:11px;color:#777;margin-top:15px}
+footer{background:#ddd;padding:15px;text-align:center;font-size:13px}
 </style>
 </head>
 
@@ -41,90 +33,107 @@ footer{text-align:center;font-size:12px;color:#666;padding:15px}
 <header>
 <h1>F2K MARKET</h1>
 <nav>
-<a href="#">Accueil</a>
-<a href="#">Créer un compte</a>
-<a href="#">Connexion</a>
+<a href="#boutique">Boutique</a>
+<a href="#inscription">Inscription</a>
+<a href="#connexion">Connexion</a>
+<a href="#temoignages">Témoignages</a>
 <a href="#support">Support</a>
+<a href="#contact">Contact</a>
 </nav>
 </header>
 
-<div class="container">
+<section id="boutique">
+<h2>🛒 Boutique</h2>
 
-<div class="search">
-<input type="text" id="search" placeholder="Rechercher un produit..." onkeyup="filterProducts()">
-</div>
+<input type="text" id="search" placeholder="Rechercher un produit..." onkeyup="searchProduct()">
 
-<h2>📘 eBooks</h2>
+<h3>📘 eBooks</h3>
 
-<div class="product"><span class="badge">BEST</span><h3>eBook Business Digital</h3><p>Créer et vendre en ligne</p><div class="price">5 000 FCFA</div><button class="pay" onclick="payer('eBook Business Digital',5000)">Payer</button></div>
-<div class="product"><h3>eBook Marketing WhatsApp</h3><div class="price">4 000 FCFA</div><button class="pay" onclick="payer('eBook Marketing WhatsApp',4000)">Payer</button></div>
-<div class="product"><h3>eBook Canva Pro</h3><div class="price">3 500 FCFA</div><button class="pay" onclick="payer('eBook Canva Pro',3500)">Payer</button></div>
-<div class="product"><h3>eBook Facebook Ads</h3><div class="price">6 000 FCFA</div><button class="pay" onclick="payer('eBook Facebook Ads',6000)">Payer</button></div>
-<div class="product"><h3>eBook Freelance Afrique</h3><div class="price">5 500 FCFA</div><button class="pay" onclick="payer('eBook Freelance Afrique',5500)">Payer</button></div>
-<div class="product"><h3>eBook Dropshipping</h3><div class="price">7 000 FCFA</div><button class="pay" onclick="payer('eBook Dropshipping',7000)">Payer</button></div>
-<div class="product"><h3>eBook Création Site Web</h3><div class="price">4 500 FCFA</div><button class="pay" onclick="payer('eBook Création Site Web',4500)">Payer</button></div>
-<div class="product"><h3>eBook Intelligence Artificielle</h3><div class="price">8 000 FCFA</div><button class="pay" onclick="payer('eBook IA',8000)">Payer</button></div>
+<div class="product"><span class="badge">Nouveau</span><h4>eBook Business Digital</h4><div class="price">5 000 FCFA</div></div>
+<div class="product"><h4>eBook Marketing WhatsApp</h4><div class="price">4 000 FCFA</div></div>
+<div class="product"><h4>eBook Facebook Ads</h4><div class="price">6 000 FCFA</div></div>
+<div class="product"><h4>eBook Canva Pro</h4><div class="price">3 500 FCFA</div></div>
+<div class="product"><h4>eBook Freelance Afrique</h4><div class="price">5 500 FCFA</div></div>
+<div class="product"><h4>eBook Dropshipping</h4><div class="price">7 000 FCFA</div></div>
+<div class="product"><h4>eBook Création Site Web</h4><div class="price">4 500 FCFA</div></div>
+<div class="product"><h4>eBook Intelligence Artificielle</h4><div class="price">8 000 FCFA</div></div>
 
-<h2>🎓 Formations</h2>
+<h3>🎓 Formations</h3>
 
-<div class="product"><h3>Formation Business Digital</h3><div class="price">25 000 FCFA</div><button class="pay" onclick="payer('Formation Business Digital',25000)">Payer</button></div>
-<div class="product"><h3>Formation WhatsApp Pro</h3><div class="price">15 000 FCFA</div><button class="pay" onclick="payer('Formation WhatsApp Pro',15000)">Payer</button></div>
-<div class="product"><h3>Formation Canva Avancé</h3><div class="price">12 000 FCFA</div><button class="pay" onclick="payer('Formation Canva Avancé',12000)">Payer</button></div>
-<div class="product"><h3>Formation Création Site Web</h3><div class="price">30 000 FCFA</div><button class="pay" onclick="payer('Formation Site Web',30000)">Payer</button></div>
-<div class="product"><h3>Formation Facebook Ads</h3><div class="price">20 000 FCFA</div><button class="pay" onclick="payer('Formation Facebook Ads',20000)">Payer</button></div>
-<div class="product"><h3>Formation Freelance</h3><div class="price">18 000 FCFA</div><button class="pay" onclick="payer('Formation Freelance',18000)">Payer</button></div>
-<div class="product"><h3>Formation Dropshipping</h3><div class="price">35 000 FCFA</div><button class="pay" onclick="payer('Formation Dropshipping',35000)">Payer</button></div>
-<div class="product"><h3>Formation Intelligence Artificielle</h3><div class="price">40 000 FCFA</div><button class="pay" onclick="payer('Formation IA',40000)">Payer</button></div>
+<div class="product"><span class="badge">Best</span><h4>Formation Business Digital</h4><div class="price">25 000 FCFA</div></div>
+<div class="product"><h4>Formation WhatsApp Pro</h4><div class="price">15 000 FCFA</div></div>
+<div class="product"><h4>Formation Canva Avancé</h4><div class="price">12 000 FCFA</div></div>
+<div class="product"><h4>Formation Facebook Ads</h4><div class="price">20 000 FCFA</div></div>
+<div class="product"><h4>Formation Freelance</h4><div class="price">18 000 FCFA</div></div>
+<div class="product"><h4>Formation Dropshipping</h4><div class="price">35 000 FCFA</div></div>
+<div class="product"><h4>Formation Création Site Web</h4><div class="price">30 000 FCFA</div></div>
+<div class="product"><h4>Formation Intelligence Artificielle</h4><div class="price">40 000 FCFA</div></div>
 
-<h2>⭐ Témoignages</h2>
-<div class="testimonial">« Formation claire, WhatsApp réactif » – Jean</div>
-<div class="testimonial">« J’ai reçu mon ebook immédiatement » – Aïcha</div>
-<div class="testimonial">« Très sérieux, je recommande » – Mohamed</div>
+</section>
 
-<h2 id="support">📞 Support</h2>
+<section id="inscription">
+<h2>📝 Inscription</h2>
+<input placeholder="Nom">
+<input placeholder="Email">
+<input placeholder="Mot de passe">
+<button>S'inscrire</button>
+</section>
+
+<section id="connexion">
+<h2>🔐 Connexion</h2>
+<input placeholder="Email">
+<input placeholder="Mot de passe">
+<button>Se connecter</button>
+</section>
+
+<section id="temoignages">
+<h2>💬 Témoignages</h2>
+<p>⭐ « Très bon service » – Jean</p>
+<p>⭐ « Livraison rapide » – Aïcha</p>
+<p>⭐ « Sérieux et fiable » – Mohamed</p>
+</section>
+
+<section id="support">
+<h2>🛠 Support</h2>
 <p>WhatsApp : +229 01 58 07 07 08</p>
 <p>Email : support@f2kmultiservice.com</p>
+</section>
 
-<p class="conditions">Paiement sécurisé – Livraison WhatsApp – Aucun remboursement</p>
+<section id="contact">
+<h2>📞 Contact</h2>
+<p>Email : f2kmultiservice@gmail.com</p>
+<p>WhatsApp : +229 01 58 07 07 08</p>
+</section>
 
-</div>
+<div class="popup" id="popup"></div>
 
-<div class="popup" id="popup">🔥 3 personnes ont acheté ce produit</div>
-
-<a class="whatsapp-float"
+<a class="whatsapp"
 href="https://wa.me/2290158070708?text=Bonjour%20j'aimerais%20savoir%20comment%20procéder%20pour%20bénéficier%20de%20vos%20offres">💬</a>
 
-<script>
-function payer(p,m){
-PayDunya.setup({
-displayMode:PayDunya.DISPLAY_IN_POPUP,
-checkoutType:PayDunya.CHECKOUT_INVOICE,
-publicKey:"live_public_0tcwPCc1asd9iZEL5WvmkSD2wxI",
-invoice:{totalAmount:m,description:p},
-onSuccess:function(){
-window.location.href="https://wa.me/2290158070708?text="+encodeURIComponent("Paiement effectué avec succès : "+p);
-}});
-PayDunya.start();
-}
+<footer>
+<p>© 2026 F2K MARKET</p>
+<p><b>Promoteur :</b> Kouessi Franck Kevin ADRE</p>
+</footer>
 
-function filterProducts(){
-let s=document.getElementById("search").value.toLowerCase();
+<script>
+function searchProduct(){
+let v=document.getElementById("search").value.toLowerCase();
 document.querySelectorAll(".product").forEach(p=>{
-p.style.display=p.innerText.toLowerCase().includes(s)?"block":"none";
+p.style.display=p.innerText.toLowerCase().includes(v)?"block":"none";
 });
 }
 
+const produits=["eBook Business Digital","Formation Canva Avancé","eBook Facebook Ads","Formation Dropshipping"];
 setInterval(()=>{
+let p=produits[Math.floor(Math.random()*produits.length)];
+let n=Math.floor(Math.random()*8)+2;
 let pop=document.getElementById("popup");
+pop.innerHTML="🔥 "+n+" personnes ont acheté "+p;
 pop.style.display="block";
-setTimeout(()=>pop.style.display="none",3000);
-},15000);
+setTimeout(()=>pop.style.display="none",4000);
+},12000);
 </script>
 
-<script src="//code.tidio.co/rsimiu3vjdcbd2sq1ff60lmfgdx15vjg.js" async></script>
-
-<footer>© F2K MULTISERVICE</footer>
-
 </body>
-  </html>
-  
+                                                      </html>
+                                                  
