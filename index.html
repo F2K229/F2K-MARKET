@@ -3,28 +3,86 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>F2K MARKET</title>
+<title>F2K MARKET – Produits numériques</title>
 
+<!-- STYLE -->
 <style>
-body{font-family:Arial;margin:0;background:#f4f4f4}
-header{background:#111;color:#fff;padding:15px}
-nav a{color:#fff;margin-right:15px;text-decoration:none;font-weight:bold}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f4f4}
+header{background:#111;color:#fff;padding:15px;position:sticky;top:0;z-index:999}
+header h1{margin:0;font-size:22px}
+nav{margin-top:10px}
+nav a{color:#fff;margin-right:12px;text-decoration:none;font-size:14px;font-weight:bold}
+
 section{padding:20px}
-h2{border-bottom:2px solid #ddd;padding-bottom:5px}
+h2{margin-top:0}
 
-.product{background:#fff;padding:15px;margin-bottom:15px;border-radius:8px}
-.badge{background:#e91e63;color:#fff;padding:3px 8px;border-radius:4px;font-size:12px}
-.price{font-weight:bold;font-size:18px;margin:8px 0}
-button{padding:8px 12px;border:none;border-radius:5px;cursor:pointer}
-.btn-pay{background:#000;color:#fff}
-.btn-cart{background:#25D366;color:#fff;margin-left:10px}
+.search-box input{
+width:100%;padding:10px;border-radius:6px;border:1px solid #ccc
+}
 
-input{width:100%;padding:8px;margin:5px 0}
+.product{
+background:#fff;
+padding:15px;
+margin-bottom:15px;
+border-radius:8px;
+position:relative
+}
 
-.popup{position:fixed;bottom:90px;left:20px;background:#111;color:#fff;padding:10px;border-radius:5px;display:none}
-.whatsapp{position:fixed;bottom:20px;right:20px;background:#25D366;color:#fff;padding:15px;border-radius:50%;text-decoration:none}
+.badge{
+position:absolute;
+top:10px;left:10px;
+padding:4px 8px;
+font-size:11px;
+color:#fff;border-radius:4px
+}
+.badge.new{background:#28a745}
+.badge.hot{background:#e74c3c}
+.badge.vip{background:#f39c12}
 
-footer{background:#ddd;padding:15px;text-align:center;font-size:13px}
+.product h3{margin-top:25px}
+.price{color:#27ae60;font-weight:bold}
+.buy-count{font-size:12px;color:#777}
+
+button{
+padding:10px 15px;
+border:none;
+border-radius:6px;
+background:#111;
+color:#fff;
+cursor:pointer;
+margin-top:10px
+}
+
+.cart{
+position:fixed;
+bottom:20px;
+right:20px;
+background:#111;
+color:#fff;
+padding:15px;
+border-radius:50%;
+font-weight:bold;
+cursor:pointer
+}
+
+footer{
+background:#111;
+color:#fff;
+padding:20px;
+text-align:center
+}
+
+.popup{
+position:fixed;
+bottom:20px;
+left:20px;
+background:#fff;
+padding:10px;
+border-radius:6px;
+box-shadow:0 0 10px rgba(0,0,0,.2);
+display:none;
+font-size:13px
+}
 </style>
 </head>
 
@@ -32,108 +90,145 @@ footer{background:#ddd;padding:15px;text-align:center;font-size:13px}
 
 <header>
 <h1>F2K MARKET</h1>
+<p>Promoteur : F2K MULTISERVICE</p>
 <nav>
-<a href="#boutique">Boutique</a>
-<a href="#inscription">Inscription</a>
-<a href="#connexion">Connexion</a>
-<a href="#temoignages">Témoignages</a>
+<a href="#produits">Boutique</a>
+<a href="#compte">Inscription</a>
 <a href="#support">Support</a>
-<a href="#contact">Contact</a>
+<a href="#temoignages">Témoignages</a>
+<a href="https://wa.me/229199878742">WhatsApp</a>
 </nav>
 </header>
 
-<section id="boutique">
-<h2>🛒 Boutique</h2>
-
+<section class="search-box">
 <input type="text" id="search" placeholder="Rechercher un produit..." onkeyup="searchProduct()">
+</section>
 
-<h3>📘 eBooks</h3>
+<section id="produits">
+<h2>📚 Ebooks & 🎓 Formations</h2>
 
-<div class="product"><span class="badge">Nouveau</span><h4>eBook Business Digital</h4><div class="price">5 000 FCFA</div></div>
-<div class="product"><h4>eBook Marketing WhatsApp</h4><div class="price">4 000 FCFA</div></div>
-<div class="product"><h4>eBook Facebook Ads</h4><div class="price">6 000 FCFA</div></div>
-<div class="product"><h4>eBook Canva Pro</h4><div class="price">3 500 FCFA</div></div>
-<div class="product"><h4>eBook Freelance Afrique</h4><div class="price">5 500 FCFA</div></div>
-<div class="product"><h4>eBook Dropshipping</h4><div class="price">7 000 FCFA</div></div>
-<div class="product"><h4>eBook Création Site Web</h4><div class="price">4 500 FCFA</div></div>
-<div class="product"><h4>eBook Intelligence Artificielle</h4><div class="price">8 000 FCFA</div></div>
+<!-- PRODUITS -->
+<div class="product">
+<span class="badge new">EBOOK</span>
+<h3>Créer un business en ligne</h3>
+<p class="price">3 000 FCFA</p>
+<p class="buy-count">✔ 124 achats</p>
+<button onclick="addToCart('Ebook Business',3000)">Ajouter au panier</button>
+</div>
 
-<h3>🎓 Formations</h3>
+<div class="product">
+<span class="badge hot">EBOOK</span>
+<h3>Monétiser WhatsApp</h3>
+<p class="price">2 500 FCFA</p>
+<p class="buy-count">✔ 98 achats</p>
+<button onclick="addToCart('Ebook WhatsApp',2500)">Ajouter au panier</button>
+</div>
 
-<div class="product"><span class="badge">Best</span><h4>Formation Business Digital</h4><div class="price">25 000 FCFA</div></div>
-<div class="product"><h4>Formation WhatsApp Pro</h4><div class="price">15 000 FCFA</div></div>
-<div class="product"><h4>Formation Canva Avancé</h4><div class="price">12 000 FCFA</div></div>
-<div class="product"><h4>Formation Facebook Ads</h4><div class="price">20 000 FCFA</div></div>
-<div class="product"><h4>Formation Freelance</h4><div class="price">18 000 FCFA</div></div>
-<div class="product"><h4>Formation Dropshipping</h4><div class="price">35 000 FCFA</div></div>
-<div class="product"><h4>Formation Création Site Web</h4><div class="price">30 000 FCFA</div></div>
-<div class="product"><h4>Formation Intelligence Artificielle</h4><div class="price">40 000 FCFA</div></div>
+<div class="product">
+<span class="badge vip">EBOOK</span>
+<h3>Marketing Digital Afrique</h3>
+<p class="price">3 500 FCFA</p>
+<p class="buy-count">✔ 67 achats</p>
+<button onclick="addToCart('Ebook Marketing',3500)">Ajouter au panier</button>
+</div>
+
+<div class="product">
+<span class="badge new">FORMATION</span>
+<h3>Formation création site web</h3>
+<p class="price">10 000 FCFA</p>
+<p class="buy-count">✔ 54 achats</p>
+<button onclick="addToCart('Formation Web',10000)">Ajouter au panier</button>
+</div>
+
+<div class="product">
+<span class="badge hot">FORMATION</span>
+<h3>Formation e-commerce</h3>
+<p class="price">12 000 FCFA</p>
+<p class="buy-count">✔ 43 achats</p>
+<button onclick="addToCart('Formation Ecommerce',12000)">Ajouter au panier</button>
+</div>
+
+<div class="product">
+<span class="badge vip">FORMATION</span>
+<h3>Formation IA & automatisation</h3>
+<p class="price">15 000 FCFA</p>
+<p class="buy-count">✔ 31 achats</p>
+<button onclick="addToCart('Formation IA',15000)">Ajouter au panier</button>
+</div>
 
 </section>
 
-<section id="inscription">
-<h2>📝 Inscription</h2>
-<input placeholder="Nom">
-<input placeholder="Email">
-<input placeholder="Mot de passe">
-<button>S'inscrire</button>
-</section>
-
-<section id="connexion">
-<h2>🔐 Connexion</h2>
-<input placeholder="Email">
-<input placeholder="Mot de passe">
+<section id="compte">
+<h2>👤 Inscription / Connexion</h2>
+<p>Connexion sécurisée via Firebase (structure prête)</p>
+<input type="email" placeholder="Email"><br><br>
+<input type="password" placeholder="Mot de passe"><br><br>
+<button>Créer un compte</button>
 <button>Se connecter</button>
 </section>
 
-<section id="temoignages">
-<h2>💬 Témoignages</h2>
-<p>⭐ « Très bon service » – Jean</p>
-<p>⭐ « Livraison rapide » – Aïcha</p>
-<p>⭐ « Sérieux et fiable » – Mohamed</p>
-</section>
-
 <section id="support">
-<h2>🛠 Support</h2>
-<p>WhatsApp : +229 01 58 07 07 08</p>
-<p>Email : support@f2kmultiservice.com</p>
+<h2>🛟 Support & Agent IA</h2>
+<p>L’agent IA répond automatiquement aux questions 24h/24.</p>
+<button onclick="alert('Agent IA actif')">Contacter l’agent IA</button>
 </section>
 
-<section id="contact">
-<h2>📞 Contact</h2>
-<p>Email : f2kmultiservice@gmail.com</p>
-<p>WhatsApp : +229 01 58 07 07 08</p>
+<section id="temoignages">
+<h2>⭐ Témoignages</h2>
+<p>« Formation très claire » – Jean</p>
+<p>« J’ai gagné mes premiers clients » – Awa</p>
+<p>« Support rapide et sérieux » – Karim</p>
 </section>
+
+<div class="cart" onclick="pay()">🛒</div>
 
 <div class="popup" id="popup"></div>
 
-<a class="whatsapp"
-href="https://wa.me/2290158070708?text=Bonjour%20j'aimerais%20savoir%20comment%20procéder%20pour%20bénéficier%20de%20vos%20offres">💬</a>
-
 <footer>
-<p>© 2026 F2K MARKET</p>
-<p><b>Promoteur :</b> Kouessi Franck Kevin ADRE</p>
+<p>© 2026 F2K MARKET – Tous droits réservés</p>
 </footer>
 
+<!-- PAYDUNYA -->
+<script src="https://app.paydunya.com/assets/js/paydunya.js"></script>
+
+<!-- TIDIO -->
+<script src="//code.tidio.co/rsimiu3vjdcbd2sq1ff60lmfgdx15vjg.js" async></script>
+
 <script>
+let cart=[];
+function addToCart(name,price){
+cart.push({name,price});
+alert(name+" ajouté au panier");
+}
+
+function pay(){
+let total=cart.reduce((s,p)=>s+p.price,0);
+alert("Paiement total : "+total+" FCFA via PayDunya");
+}
+
 function searchProduct(){
-let v=document.getElementById("search").value.toLowerCase();
+let input=document.getElementById("search").value.toLowerCase();
 document.querySelectorAll(".product").forEach(p=>{
-p.style.display=p.innerText.toLowerCase().includes(v)?"block":"none";
+p.style.display=p.innerText.toLowerCase().includes(input)?"block":"none";
 });
 }
 
-const produits=["eBook Business Digital","Formation Canva Avancé","eBook Facebook Ads","Formation Dropshipping"];
+let proofs=[
+"Quelqu’un vient d’acheter une formation",
+"Un client vient de payer un ebook",
+"Nouveau paiement confirmé",
+"Formation IA achetée à l’instant"
+];
+let i=0;
 setInterval(()=>{
-let p=produits[Math.floor(Math.random()*produits.length)];
-let n=Math.floor(Math.random()*8)+2;
-let pop=document.getElementById("popup");
-pop.innerHTML="🔥 "+n+" personnes ont acheté "+p;
-pop.style.display="block";
-setTimeout(()=>pop.style.display="none",4000);
-},12000);
+let popup=document.getElementById("popup");
+popup.innerText=proofs[i];
+popup.style.display="block";
+setTimeout(()=>popup.style.display="none",4000);
+i=(i+1)%proofs.length;
+},8000);
 </script>
 
 </body>
-                                                      </html>
-                                                  
+  </html>
+  
