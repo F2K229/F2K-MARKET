@@ -290,7 +290,7 @@ function checkoutToWhatsApp() {
   let total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   message += `\nTotal : ${total.toLocaleString()} FCFA\n\nMerci de confirmer et guider pour le paiement.`;
   let waText = encodeURIComponent(message);
-  window.open(`https://wa.me/229199878742?text=${waText}`, '_blank');
+  window.open(`https://wa.me/2290199878742?text=${waText}`, '_blank');
   clearCart(); // Optionnel: vider après envoi
 }
 
