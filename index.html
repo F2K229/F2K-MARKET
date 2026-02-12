@@ -4,84 +4,65 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>F2K MARKET – Produits numériques</title>
+<meta name="description" content="Boutique en ligne de ebooks et formations sur le business digital, marketing et développement web en Afrique. Paiements sécurisés via WhatsApp.">
+<meta name="keywords" content="ebooks business, formations en ligne, marketing digital Afrique, création site web, monétiser WhatsApp">
 
-<!-- STYLE -->
+<!-- STYLE (amélioré pour responsive, cartes plus modernes, hover effects) -->
 <style>
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f4f4}
-header{background:#111;color:#fff;padding:15px;position:sticky;top:0;z-index:999}
-header h1{margin:0;font-size:22px}
-nav{margin-top:10px}
-nav a{color:#fff;margin-right:12px;text-decoration:none;font-size:14px;font-weight:bold}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Arial, Helvetica, sans-serif; background: #f4f4f4; color: #333; line-height: 1.6; }
+header { background: #111; color: #fff; padding: 15px; position: sticky; top: 0; z-index: 999; }
+header h1 { margin: 0; font-size: 22px; }
+header p { margin: 5px 0; font-size: 14px; }
+nav { margin-top: 10px; display: flex; justify-content: space-around; flex-wrap: wrap; }
+nav a { color: #fff; margin: 5px 12px; text-decoration: none; font-size: 14px; font-weight: bold; transition: color 0.3s; }
+nav a:hover { color: #00d4ff; }
 
-section{padding:20px}
-h2{margin-top:0}
+section { padding: 20px; }
+h2 { margin-top: 0; font-size: 24px; text-align: center; }
 
-.search-box input{
-width:100%;padding:10px;border-radius:6px;border:1px solid #ccc
-}
+.search-box { max-width: 600px; margin: 0 auto; }
+.search-box input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 16px; }
 
-.product{
-background:#fff;
-padding:15px;
-margin-bottom:15px;
-border-radius:8px;
-position:relative
-}
+#produits { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+.product { background: #fff; padding: 15px; border-radius: 8px; position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.3s, box-shadow 0.3s; }
+.product:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.2); }
+.product img { width: 100%; height: 180px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; }
 
-.badge{
-position:absolute;
-top:10px;left:10px;
-padding:4px 8px;
-font-size:11px;
-color:#fff;border-radius:4px
-}
-.badge.new{background:#28a745}
-.badge.hot{background:#e74c3c}
-.badge.vip{background:#f39c12}
+.badge { position: absolute; top: 10px; left: 10px; padding: 4px 8px; font-size: 11px; color: #fff; border-radius: 4px; }
+.badge.new { background: #28a745; }
+.badge.hot { background: #e74c3c; }
+.badge.vip { background: #f39c12; }
 
-.product h3{margin-top:25px}
-.price{color:#27ae60;font-weight:bold}
-.buy-count{font-size:12px;color:#777}
+.product h3 { margin-top: 10px; font-size: 18px; }
+.price { color: #27ae60; font-weight: bold; font-size: 16px; }
+.buy-count { font-size: 12px; color: #777; margin-bottom: 10px; }
 
-button{
-padding:10px 15px;
-border:none;
-border-radius:6px;
-background:#111;
-color:#fff;
-cursor:pointer;
-margin-top:10px
-}
+button { padding: 10px 15px; border: none; border-radius: 6px; background: #111; color: #fff; cursor: pointer; font-size: 14px; transition: background 0.3s; }
+button:hover { background: #333; }
+button.quantity { background: #eee; color: #333; margin: 0 5px; padding: 5px 10px; }
 
-.cart{
-position:fixed;
-bottom:20px;
-right:20px;
-background:#111;
-color:#fff;
-padding:15px;
-border-radius:50%;
-font-weight:bold;
-cursor:pointer
-}
+.cart { position: fixed; bottom: 20px; right: 20px; background: #111; color: #fff; padding: 15px; border-radius: 50%; font-weight: bold; cursor: pointer; text-align: center; min-width: 50px; }
+.cart:hover { background: #333; }
 
-footer{
-background:#111;
-color:#fff;
-padding:20px;
-text-align:center
-}
+#cart-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.3); z-index: 1000; max-width: 90%; width: 400px; }
+#cart-modal h2 { text-align: left; font-size: 20px; }
+#cart-items { margin-bottom: 15px; }
+.cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+.cart-item span { flex: 1; }
+#cart-total { font-weight: bold; font-size: 16px; }
+#overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
 
-.popup{
-position:fixed;
-bottom:20px;
-left:20px;
-background:#fff;
-padding:10px;
-border-radius:6px;
-box-shadow:0 0 10px rgba(0,0,0,.2);
-display:none;
-font-size:13px
+.popup { position: fixed; bottom: 20px; left: 20px; background: #fff; padding: 10px; border-radius: 6px; box-shadow: 0 0 10px rgba(0,0,0,.2); display: none; font-size: 13px; }
+
+footer { background: #111; color: #fff; padding: 20px; text-align: center; font-size: 14px; }
+footer a { color: #ccc; text-decoration: none; margin: 0 10px; }
+footer a:hover { color: #00d4ff; }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  nav { justify-content: center; }
+  .product { margin: 0 10px; }
 }
 </style>
 </head>
@@ -90,13 +71,13 @@ font-size:13px
 
 <header>
 <h1>F2K MARKET</h1>
-<p>Promoteur : Kouessi Franck Kevin ADRE</p>
+<p>Promoteur : F2K MULTISERVICE</p>
 <nav>
 <a href="#produits">Boutique</a>
 <a href="#compte">Inscription</a>
 <a href="#support">Support</a>
 <a href="#temoignages">Témoignages</a>
-<a href="https://wa.me/2290199878742">WhatsApp</a>
+<a href="https://wa.me/229199878742">WhatsApp</a>
 </nav>
 </header>
 
@@ -107,9 +88,10 @@ font-size:13px
 <section id="produits">
 <h2>📚 Ebooks & 🎓 Formations</h2>
 
-<!-- PRODUITS -->
+<!-- PRODUITS (ajout images placeholders Unsplash, quantités) -->
 <div class="product">
 <span class="badge new">EBOOK</span>
+<img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400" alt="Créer un business en ligne">
 <h3>Créer un business en ligne</h3>
 <p class="price">3 000 FCFA</p>
 <p class="buy-count">✔ 124 achats</p>
@@ -118,6 +100,7 @@ font-size:13px
 
 <div class="product">
 <span class="badge hot">EBOOK</span>
+<img src="https://images.unsplash.com/photo-1616070691142-509843873eb5?w=400" alt="Monétiser WhatsApp">
 <h3>Monétiser WhatsApp</h3>
 <p class="price">2 500 FCFA</p>
 <p class="buy-count">✔ 98 achats</p>
@@ -126,6 +109,7 @@ font-size:13px
 
 <div class="product">
 <span class="badge vip">EBOOK</span>
+<img src="https://images.unsplash.com/photo-1460925898913-fffcc8da4e16?w=400" alt="Marketing Digital Afrique">
 <h3>Marketing Digital Afrique</h3>
 <p class="price">3 500 FCFA</p>
 <p class="buy-count">✔ 67 achats</p>
@@ -134,6 +118,7 @@ font-size:13px
 
 <div class="product">
 <span class="badge new">FORMATION</span>
+<img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400" alt="Formation création site web">
 <h3>Formation création site web</h3>
 <p class="price">10 000 FCFA</p>
 <p class="buy-count">✔ 54 achats</p>
@@ -142,6 +127,7 @@ font-size:13px
 
 <div class="product">
 <span class="badge hot">FORMATION</span>
+<img src="https://images.unsplash.com/photo-1556740758-90de374c12ad?w=400" alt="Formation e-commerce">
 <h3>Formation e-commerce</h3>
 <p class="price">12 000 FCFA</p>
 <p class="buy-count">✔ 43 achats</p>
@@ -150,6 +136,7 @@ font-size:13px
 
 <div class="product">
 <span class="badge vip">FORMATION</span>
+<img src="https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?w=400" alt="Formation IA & automatisation">
 <h3>Formation IA & automatisation</h3>
 <p class="price">15 000 FCFA</p>
 <p class="buy-count">✔ 31 achats</p>
@@ -160,17 +147,23 @@ font-size:13px
 
 <section id="compte">
 <h2>👤 Inscription / Connexion</h2>
-<p>Connexion sécurisée via Firebase (structure prête)</p>
-<input type="email" placeholder="Email"><br><br>
-<input type="password" placeholder="Mot de passe"><br><br>
-<button>Créer un compte</button>
-<button>Se connecter</button>
+<p>Créez un compte pour sauvegarder vos préférences (stocké localement).</p>
+<input type="email" id="email" placeholder="Email"><br><br>
+<input type="password" id="password" placeholder="Mot de passe"><br><br>
+<button onclick="fakeSignup()">Créer un compte</button>
+<button onclick="fakeLogin()">Se connecter</button>
+<p id="account-status"></p>
 </section>
 
 <section id="support">
 <h2>🛟 Support & Agent IA</h2>
-<p>L’agent IA répond automatiquement aux questions 24h/24.</p>
-<button onclick="alert('Agent IA actif')">Contacter l’agent IA</button>
+<p>L’agent IA répond automatiquement aux questions 24h/24 via chat simple.</p>
+<button onclick="openChat()">Contacter l’agent IA</button>
+<div id="chat-box" style="display:none; margin-top:10px; border:1px solid #ccc; padding:10px; border-radius:6px;">
+  <div id="chat-messages"></div>
+  <input type="text" id="chat-input" placeholder="Posez votre question..." style="width:100%; margin-top:10px;">
+  <button onclick="sendChatMessage()">Envoyer</button>
+</div>
 </section>
 
 <section id="temoignages">
@@ -180,55 +173,194 @@ font-size:13px
 <p>« Support rapide et sérieux » – Karim</p>
 </section>
 
-<div class="cart" onclick="pay()">🛒</div>
+<div class="cart" onclick="showCartModal()"></div>
+
+<!-- Modal Panier -->
+<div id="overlay" onclick="closeCartModal()"></div>
+<div id="cart-modal">
+  <h2>Votre Panier</h2>
+  <div id="cart-items"></div>
+  <p id="cart-total">Total : 0 FCFA</p>
+  <button onclick="clearCart()">Vider le panier</button>
+  <button onclick="checkoutToWhatsApp()">Payer via WhatsApp</button>
+  <button onclick="closeCartModal()">Fermer</button>
+</div>
 
 <div class="popup" id="popup"></div>
 
 <footer>
-<p>© 2026 F2K MULTISERVICE – Tous droits réservés</p>
+<p>© 2026 F2K MARKET – Tous droits réservés</p>
+<a href="#produits">Boutique</a>
+<a href="https://wa.me/229199878742">Contact</a>
+<a href="#temoignages">Avis</a>
 </footer>
 
-<!-- PAYDUNYA -->
-<script src="https://app.paydunya.com/assets/js/paydunya.js"></script>
-
-<!-- TIDIO -->
-<script src="//code.tidio.co/rsimiu3vjdcbd2sq1ff60lmfgdx15vjg.js" async></script>
-
+<!-- SCRIPT (améliorations: panier persistant, quantités, suppression, modal panier, WhatsApp checkout, fake auth, simple chat IA, SEO meta, etc.) -->
 <script>
-let cart=[];
-function addToCart(name,price){
-cart.push({name,price});
-alert(name+" ajouté au panier");
+// Panier persistant
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+updateCartButton();
+
+// Ajout au panier
+function addToCart(name, price) {
+  let item = cart.find(i => i.name === name);
+  if (item) {
+    item.quantity += 1;
+  } else {
+    cart.push({ name, price, quantity: 1 });
+  }
+  saveCart();
+  alert(name + " ajouté au panier !");
 }
 
-function pay(){
-let total=cart.reduce((s,p)=>s+p.price,0);
-alert("Paiement total : "+total+" FCFA via PayDunya");
+// Sauvegarde
+function saveCart() {
+  localStorage.setItem('cart', JSON.stringify(cart));
+  updateCartButton();
 }
 
-function searchProduct(){
-let input=document.getElementById("search").value.toLowerCase();
-document.querySelectorAll(".product").forEach(p=>{
-p.style.display=p.innerText.toLowerCase().includes(input)?"block":"none";
-});
+// Mise à jour bouton panier
+function updateCartButton() {
+  let totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  let totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  document.querySelector('.cart').innerHTML = `🛒 ${totalItems} • ${totalPrice.toLocaleString()} FCFA`;
 }
 
-let proofs=[
-"Quelqu’un vient d’acheter une formation",
-"4 client vient de payer un ebook",
-"2 Nouveaux paiement confirmé",
-"Formation IA achetée à l’instant"
+// Afficher modal panier
+function showCartModal() {
+  if (cart.length === 0) {
+    alert("Votre panier est vide.");
+    return;
+  }
+  let itemsHtml = '';
+  cart.forEach((item, index) => {
+    itemsHtml += `
+      <div class="cart-item">
+        <span>${item.name} × ${item.quantity}</span>
+        <span>${(item.price * item.quantity).toLocaleString()} FCFA</span>
+        <button class="quantity" onclick="changeQuantity(${index}, -1)">-</button>
+        <button class="quantity" onclick="changeQuantity(${index}, 1)">+</button>
+        <button onclick="removeFromCart(${index})">Supprimer</button>
+      </div>
+    `;
+  });
+  document.getElementById('cart-items').innerHTML = itemsHtml;
+  let total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  document.getElementById('cart-total').innerHTML = `Total : ${total.toLocaleString()} FCFA`;
+  document.getElementById('cart-modal').style.display = 'block';
+  document.getElementById('overlay').style.display = 'block';
+}
+
+// Fermer modal
+function closeCartModal() {
+  document.getElementById('cart-modal').style.display = 'none';
+  document.getElementById('overlay').style.display = 'none';
+}
+
+// Changer quantité
+function changeQuantity(index, delta) {
+  cart[index].quantity += delta;
+  if (cart[index].quantity < 1) cart[index].quantity = 1;
+  saveCart();
+  showCartModal();
+}
+
+// Supprimer item
+function removeFromCart(index) {
+  cart.splice(index, 1);
+  saveCart();
+  showCartModal();
+}
+
+// Vider panier
+function clearCart() {
+  cart = [];
+  saveCart();
+  closeCartModal();
+  alert("Panier vidé !");
+}
+
+// Checkout vers WhatsApp
+function checkoutToWhatsApp() {
+  if (cart.length === 0) return;
+  let message = "Bonjour, je souhaite commander :\n\n";
+  cart.forEach(item => {
+    message += `${item.name} × ${item.quantity} = ${(item.price * item.quantity).toLocaleString()} FCFA\n`;
+  });
+  let total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  message += `\nTotal : ${total.toLocaleString()} FCFA\n\nMerci de confirmer et guider pour le paiement.`;
+  let waText = encodeURIComponent(message);
+  window.open(`https://wa.me/229199878742?text=${waText}`, '_blank');
+  clearCart(); // Optionnel: vider après envoi
+}
+
+// Recherche produits
+function searchProduct() {
+  let input = document.getElementById("search").value.toLowerCase();
+  document.querySelectorAll(".product").forEach(p => {
+    p.style.display = p.innerText.toLowerCase().includes(input) ? "block" : "none";
+  });
+}
+
+// Fake auth (localStorage)
+function fakeSignup() {
+  let email = document.getElementById('email').value;
+  let password = document.getElementById('password').value;
+  if (email && password) {
+    localStorage.setItem('user', JSON.stringify({email}));
+    document.getElementById('account-status').innerText = "Compte créé ! Bienvenue " + email;
+  } else {
+    alert("Remplissez les champs.");
+  }
+}
+
+function fakeLogin() {
+  let email = document.getElementById('email').value;
+  let stored = JSON.parse(localStorage.getItem('user'));
+  if (stored && stored.email === email) {
+    document.getElementById('account-status').innerText = "Connecté ! Bienvenue " + email;
+  } else {
+    alert("Compte non trouvé.");
+  }
+}
+
+// Simple chat IA (réponses prédéfinies)
+function openChat() {
+  document.getElementById('chat-box').style.display = 'block';
+}
+
+function sendChatMessage() {
+  let input = document.getElementById('chat-input').value;
+  if (!input) return;
+  let messages = document.getElementById('chat-messages');
+  messages.innerHTML += `<p><strong>Vous :</strong> ${input}</p>`;
+  // Réponses fake IA
+  let response = "Désolé, je suis un agent IA simple. Contactez via WhatsApp pour plus d'aide.";
+  if (input.toLowerCase().includes("prix")) response = "Les prix sont indiqués sur les produits. Promotions en cours : -10% sur ebooks !";
+  if (input.toLowerCase().includes("livraison")) response = "Produits numériques : livraison instantanée par email après paiement.";
+  messages.innerHTML += `<p><strong>IA :</strong> ${response}</p>`;
+  document.getElementById('chat-input').value = '';
+  messages.scrollTop = messages.scrollHeight;
+}
+
+// Preuves sociales (popups)
+let proofs = [
+  "Quelqu’un vient d’acheter une formation",
+  "Un client vient de payer un ebook",
+  "Nouveau paiement confirmé",
+  "Formation IA achetée à l’instant"
 ];
-let i=0;
-setInterval(()=>{
-let popup=document.getElementById("popup");
-popup.innerText=proofs[i];
-popup.style.display="block";
-setTimeout(()=>popup.style.display="none",4000);
-i=(i+1)%proofs.length;
-},8000);
+let i = 0;
+setInterval(() => {
+  let popup = document.getElementById("popup");
+  popup.innerText = proofs[i];
+  popup.style.display = "block";
+  setTimeout(() => popup.style.display = "none", 4000);
+  i = (i + 1) % proofs.length;
+}, 8000);
+
+// Supprimer PayDunya et Tidio (non nécessaires sans clés)
 </script>
 
 </body>
   </html>
-  
