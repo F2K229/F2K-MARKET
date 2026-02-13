@@ -1,555 +1,878 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>F2K MARKET – Ebooks & Formations digitales</title>
-  <meta name="description" content="Ebooks et formations sur le business en ligne, marketing digital, monétisation WhatsApp, IA, e-commerce, création de sites web. Paiement mobile money – livraison immédiate."/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F2K MARKET - Ebooks & Formations pour l'Afrique</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-  <style>
-    :root {
-      --bg: #f9fafb;
-      --text: #111827;
-      --card: #ffffff;
-      --primary: #2563eb;
-      --success: #16a34a;
-      --danger: #dc2626;
-      --gray: #6b7280;
-      --dark: #1f2937;
-    }
-    [data-theme="dark"] {
-      --bg: #111827;
-      --text: #f3f4f6;
-      --card: #1f2937;
-      --primary: #60a5fa;
-      --success: #34d399;
-      --danger: #f87171;
-      --gray: #9ca3af;
-      --dark: #f3f4f6;
-    }
+        body {
+            background-color: #f5f5f5;
+        }
 
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-    }
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
 
-    header {
-      background: var(--dark);
-      color: white;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-    }
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
 
-    .header-top {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 0.9rem 1.5rem;
-      text-align: center;
-    }
+        .logo p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
 
-    .logo h1 {
-      margin: 0;
-      font-size: 2rem;
-      letter-spacing: -0.6px;
-    }
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
 
-    .nav-bar {
-      background: rgba(0,0,0,0.18);
-      padding: 0.6rem 0;
-      text-align: center;
-    }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
 
-    .nav-bar a, .nav-bar button {
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-      padding: 0.45rem 0.95rem;
-      margin: 0 0.25rem;
-      border-radius: 6px;
-      transition: all 0.2s;
-      font-size: 0.96rem;
-    }
+        nav a:hover {
+            opacity: 0.8;
+        }
 
-    .nav-bar a:hover, .nav-bar button:hover {
-      background: rgba(255,255,255,0.15);
-    }
+        .user-menu {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
 
-    main { padding-top: 125px; }
+        .user-email {
+            font-size: 0.9rem;
+            background: rgba(255,255,255,0.2);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+        }
 
-    .container { max-width: 1240px; margin: 0 auto; padding: 1.5rem; }
+        .logout-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: opacity 0.3s;
+        }
 
-    h2 { text-align: center; margin: 2.5rem 0 2rem; font-size: 2.2rem; }
+        .logout-btn:hover {
+            opacity: 0.8;
+        }
 
-    .search-box { max-width: 640px; margin: 0 auto 2.8rem; }
-    .search-box input {
-      width: 100%;
-      padding: 1rem;
-      font-size: 1.1rem;
-      border: 1px solid var(--gray);
-      border-radius: 10px;
-      background: var(--card);
-      color: var(--text);
-    }
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
 
-    #products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-      gap: 1.9rem 1.7rem;
-    }
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
 
-    .product {
-      background: var(--card);
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.09);
-      transition: all 0.28s ease;
-      cursor: pointer;
-    }
+        .chat-btn {
+            background-color: #25D366;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.3s;
+        }
 
-    .product:hover {
-      transform: translateY(-9px);
-      box-shadow: 0 14px 28px rgba(0,0,0,0.16);
-    }
+        .chat-btn:hover {
+            transform: scale(1.05);
+        }        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
 
-    .product img { width: 100%; height: 190px; object-fit: cover; }
-    .product-content { padding: 1.3rem; text-align: center; }
-    .badge {
-      position: absolute;
-      top: 14px;
-      left: 14px;
-      padding: 0.45rem 0.9rem;
-      font-size: 0.84rem;
-      font-weight: 700;
-      border-radius: 5px;
-      color: white;
-    }
+        .section-title {
+            text-align: center;
+            margin: 3rem 0 2rem;
+            position: relative;
+        }
 
-    .price { font-size: 1.5rem; font-weight: 700; color: var(--success); margin: 0.8rem 0 0.8rem; }
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: #333;
+            display: inline-block;
+            background-color: #f5f5f5;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
 
-    .add-btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.8rem 1.4rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-top: 0.8rem;
-      transition: background 0.2s;
-    }
-    .add-btn:hover { background: #1d4ed8; }
+        .section-title::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, transparent);
+            z-index: 0;
+        }
 
-    .cart-float, .wa-float {
-      position: fixed;
-      right: 20px;
-      width: 62px;
-      height: 62px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.6rem;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      cursor: pointer;
-      z-index: 999;
-      transition: transform 0.22s;
-    }
-    .cart-float { bottom: 100px; background: var(--primary); color: white; }
-    .wa-float    { bottom: 25px; background: #25D366; color: white; }
-    .cart-float:hover, .wa-float:hover { transform: scale(1.09); }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
 
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2000; display: none; place-items: center; }
-    .modal {
-      background: var(--card);
-      border-radius: 14px;
-      width: 92%;
-      max-width: 520px;
-      max-height: 94vh;
-      overflow-y: auto;
-      padding: 1.8rem;
-      position: relative;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
-    }
-    .close { position: absolute; top: 12px; right: 18px; font-size: 2.4rem; cursor: pointer; color: var(--gray); }
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
 
-    .proof-popup {
-      position: fixed;
-      bottom: 100px;
-      left: 20px;
-      background: var(--card);
-      padding: 1rem 1.4rem;
-      border-radius: 10px;
-      box-shadow: 0 5px 18px rgba(0,0,0,0.25);
-      max-width: 360px;
-      font-size: 0.97rem;
-      display: none;
-      z-index: 999;
-    }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
 
-    footer {
-      background: var(--dark);
-      color: white;
-      text-align: center;
-      padding: 2.5rem 1rem;
-      margin-top: 5rem;
-    }
+        .product-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 1;
+        }
 
-    button {
-      padding: 0.9rem 1.6rem;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.05rem;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-primary:hover { background: #1d4ed8; }
-    .btn-danger { background: var(--danger); color: white; }
+        .product-image {
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            opacity: 0.9;
+        }
 
-    form input {
-      width: 100%;
-      padding: 0.95rem;
-      margin: 0.8rem 0;
-      border: 1px solid var(--gray);
-      border-radius: 8px;
-      font-size: 1rem;
-      background: var(--card);
-      color: var(--text);
-    }
+        .product-info {
+            padding: 1.5rem;
+        }
 
-    @media (max-width: 768px) {
-      .header-top { padding: 0.8rem; }
-      .nav-bar a, .nav-bar button { padding: 0.45rem 0.8rem; margin: 0 0.2rem; font-size: 0.94rem; }
-      main { padding-top: 150px; }
-    }
-  </style>
+        .product-info h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin: 1rem 0;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            padding: 0.8rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .add-to-cart:hover {
+            opacity: 0.9;
+          }        /* Auth Section */
+        .auth-section {
+            max-width: 400px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 1rem;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            background: none;
+            font-weight: 600;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .auth-tab.active {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .auth-form input {
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .auth-form button {
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .auth-form button:hover {
+            opacity: 0.9;
+        }
+
+        .error-message {
+            color: #ff4757;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .success-message {
+            color: #00d25b;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        /* User Info Section */
+        .user-info {
+            max-width: 400px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .user-info h3 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .user-info p {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .user-info button {
+            padding: 1rem 2rem;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .user-info button:hover {
+            opacity: 0.8;
+  }        /* Modal Panier */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .close-modal:hover {
+            color: #333;
+        }
+
+        .cart-items {
+            margin: 2rem 0;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item-info h4 {
+            color: #333;
+            margin-bottom: 0.3rem;
+        }
+
+        .cart-item-price {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .remove-item {
+            color: #ff4757;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+        }
+
+        .remove-item:hover {
+            transform: scale(1.2);
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #eee;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: opacity 0.3s;
+        }
+
+        .checkout-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
 <body>
-
-<header>
-  <div class="header-top">
-    <div class="logo"><h1>F2K MARKET</h1></div>
-  </div>
-
-  <div class="nav-bar">
-    <a href="#produits">Boutique</a>
-    <a href="#compte">Mon compte</a>
-    <a href="#support">Support</a>
-    <a href="https://wa.me/2290199878742">WhatsApp</a>
-    <button onclick="toggleTheme()">Thème</button>
-  </div>
-</header>
-
-<main class="container">
-
-  <section class="search-box">
-    <input type="text" id="search" placeholder="Rechercher un ebook ou formation..." onkeyup="filterProducts()">
-  </section>
-
-  <section id="produits">
-    <h2>Nos Ebooks & Formations</h2>
-
-    <div id="products-grid">
-
-      <!-- 8 EBOOKS -->
-      <div class="product" data-name="Créer un business en ligne" data-price="3000" data-desc="Lancer ton activité digitale depuis Cotonou ou n'importe où en Afrique francophone.">
-        <span class="badge new">EBOOK</span>
-        <img src="https://images.unsplash.com/photo-1556155099-490a1ba16284?w=800" alt="">
-        <div class="product-content">
-          <h3>Créer un business en ligne</h3>
-          <div class="price">3 000 FCFA</div>
-          <button class="add-btn" onclick="addToCart('Créer un business en ligne', 3000)">Ajouter au panier</button>
+    <header>
+        <div class="logo">
+            <h1>F2K MARKET</h1>
+            <p>Ebooks & Formations pour l'Afrique</p>
         </div>
-      </div>
+        <nav>
+            <a href="#ebooks">Ebooks</a>
+            <a href="#formations">Formations</a>
+            <a href="#contact">Contact</a>
+            <div class="user-menu" id="userMenu"></div>
+            <div class="cart-icon" onclick="toggleCart()">
+                🛒
+                <span class="cart-count" id="cartCount">0</span>
+            </div>
+            <button class="chat-btn" onclick="openWhatsApp()">
+                💬
+                <span>WhatsApp</span>
+            </button>
+        </nav>
+    </header>    <main>
+        <!-- Section Ebooks -->
+        <section id="ebooks">
+            <div class="section-title">
+                <h2>📚 Nos Ebooks</h2>
+            </div>
+            <div class="products-grid" id="ebooksGrid"></div>
+        </section>
 
-      <div class="product" data-name="Monétiser WhatsApp" data-price="2500" data-desc="Transformer WhatsApp en vraie machine à vendre (statuts, groupes, broadcast).">
-        <span class="badge hot">EBOOK</span>
-        <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800" alt="">
-        <div class="product-content">
-          <h3>Monétiser WhatsApp</h3>
-          <div class="price">2 500 FCFA</div>
-          <button class="add-btn" onclick="addToCart('Monétiser WhatsApp', 2500)">Ajouter au panier</button>
+        <!-- Section Formations -->
+        <section id="formations">
+            <div class="section-title">
+                <h2>🎓 Nos Formations</h2>
+            </div>
+            <div class="products-grid" id="formationsGrid"></div>
+        </section>
+
+        <!-- Section Authentification -->
+        <div id="authContainer"></div>
+    </main>
+
+    <!-- Modal Panier -->
+    <div class="modal" id="cartModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="toggleCart()">&times;</span>
+            <h2>Votre panier</h2>
+            <div class="cart-items" id="cartItems"></div>
+            <div class="cart-total">
+                <span>Total :</span>
+                <span id="cartTotal">0 FCFA</span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">Commander sur WhatsApp</button>
         </div>
-      </div>
-
-      <div class="product" data-name="Marketing Digital Afrique" data-price="3500" data-desc="Stratégies adaptées au marché africain 2026.">
-        <span class="badge vip">EBOOK</span>
-        <img src="https://images.unsplash.com/photo-1460925898913-fffcc8da4e16?w=800" alt="">
-        <div class="product-content">
-          <h3>Marketing Digital Afrique</h3>
-          <div class="price">3 500 FCFA</div>
-          <button class="add-btn" onclick="addToCart('Marketing Digital Afrique', 3500)">Ajouter au panier</button>
-        </div>
-      </div>
-
-      <div class="product" data-name="SEO Local pour PME" data-price="4000" data-desc="Google My Business + SEO local efficace au Bénin.">
-        <span class="badge new">EBOOK</span>
-        <img src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800" alt="">
-        <div class="product-content">
-          <h3>SEO Local pour PME</h3>
-          <div class="price">4 000 FCFA</div>
-          <button class="add-btn" onclick="addToCart('SEO Local pour PME', 4000)">Ajouter au panier</button>
-        </div>
-      </div>
-
-      <div class="product" data-name="Vendre sur TikTok Shop" data-price="3200" data-desc="Créer et scaler une boutique TikTok en Afrique.">
-        <span class="badge hot">EBOOK</span>
-        <img src="https://images.unsplash.com/photo-1611162618071-b39a2ec5d4e6?w=800" alt="">
-        <div class="product-content">
-          <h3>Vendre sur TikTok Shop</h3>
-          <div class="price">3 200 FCFA</div>
-          <button class="add-btn" onclick="addToCart('Vendre sur TikTok Shop', 3200)">Ajouter au panier</button>
-        </div>
-      </div>
-
-      <div class="product" data-name="Copywriting qui convertit" data-price="2800" data-desc="Rédiger des textes qui vendent (pubs, emails, posts).">
-        <span class="badge vip">EBOOK</span>
-        <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800" alt="">
-        <div class="product-content">
-          <h3>Copywriting qui convertit</h3>
-          <div class="price">2 800 FCFA</div>
-          <button class="add-btn" onclick="addToCart('Copywriting qui convertit', 2800)">Ajouter au panier</button>
-        </div>
-      </div>
-
-      <div class="product" data-name="Gestion financière perso" data-price="3800" data-desc="Budget, économies, investissements pour entrepreneurs.">
-        <span class="badge new">EBOOK</span>
-        <img src="https://images.unsplash.com/photo-1554224155-6726b3ff8f78?w=800" alt="">
-        <div class="product-content">
-          <h3>Gestion financière perso</h3>
-          <div class="price">3 800 FCFA</div>
-          <button class="add-btn" onclick="addToCart('Gestion financière perso', 3800)">Ajouter au panier</button>
-        </div>
-      </div>
-
-      <div class="product" data-name="Freelance Afrique 2026" data-price="4500" data-desc="Upwork, Fiverr + clients locaux – guide complet.">
-        <span class="badge hot">EBOOK</span>
-        <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=800" alt="">
-        <div class="product-content">
-          <h3>Freelance Afrique 2026</h3>
-          <div class="price">4 500 FCFA</div>
-          <button class="add-btn" onclick="addToCart('Freelance Afrique 2026', 4500)">Ajouter au panier</button>
-        </div>
-      </div>
-
-      <!-- 8 FORMATIONS -->
-      <div class="product" data-name="Création de site web" data-price="10000" data-desc="HTML/CSS/JS + WordPress/Next.js – de zéro à pro.">
-        <span class="badge new">FORMATION</span>
-        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800" alt="">
-        <div class="product-content">
-          <h3>Création de site web</h3>
-          <div class="price">10 000 FCFA</div>
-          <button class="add-btn" onclick="addToCart('Création de site web', 10000)">Ajouter au panier</button>
-        </div>
-      </div>
-
-      <div class="product" data-name="E-commerce complet" data-price="12000" data-desc="Shopify/WooCommerce + pub + logistique Afrique.">
-        <span class="badge hot">FORMATION</span>
-        <img src="https://images.unsplash.com/photo-1556740758-90de374c12ad?w=800" alt="">
-        <div class="product-content">
-          <h3>E-commerce complet</h3>
-          <div class="price">12 000 FCFA</div>
-          <button class="add-btn" onclick="addToCart('E-commerce complet', 12000)">Ajouter au panier</button>
-        </div>
-      </div>
-
-      <div class="product" data-name="IA & Automatisation" data-price="15000" data-desc="ChatGPT, Make, Zapier, agents IA pour business.">
-        <span class="badge vip">FORMATION</span>
-        <img src="https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?w=800" alt="">
-        <div class="product-content">
-          <h3>IA & Automatisation</h3>
-          <div class="price">15 000 FCFA</div>
-          <button class="add-btn" onclick="addToCart('IA & Automatisation', 15000)">Ajouter au panier</button>
-        </div>
-      </div>
-
-      <div class="product" data-name="Publicité Facebook & Instagram" data-price="11000" data-desc="Campagnes rentables en Afrique francophone.">
-        <span class="badge new">FORMATION</span>
-        <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800" alt="">
-        <div class="product-content">
-          <h3>Publicité Facebook & Instagram</h3>
-          <div class="price">11 000 FCFA</div>
-          <button class="add-btn" onclick="addToCart('Publicité Facebook & Instagram', 11000)">Ajouter au panier</button>
-        </div>
-      </div>
-
-      <div class="product" data-name="YouTube monétisation" data-price="9500" data-desc="Chaîne pro + monétisation 2026.">
-        <span class="badge hot">FORMATION</span>
-        <img src="https://images.unsplash.com/photo-1611162618071-b39a2ec5d4e6?w=800" alt="">
-        <div class="product-content">
-          <h3>YouTube monétisation</h3>
-          <div class="price">9 500 FCFA</div>
-          <button class="add-btn" onclick="addToCart('YouTube monétisation', 9500)">Ajouter au panier</button>
-        </div>
-      </div>
-
-      <div class="product" data-name="Dropshipping Afrique" data-price="13000" data-desc="Fournisseurs, pub, logistique adaptée.">
-        <span class="badge vip">FORMATION</span>
-        <img src="https://images.unsplash.com/photo-1574063346896-b98b22b0d0ab?w=800" alt="">
-        <div class="product-content">
-          <h3>Dropshipping Afrique</h3>
-          <div class="price">13 000 FCFA</div>
-          <button class="add-btn" onclick="addToCart('Dropshipping Afrique', 13000)">Ajouter au panier</button>
-        </div>
-      </div>
-
-      <div class="product" data-name="Community Management" data-price="8500" data-desc="Gérer communautés WhatsApp/FB/IG rentables.">
-        <span class="badge new">FORMATION</span>
-        <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800" alt="">
-        <div class="product-content">
-          <h3>Community Management</h3>
-          <div class="price">8 500 FCFA</div>
-          <button class="add-btn" onclick="addToCart('Community Management', 8500)">Ajouter au panier</button>
-        </div>
-      </div>
-
-      <div class="product" data-name="Trading Crypto débutant" data-price="14000" data-desc="Bases + stratégies low-risk pour Africains.">
-        <span class="badge hot">FORMATION</span>
-        <img src="https://images.unsplash.com/photo-1621504450181-5b91a7ce1a51?w=800" alt="">
-        <div class="product-content">
-          <h3>Trading Crypto débutant</h3>
-          <div class="price">14 000 FCFA</div>
-          <button class="add-btn" onclick="addToCart('Trading Crypto débutant', 14000)">Ajouter au panier</button>
-        </div>
-      </div>
-
     </div>
-  </section>
 
-  <section id="compte">
-    <h2>Inscription / Connexion</h2>
+    <footer>
+        <p>&copy; 2026 F2K MARKET - Tous droits réservés</p>
+        <p style="margin-top: 1rem; opacity: 0.8;">Des ebooks et formations de qualité pour l'Afrique</p>
+    </footer>    <script>
+        // ============================================
+        // 1. VOTRE CONFIGURATION FIREBASE (ACTIVE)
+        // ============================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfKZKonA3oEsBJ3Ur_PbbR0e61nba1p6Y",
+            authDomain: "f2k-market-5a1cf.firebaseapp.com",
+            projectId: "f2k-market-5a1cf",
+            storageBucket: "f2k-market-5a1cf.firebasestorage.app",
+            messagingSenderId: "346564648549",
+            appId: "1:346564648549:web:17aed8fe5ddc462cceb08c",
+            measurementId: "G-TMC47NWTLB"
+        };
 
-    <form id="authForm">
-      <input type="text" id="prenom" placeholder="Prénom" required>
-      <input type="text" id="nom" placeholder="Nom" required>
-      <input type="tel" id="telephone" placeholder="Numéro de téléphone (ex: +229 XX XX XX XX)" required>
-      <input type="email" id="email" placeholder="Adresse email (Gmail ou autre)" required>
-      <input type="password" id="password" placeholder="Mot de passe (minimum 6 caractères)" minlength="6" required>
+        // Initialisation de Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
 
-      <div style="margin: 2rem 0; text-align: center;">
-        <button type="button" class="btn-primary" onclick="signUp()">Créer mon compte</button>
-        <button type="button" class="btn-primary" onclick="signIn()" style="margin-left: 1.2rem;">Me connecter</button>
-        <button type="button" class="btn-danger" id="logoutBtn" onclick="signOut()" style="display:none; margin-left:1.2rem;">Déconnexion</button>
-      </div>
-    </form>
+        // ============================================
+        // 2. PRODUITS
+        // ============================================
+        const products = {
+            ebooks: [
+                { name: "Créer un business en ligne", price: 3000 },
+                { name: "Monétiser WhatsApp", price: 2500 },
+                { name: "Marketing Digital Afrique", price: 3500 },
+                { name: "SEO Local pour PME", price: 4000 },
+                { name: "Vendre sur TikTok Shop", price: 3200 },
+                { name: "Copywriting qui convertit", price: 2800 },
+                { name: "Gestion financière perso", price: 3800 },
+                { name: "Freelance Afrique 2026", price: 4500 }
+            ],
+            formations: [
+                { name: "Création de site web", price: 10000 },
+                { name: "E-commerce complet", price: 12000 },
+                { name: "IA & Automatisation", price: 15000 },
+                { name: "Publicité Facebook & Instagram", price: 11000 },
+                { name: "YouTube monétisation", price: 9500 },
+                { name: "Dropshipping Afrique", price: 13000 },
+                { name: "Community Management", price: 8500 },
+                { name: "Trading Crypto débutant", price: 14000 }
+            ]
+        };
 
-    <p id="authMessage" style="text-align:center; font-weight:600; min-height:40px; margin-top:1.2rem;"></p>
-  </section>
+        // Panier
+        let cart = [];
 
-</main>
+        // ============================================
+        // 3. AUTHENTIFICATION
+        // ============================================
+        
+        auth.onAuthStateChanged((user) => {
+            updateUI(user);
+        });
 
-<!-- Flottants -->
-<div class="cart-float" onclick="openCart()">🛒 <span id="cart-count">0</span></div>
-<div class="wa-float" onclick="openWhatsApp()">💬</div>
+        function updateUI(user) {
+            const userMenu = document.getElementById('userMenu');
+            const authContainer = document.getElementById('authContainer');
 
-<!-- Modal panier -->
-<div class="modal-overlay" id="modalOverlay"></div>
-<div class="modal" id="cartModal">
-  <span class="close" onclick="closeModal()">×</span>
-  <h2>Votre panier</h2>
-  <div id="cart-content"></div>
-  <p style="font-size:1.35rem; font-weight:700; margin:1.6rem 0;">
-    Total : <span id="cart-total">0 FCFA</span>
-  </p>
-  <div style="display:flex; gap:1.2rem;">
-    <button class="btn-danger" onclick="clearCart()" style="flex:1;">Vider</button>
-    <button class="btn-primary" onclick="sendToWhatsApp()" style="flex:2;">Envoyer la commande</button>
-  </div>
-</div>
+            if (user) {
+                userMenu.innerHTML = `
+                    <span class="user-email">${user.email}</span>
+                    <button class="logout-btn" onclick="logout()">Déconnexion</button>
+                `;
+                
+                authContainer.innerHTML = `
+                    <div class="user-info">
+                        <h3>Bienvenue sur F2K MARKET !</h3>
+                        <p>Connecté en tant que : <strong>${user.email}</strong></p>
+                        <p>Vous pouvez maintenant passer vos commandes.</p>
+                    </div>
+                `;
+            } else {
+                userMenu.innerHTML = '';
+                
+                authContainer.innerHTML = `
+                    <div class="auth-section">
+                        <div class="auth-tabs">
+                            <button class="auth-tab active" onclick="showTab('login')" id="loginTab">Connexion</button>
+                            <button class="auth-tab" onclick="showTab('register')" id="registerTab">Inscription</button>
+                        </div>
+                        
+                        <div id="loginForm" class="auth-form">
+                            <input type="email" id="loginEmail" placeholder="Email" required>
+                            <input type="password" id="loginPassword" placeholder="Mot de passe" required>
+                            <button onclick="login()">Se connecter</button>
+                            <div id="loginError" class="error-message"></div>
+                        </div>
+                        
+                        <div id="registerForm" class="auth-form" style="display: none;">
+                            <input type="email" id="registerEmail" placeholder="Email" required>
+                            <input type="password" id="registerPassword" placeholder="Mot de passe (min. 6 caractères)" required>
+                            <button onclick="register()">S'inscrire</button>
+                            <div id="registerError" class="error-message"></div>
+                            <div id="registerSuccess" class="success-message"></div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
 
-<!-- Preuve sociale -->
-<div class="proof-popup" id="proof"></div>
+        function showTab(tab) {
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
 
-<footer>
-  <p>© 2026 F2K MARKET – Tous droits réservés</p>
-  <p style="margin-top:0.7rem; opacity:0.9;">Paiement mobile money • Livraison instantanée</p>
-</footer>
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                loginForm.style.display = 'flex';
+                registerForm.style.display = 'none';
+            } else {
+                registerTab.classList.add('active');
+                loginTab.classList.remove('active');
+                registerForm.style.display = 'flex';
+                loginForm.style.display = 'none';
+            }
+        }
 
-<script>
-// Panier
-let cart = JSON.parse(localStorage.getItem('f2k_cart')) || [];
+        function register() {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const errorDiv = document.getElementById('registerError');
+            const successDiv = document.getElementById('registerSuccess');
 
-function saveCart() {
-  localStorage.setItem('f2k_cart', JSON.stringify(cart));
-  document.getElementById('cart-count').textContent = cart.reduce((s,i)=>s+i.qty,0);
-}
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
 
-function addToCart(name, price) {
-  let item = cart.find(i=>i.name===name);
-  if(item) item.qty++;
-  else cart.push({name, price, qty:1});
-  saveCart();
-  alert(name + " ajouté au panier !");
-}
+            if (!email || !password) {
+                errorDiv.textContent = 'Veuillez remplir tous les champs';
+                return;
+            }
 
-function renderCart() {
-  let html = '';
-  let total = 0;
-  cart.forEach((item, idx) => {
-    const subt = item.price * item.qty;
-    total += subt;
-    html += `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin:1rem 0; padding-bottom:1rem; border-bottom:1px solid var(--gray);">
-        <div>
-          <strong>${item.name}</strong><br>
-          ${item.price.toLocaleString()} FCFA × ${item.qty}
-        </div>
-        <div style="text-align:right;">
-          ${subt.toLocaleString()} FCFA
-          <div style="margin-top:0.5rem;">
-            <button onclick="updateQty(${idx}, -1)">−</button>
-            <button onclick="updateQty(${idx}, 1)">+</button>
-            <button onclick="removeItem(${idx})" style="background:var(--danger); color:white;">×</button>
-          </div>
-        </div>
-      </div>`;
-  });
-  document.getElementById('cart-content').innerHTML = html || '<p style="text-align:center;">Votre panier est vide.</p>';
-  document.getElementById('cart-total').textContent = total.toLocaleString() + ' FCFA';
-}
+            if (password.length < 6) {
+                errorDiv.textContent = 'Le mot de passe doit contenir au moins 6 caractères';
+                return;
+            }
 
-function updateQty(idx, delta) {
-  cart[idx].qty = Math.max(1, cart[idx].qty + delta);
-  saveCart();
-  renderCart();
-}
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    successDiv.textContent = 'Inscription réussie ! Vous êtes maintenant connecté.';
+                    setTimeout(() => {
+                        successDiv.textContent = '';
+                    }, 3000);
+                })
+                .catch((error) => {
+                    let errorMessage = 'Erreur : ';
+                    switch (error.code) {
+                        case 'auth/email-already-in-use':
+                            errorMessage += 'Cet email est déjà utilisé';
+                            break;
+                        case 'auth/invalid-email':
+                            errorMessage += 'Email invalide';
+                            break;
+                        default:
+                            errorMessage += error.message;
+                    }
+                    errorDiv.textContent = errorMessage;
+                });
+        }
 
-function removeItem(idx) {
-  cart.splice(idx, 1);
-  saveCart();
-  renderCart();
-}
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
 
-function clearCart() {
-  if (confirm('Vider tout le panier ?')) {
-    cart = [];
-    saveCart();
-    renderCart();
-  }
-}
+            errorDiv.textContent = '';
 
-function openCart() {
-  renderCart();
-  document.getElementById('modalOverlay').style.display = 'flex';
-  document.getElementById('cartModal').style.display = 'block';
-}
+            if (!email || !password) {
+                errorDiv.textContent = 'Veuillez remplir tous les champs';
+                return;
+            }
 
-function closeModal() {
-  document.getElementById('modalOverlay').style.display = 'none';
-  document.getElementById('cartModal').style.display = 'none';
-}
+            auth.signInWithEmailAndPassword(email, password)
+                .catch((error) => {
+                    let errorMessage = 'Erreur : ';
+                    switch (error.code) {
+                        case 'auth/user-not-found':
+                            errorMessage += 'Aucun compte trouvé';
+                            break;
+                        case 'auth/wrong-password':
+                            errorMessage += 'Mot de passe incorrect';
+                            break;
+                        default:
+                            errorMessage += error.message;
+                    }
+                    errorDiv.textContent = errorMessage;
+                });
+        }
 
-function sendToWhatsApp() {
-  if (cart.length === 0) return alert('Panier vide');
-  let text = 'Bonjour F2K MARKET,\nJe commande :\n\n';
-  let total = 0;
-  cart.forEach(i => {
-    const s = i.price * i.qty;
-    t
+        function logout() {
+            auth.signOut()
+                .then(() => {
+                    window.scrollTo(0, 0);
+                })
+                .catch((error) => {
+                    alert('Erreur : ' + error.message);
+                });
+        }
+
+        // ============================================
+        // 4. PRODUITS ET PANIER
+        // ============================================
+        
+        function displayProducts() {
+            displayEbooks();
+            displayFormations();
+        }
+
+        function displayEbooks() {
+            const grid = document.getElementById('ebooksGrid');
+            grid.innerHTML = products.ebooks.map(ebook => `
+                <div class="product-card">
+                    <span class="product-badge">EBOOK</span>
+                    <div class="product-image">📖</div>
+                    <div class="product-info">
+                        <h3>${ebook.name}</h3>
+                        <div class="product-price">${ebook.price.toLocaleString()} FCFA</div>
+                        <button class="add-to-cart" onclick="addToCart('${ebook.name}', ${ebook.price})">
+                            Ajouter au panier
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayFormations() {
+            const grid = document.getElementById('formationsGrid');
+            grid.innerHTML = products.formations.map(formation => `
+                <div class="product-card">
+                    <span class="product-badge">FORMATION</span>
+                    <div class="product-image">🎓</div>
+                    <div class="product-info">
+                        <h3>${formation.name}</h3>
+                        <div class="product-price">${formation.price.toLocaleString()} FCFA</div>
+                        <button class="add-to-cart" onclick="addToCart('${formation.name}', ${formation.price})">
+                            Ajouter au panier
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            updateCartDisplay();
+            showNotification('Produit ajouté au panier !');
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartDisplay();
+        }
+
+        function updateCartDisplay() {
+            document.getElementById('cartCount').textContent = cart.length;
+
+            const cartItems = document.getElementById('cartItems');
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p style="text-align: center; color: #666;">Votre panier est vide</p>';
+            } else {
+                cartItems.innerHTML = cart.map((item, index) => `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <h4>${item.name}</h4>
+                            <div class="cart-item-price">${item.price.toLocaleString()} FCFA</div>
+                        </div>
+                        <div class="remove-item" onclick="removeFromCart(${index})">&times;</div>
+                    </div>
+                `).join('');
+            }
+
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            document.getElementById('cartTotal').textContent = `${total.toLocaleString()} FCFA`;
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                padding: 1rem 2rem;
+                border-radius: 8px;
+                animation: slideIn 0.3s ease-out;
+                z-index: 1000;
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        function toggleCart() {
+            const modal = document.getElementById('cartModal');
+            modal.classList.toggle('active');
+        }
+
+        function openWhatsApp() {
+            window.open('https://wa.me/2290199878742?text=Bonjour%20F2K%20MARKET%20!', '_blank');
+        }
+
+        function checkout() {
+            const user = auth.currentUser;
+            
+            if (!user) {
+                alert('Veuillez vous connecter pour commander !');
+                document.getElementById('authContainer').scrollIntoView({ behavior: 'smooth' });
+                return;
+            }
+
+            if (cart.length === 0) {
+                alert('Votre panier est vide !');
+                return;
+            }
+
+            const message = cart.map(item => `- ${item.name} : ${item.price} FCFA`).join('%0A');
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            const whatsappUrl = `https://wa.me/2290199878742?text=*Commande%20F2K%20MARKET*%0A%0A${message}%0A%0A*Total%20:%20${total}%20FCFA*%0A%0AClient%20:%20${user.email}%0AMerci%20de%20confirmer%20ma%20commande.`;
+            
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', displayProducts);
+    </script>
+</body>
+  </html>
