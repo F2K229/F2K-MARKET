@@ -127,7 +127,9 @@
 
         .chat-btn:hover {
             transform: scale(1.05);
-        }        /* Main Content */
+        }
+
+        /* Main Content */
         main {
             max-width: 1200px;
             margin: 2rem auto;
@@ -237,7 +239,9 @@
 
         .add-to-cart:hover {
             opacity: 0.9;
-          }        /* Auth Section */
+        }
+
+        /* Auth Section */
         .auth-section {
             max-width: 400px;
             margin: 3rem auto;
@@ -345,7 +349,9 @@
 
         .user-info button:hover {
             opacity: 0.8;
-  }        /* Modal Panier */
+        }
+
+        /* Modal Panier */
         .modal {
             display: none;
             position: fixed;
@@ -408,17 +414,6 @@
         .cart-item-price {
             color: #667eea;
             font-weight: 600;
-        }
-
-        .remove-item {
-            color: #ff4757;
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: transform 0.3s;
-        }
-
-        .remove-item:hover {
-            transform: scale(1.2);
         }
 
         .cart-total {
@@ -488,8 +483,7 @@
         }
     </style>
 </head>
-<body>
-    <header>
+<body>    <header>
         <div class="logo">
             <h1>F2K MARKET</h1>
             <p>Ebooks & Formations pour l'Afrique</p>
@@ -508,7 +502,9 @@
                 <span>WhatsApp</span>
             </button>
         </nav>
-    </header>    <main>
+    </header>
+
+    <main>
         <!-- Section Ebooks -->
         <section id="ebooks">
             <div class="section-title">
@@ -546,7 +542,9 @@
     <footer>
         <p>&copy; 2026 F2K MARKET - Tous droits réservés</p>
         <p style="margin-top: 1rem; opacity: 0.8;">Des ebooks et formations de qualité pour l'Afrique</p>
-    </footer>    <script>
+    </footer>
+
+    <script>
         // ============================================
         // 1. VOTRE CONFIGURATION FIREBASE (ACTIVE)
         // ============================================
@@ -590,11 +588,13 @@
             ]
         };
 
-        // Panier
-        let cart = [];
+        // ============================================
+        // 3. STRUCTURE DU PANIER AMÉLIORÉE
+        // ============================================
+        let cart = []; // Chaque élément : { id, name, price, quantity }
 
         // ============================================
-        // 3. AUTHENTIFICATION
+        // 4. AUTHENTIFICATION
         // ============================================
         
         auth.onAuthStateChanged((user) => {
@@ -605,7 +605,7 @@
             const userMenu = document.getElementById('userMenu');
             const authContainer = document.getElementById('authContainer');
 
-            if (user) {
+            if (user && user.emailVerified) {
                 userMenu.innerHTML = `
                     <span class="user-email">${user.email}</span>
                     <button class="logout-btn" onclick="logout()">Déconnexion</button>
@@ -616,6 +616,30 @@
                         <h3>Bienvenue sur F2K MARKET !</h3>
                         <p>Connecté en tant que : <strong>${user.email}</strong></p>
                         <p>Vous pouvez maintenant passer vos commandes.</p>
+                    </div>
+                `;
+            } else if (user && !user.emailVerified) {
+                userMenu.innerHTML = `
+                    <span class="user-email">${user.email} (non vérifié)</span>
+                    <button class="logout-btn" onclick="logout()">Déconnexion</button>
+                `;
+                
+                authContainer.innerHTML = `
+                    <div class="auth-section">
+                        <div style="text-align: center; padding: 2rem;">
+                            <h3>✅ Inscription presque terminée !</h3>
+                            <p>Un code de vérification a été envoyé à :</p>
+                            <p><strong>${user.email}</strong></p>
+                            <p style="color: #666; margin: 1rem 0;">Entrez le code reçu par email :</p>
+                            <input type="text" id="verificationCode" placeholder="Code à 6 chiffres" style="padding: 1rem; width: 100%; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 1rem;">
+                            <button onclick="verifyEmailCode()" style="padding: 1rem 2rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
+                                Vérifier mon email
+                            </button>
+                            <button onclick="resendVerificationCode()" style="margin-top: 1rem; padding: 0.5rem; background: none; color: #667eea; border: none; cursor: pointer;">
+                                Renvoyer le code
+                            </button>
+                            <div id="verificationMessage" style="margin-top: 1rem; color: #ff4757;"></div>
+                        </div>
                     </div>
                 `;
             } else {
@@ -636,8 +660,12 @@
                         </div>
                         
                         <div id="registerForm" class="auth-form" style="display: none;">
-                            <input type="email" id="registerEmail" placeholder="Email" required>
-                            <input type="password" id="registerPassword" placeholder="Mot de passe (min. 6 caractères)" required>
+                            <input type="text" id="registerNom" placeholder="Nom" required>
+                            <input type="text" id="registerPrenom" placeholder="Prénom" required>
+                            <input type="tel" id="registerTelephone" placeholder="Numéro de téléphone" required>
+                            <input type="email" id="registerEmail" placeholder="Adresse Gmail" required>
+                            <input type="password" id="registerPassword" placeholder="Mot de passe" required>
+                            <small style="color: #666;">Un code de confirmation sera envoyé sur votre Gmail</small>
                             <button onclick="register()">S'inscrire</button>
                             <div id="registerError" class="error-message"></div>
                             <div id="registerSuccess" class="success-message"></div>
@@ -667,6 +695,9 @@
         }
 
         function register() {
+            const nom = document.getElementById('registerNom').value;
+            const prenom = document.getElementById('registerPrenom').value;
+            const telephone = document.getElementById('registerTelephone').value;
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
             const errorDiv = document.getElementById('registerError');
@@ -675,8 +706,13 @@
             errorDiv.textContent = '';
             successDiv.textContent = '';
 
-            if (!email || !password) {
+            if (!nom || !prenom || !telephone || !email || !password) {
                 errorDiv.textContent = 'Veuillez remplir tous les champs';
+                return;
+            }
+
+            if (!email.includes('@gmail.com')) {
+                errorDiv.textContent = 'Veuillez utiliser une adresse Gmail';
                 return;
             }
 
@@ -687,10 +723,26 @@
 
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    successDiv.textContent = 'Inscription réussie ! Vous êtes maintenant connecté.';
-                    setTimeout(() => {
-                        successDiv.textContent = '';
-                    }, 3000);
+                    const user = userCredential.user;
+                    
+                    return user.updateProfile({
+                        displayName: `${prenom} ${nom}`
+                    }).then(() => {
+                        return user.updateProfile({
+                            phoneNumber: telephone
+                        });
+                    }).then(() => {
+                        return user.sendEmailVerification({
+                            url: window.location.href,
+                            handleCodeInApp: true
+                        });
+                    }).then(() => {
+                        successDiv.innerHTML = `
+                            ✅ Compte créé avec succès !<br>
+                            <strong>Un code de vérification a été envoyé à ${email}</strong><br>
+                            <small>Veuillez vérifier votre boîte Gmail (dont les spams)</small>
+                        `;
+                    });
                 })
                 .catch((error) => {
                     let errorMessage = 'Erreur : ';
@@ -708,6 +760,47 @@
                 });
         }
 
+        function verifyEmailCode() {
+            const code = document.getElementById('verificationCode').value;
+            const messageDiv = document.getElementById('verificationMessage');
+            
+            if (!code || code.length !== 6) {
+                messageDiv.textContent = 'Veuillez entrer le code à 6 chiffres reçu par email';
+                return;
+            }
+
+            const user = auth.currentUser;
+            
+            if (user) {
+                auth.applyActionCode(code).then(() => {
+                    messageDiv.style.color = '#00d25b';
+                    messageDiv.textContent = '✅ Code valide ! Email vérifié.';
+                    return user.reload();
+                }).then(() => {
+                    setTimeout(() => {
+                        updateUI(user);
+                    }, 2000);
+                }).catch((error) => {
+                    messageDiv.textContent = '❌ Code invalide. Veuillez vérifier votre email.';
+                });
+            }
+        }
+
+        function resendVerificationCode() {
+            const user = auth.currentUser;
+            if (user) {
+                user.sendEmailVerification()
+                    .then(() => {
+                        document.getElementById('verificationMessage').innerHTML = 
+                            '📧 Nouveau code envoyé ! Vérifiez votre Gmail.';
+                    })
+                    .catch((error) => {
+                        document.getElementById('verificationMessage').innerHTML = 
+                            '❌ Erreur : ' + error.message;
+                    });
+            }
+        }
+
         function login() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
@@ -721,6 +814,13 @@
             }
 
             auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    
+                    if (!user.emailVerified) {
+                        updateUI(user);
+                    }
+                })
                 .catch((error) => {
                     let errorMessage = 'Erreur : ';
                     switch (error.code) {
@@ -745,10 +845,8 @@
                 .catch((error) => {
                     alert('Erreur : ' + error.message);
                 });
-        }
-
-        // ============================================
-        // 4. PRODUITS ET PANIER
+        }        // ============================================
+        // 5. PRODUITS ET PANIER AVEC BOUTONS + ET -
         // ============================================
         
         function displayProducts() {
@@ -758,14 +856,14 @@
 
         function displayEbooks() {
             const grid = document.getElementById('ebooksGrid');
-            grid.innerHTML = products.ebooks.map(ebook => `
+            grid.innerHTML = products.ebooks.map((ebook, index) => `
                 <div class="product-card">
                     <span class="product-badge">EBOOK</span>
                     <div class="product-image">📖</div>
                     <div class="product-info">
                         <h3>${ebook.name}</h3>
                         <div class="product-price">${ebook.price.toLocaleString()} FCFA</div>
-                        <button class="add-to-cart" onclick="addToCart('${ebook.name}', ${ebook.price})">
+                        <button class="add-to-cart" onclick="addToCart('ebook_${index}', '${ebook.name}', ${ebook.price})">
                             Ajouter au panier
                         </button>
                     </div>
@@ -775,14 +873,14 @@
 
         function displayFormations() {
             const grid = document.getElementById('formationsGrid');
-            grid.innerHTML = products.formations.map(formation => `
+            grid.innerHTML = products.formations.map((formation, index) => `
                 <div class="product-card">
                     <span class="product-badge">FORMATION</span>
                     <div class="product-image">🎓</div>
                     <div class="product-info">
                         <h3>${formation.name}</h3>
                         <div class="product-price">${formation.price.toLocaleString()} FCFA</div>
-                        <button class="add-to-cart" onclick="addToCart('${formation.name}', ${formation.price})">
+                        <button class="add-to-cart" onclick="addToCart('formation_${index}', '${formation.name}', ${formation.price})">
                             Ajouter au panier
                         </button>
                     </div>
@@ -790,36 +888,85 @@
             `).join('');
         }
 
-        function addToCart(name, price) {
-            cart.push({ name, price });
+        // Ajouter au panier avec gestion des quantités
+        function addToCart(id, name, price) {
+            // Chercher si le produit existe déjà dans le panier
+            const existingItem = cart.find(item => item.id === id);
+            
+            if (existingItem) {
+                // Si existe, augmenter la quantité
+                existingItem.quantity += 1;
+            } else {
+                // Sinon, ajouter un nouvel article avec quantité 1
+                cart.push({ id, name, price, quantity: 1 });
+            }
+            
             updateCartDisplay();
             showNotification('Produit ajouté au panier !');
         }
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
+        // Augmenter la quantité
+        function increaseQuantity(id) {
+            const item = cart.find(item => item.id === id);
+            if (item) {
+                item.quantity += 1;
+                updateCartDisplay();
+            }
+        }
+
+        // Diminuer la quantité
+        function decreaseQuantity(id) {
+            const itemIndex = cart.findIndex(item => item.id === id);
+            
+            if (itemIndex !== -1) {
+                if (cart[itemIndex].quantity > 1) {
+                    // Si quantité > 1, diminuer
+                    cart[itemIndex].quantity -= 1;
+                } else {
+                    // Si quantité = 1, supprimer l'article
+                    cart.splice(itemIndex, 1);
+                }
+                updateCartDisplay();
+            }
+        }
+
+        // Supprimer complètement un article
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
             updateCartDisplay();
         }
 
         function updateCartDisplay() {
-            document.getElementById('cartCount').textContent = cart.length;
+            // Mettre à jour le compteur (nombre total d'articles)
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = totalItems;
 
+            // Afficher les articles du panier
             const cartItems = document.getElementById('cartItems');
             if (cart.length === 0) {
                 cartItems.innerHTML = '<p style="text-align: center; color: #666;">Votre panier est vide</p>';
             } else {
-                cartItems.innerHTML = cart.map((item, index) => `
-                    <div class="cart-item">
-                        <div class="cart-item-info">
-                            <h4>${item.name}</h4>
-                            <div class="cart-item-price">${item.price.toLocaleString()} FCFA</div>
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="cart-item" style="flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; width: 100%;">
+                            <div class="cart-item-info">
+                                <h4>${item.name}</h4>
+                                <div class="cart-item-price">${item.price.toLocaleString()} FCFA</div>
+                            </div>
+                            <button onclick="removeFromCart('${item.id}')" style="background: none; border: none; color: #ff4757; font-size: 1.2rem; cursor: pointer;">🗑️</button>
                         </div>
-                        <div class="remove-item" onclick="removeFromCart(${index})">&times;</div>
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem;">
+                            <button onclick="decreaseQuantity('${item.id}')" style="background: #f0f0f0; border: none; width: 35px; height: 35px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1.2rem;">−</button>
+                            <span style="min-width: 30px; text-align: center; font-weight: bold;">${item.quantity}</span>
+                            <button onclick="increaseQuantity('${item.id}')" style="background: #f0f0f0; border: none; width: 35px; height: 35px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1.2rem;">+</button>
+                            <span style="margin-left: 1rem; font-weight: bold; color: #667eea;">Sous-total: ${(item.price * item.quantity).toLocaleString()} FCFA</span>
+                        </div>
                     </div>
                 `).join('');
             }
 
-            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            // Calculer le total (prix × quantité)
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             document.getElementById('cartTotal').textContent = `${total.toLocaleString()} FCFA`;
         }
 
@@ -859,20 +1006,39 @@
                 return;
             }
 
+            if (!user.emailVerified) {
+                alert('⚠️ Veuillez vérifier votre email avant de commander !');
+                return;
+            }
+
             if (cart.length === 0) {
                 alert('Votre panier est vide !');
                 return;
             }
 
-            const message = cart.map(item => `- ${item.name} : ${item.price} FCFA`).join('%0A');
-            const total = cart.reduce((sum, item) => sum + item.price, 0);
-            const whatsappUrl = `https://wa.me/2290199878742?text=*Commande%20F2K%20MARKET*%0A%0A${message}%0A%0A*Total%20:%20${total}%20FCFA*%0A%0AClient%20:%20${user.email}%0AMerci%20de%20confirmer%20ma%20commande.`;
+            // Préparer le message avec les quantités
+            const messageItems = cart.map(item => 
+                `- ${item.name} x${item.quantity} : ${(item.price * item.quantity).toLocaleString()} FCFA`
+            ).join('%0A');
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const telephone = user.phoneNumber || 'Non renseigné';
+            const nomComplet = user.displayName || 'Non renseigné';
+
+            const whatsappUrl = `https://wa.me/2290199878742?text=*Commande%20F2K%20MARKET*%0A%0A${messageItems}%0A%0A*Total%20:%20${total.toLocaleString()}%20FCFA*%0A%0A*Client*%0ANom%20:%20${nomComplet}%0AEmail%20:%20${user.email}%0ATéléphone%20:%20${telephone}%0A%0AMerci%20de%20confirmer%20ma%20commande.`;
             
             window.open(whatsappUrl, '_blank');
+            
+            // 🆕 VIDER LE PANIER APRÈS COMMANDE
+            cart = [];
+            updateCartDisplay();
+            toggleCart();
+            
+            showNotification('✅ Commande envoyée ! Panier vidé.');
         }
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', displayProducts);
     </script>
 </body>
-  </html>
+</html>
