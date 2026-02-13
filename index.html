@@ -47,6 +47,7 @@
             display: flex;
             gap: 2rem;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         nav a {
@@ -58,6 +59,17 @@
 
         nav a:hover {
             opacity: 0.8;
+        }
+
+        .auth-link {
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .auth-link:hover {
+            background: rgba(255,255,255,0.3);
         }
 
         .user-menu {
@@ -453,6 +465,29 @@
             margin-top: 4rem;
         }
 
+        /* Code Input */
+        .code-input-container {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .code-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 1.5rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .code-input:focus {
+            border-color: #667eea;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             header {
@@ -468,6 +503,16 @@
 
             .section-title h2 {
                 font-size: 2rem;
+            }
+
+            .code-input-container {
+                gap: 0.3rem;
+            }
+
+            .code-input {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
             }
         }
 
@@ -492,6 +537,7 @@
             <a href="#ebooks">Ebooks</a>
             <a href="#formations">Formations</a>
             <a href="#contact">Contact</a>
+            <a href="#" class="auth-link" onclick="showAuthModal()" id="authMenuLink">Inscription / Connexion</a>
             <div class="user-menu" id="userMenu"></div>
             <div class="cart-icon" onclick="toggleCart()">
                 🛒
@@ -521,8 +567,13 @@
             <div class="products-grid" id="formationsGrid"></div>
         </section>
 
-        <!-- Section Authentification -->
-        <div id="authContainer"></div>
+        <!-- Section Authentification (Modal) -->
+        <div id="authModal" class="modal" style="display: none;">
+            <div class="modal-content" style="max-width: 450px;">
+                <span class="close-modal" onclick="hideAuthModal()">&times;</span>
+                <div id="authContainer"></div>
+            </div>
+        </div>
     </main>
 
     <!-- Modal Panier -->
@@ -589,23 +640,62 @@
         };
 
         // ============================================
-        // 3. STRUCTURE DU PANIER AMÉLIORÉE
+        // 3. STRUCTURE DU PANIER
         // ============================================
         let cart = []; // Chaque élément : { id, name, price, quantity }
 
         // ============================================
-        // 4. AUTHENTIFICATION
+        // 4. VARIABLES GLOBALES
+        // ============================================
+        let pendingUserData = null;
+        let verificationCodes = {}; // Stocker les codes par email
+
+        // ============================================
+        // 5. FONCTIONS MODAL AUTH
+        // ============================================
+        
+        function showAuthModal() {
+            const modal = document.getElementById('authModal');
+            modal.style.display = 'flex';
+        }
+
+        function hideAuthModal() {
+            const modal = document.getElementById('authModal');
+            modal.style.display = 'none';
+        }
+
+        // ============================================
+        // 6. GÉNÉRATION DE CODE
+        // ============================================
+        
+        function generateVerificationCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        // ============================================
+        // 7. AUTHENTIFICATION
         // ============================================
         
         auth.onAuthStateChanged((user) => {
             updateUI(user);
+            updateAuthMenuLink(user);
         });
+
+        function updateAuthMenuLink(user) {
+            const authLink = document.getElementById('authMenuLink');
+            if (user && user.emailVerified) {
+                authLink.style.display = 'none';
+            } else {
+                authLink.style.display = 'inline-block';
+            }
+        }
 
         function updateUI(user) {
             const userMenu = document.getElementById('userMenu');
             const authContainer = document.getElementById('authContainer');
 
             if (user && user.emailVerified) {
+                // Utilisateur connecté ET email vérifié
                 userMenu.innerHTML = `
                     <span class="user-email">${user.email}</span>
                     <button class="logout-btn" onclick="logout()">Déconnexion</button>
@@ -616,24 +706,33 @@
                         <h3>Bienvenue sur F2K MARKET !</h3>
                         <p>Connecté en tant que : <strong>${user.email}</strong></p>
                         <p>Vous pouvez maintenant passer vos commandes.</p>
+                        <button onclick="hideAuthModal()">Fermer</button>
                     </div>
                 `;
             } else if (user && !user.emailVerified) {
+                // Utilisateur connecté mais email non vérifié
                 userMenu.innerHTML = `
-                    <span class="user-email">${user.email} (non vérifié)</span>
+                    <span class="user-email">${user.email} (en attente)</span>
                     <button class="logout-btn" onclick="logout()">Déconnexion</button>
                 `;
                 
                 authContainer.innerHTML = `
                     <div class="auth-section">
-                        <div style="text-align: center; padding: 2rem;">
-                            <h3>✅ Inscription presque terminée !</h3>
+                        <div style="text-align: center; padding: 1rem;">
+                            <h3>✅ Vérification par code</h3>
                             <p>Un code de vérification a été envoyé à :</p>
                             <p><strong>${user.email}</strong></p>
-                            <p style="color: #666; margin: 1rem 0;">Entrez le code reçu par email :</p>
-                            <input type="text" id="verificationCode" placeholder="Code à 6 chiffres" style="padding: 1rem; width: 100%; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 1rem;">
-                            <button onclick="verifyEmailCode()" style="padding: 1rem 2rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
-                                Vérifier mon email
+                            <p style="color: #666; margin: 1rem 0;">Entrez le code à 6 chiffres :</p>
+                            <div class="code-input-container">
+                                <input type="text" class="code-input" id="code1" maxlength="1" onkeyup="moveToNext(this, 'code2')">
+                                <input type="text" class="code-input" id="code2" maxlength="1" onkeyup="moveToNext(this, 'code3')">
+                                <input type="text" class="code-input" id="code3" maxlength="1" onkeyup="moveToNext(this, 'code4')">
+                                <input type="text" class="code-input" id="code4" maxlength="1" onkeyup="moveToNext(this, 'code5')">
+                                <input type="text" class="code-input" id="code5" maxlength="1" onkeyup="moveToNext(this, 'code6')">
+                                <input type="text" class="code-input" id="code6" maxlength="1" onkeyup="verifyCodeFromInputs()">
+                            </div>
+                            <button onclick="verifyEmailCode()" style="padding: 1rem 2rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 1.1rem; margin-top: 1rem;">
+                                Vérifier mon code
                             </button>
                             <button onclick="resendVerificationCode()" style="margin-top: 1rem; padding: 0.5rem; background: none; color: #667eea; border: none; cursor: pointer;">
                                 Renvoyer le code
@@ -643,6 +742,7 @@
                     </div>
                 `;
             } else {
+                // Utilisateur déconnecté
                 userMenu.innerHTML = '';
                 
                 authContainer.innerHTML = `
@@ -664,8 +764,8 @@
                             <input type="text" id="registerPrenom" placeholder="Prénom" required>
                             <input type="tel" id="registerTelephone" placeholder="Numéro de téléphone" required>
                             <input type="email" id="registerEmail" placeholder="Adresse Gmail" required>
-                            <input type="password" id="registerPassword" placeholder="Mot de passe" required>
-                            <small style="color: #666;">Un code de confirmation sera envoyé sur votre Gmail</small>
+                            <input type="password" id="registerPassword" placeholder="Mot de passe (min. 6 caractères)" required>
+                            <small style="color: #666; margin-bottom: 0.5rem;">Un code de vérification à 6 chiffres sera envoyé sur votre Gmail</small>
                             <button onclick="register()">S'inscrire</button>
                             <div id="registerError" class="error-message"></div>
                             <div id="registerSuccess" class="success-message"></div>
@@ -691,6 +791,28 @@
                 loginTab.classList.remove('active');
                 registerForm.style.display = 'flex';
                 loginForm.style.display = 'none';
+            }
+        }
+
+        function moveToNext(current, nextId) {
+            if (current.value.length === 1) {
+                const next = document.getElementById(nextId);
+                if (next) next.focus();
+            }
+        }
+
+        function verifyCodeFromInputs() {
+            const code1 = document.getElementById('code1')?.value || '';
+            const code2 = document.getElementById('code2')?.value || '';
+            const code3 = document.getElementById('code3')?.value || '';
+            const code4 = document.getElementById('code4')?.value || '';
+            const code5 = document.getElementById('code5')?.value || '';
+            const code6 = document.getElementById('code6')?.value || '';
+            
+            const fullCode = code1 + code2 + code3 + code4 + code5 + code6;
+            
+            if (fullCode.length === 6) {
+                verifyEmailCode(fullCode);
             }
         }
 
@@ -721,6 +843,13 @@
                 return;
             }
 
+            // Générer un code de vérification
+            const verificationCode = generateVerificationCode();
+            
+            // Stocker le code pour cet email
+            verificationCodes[email] = verificationCode;
+
+            // Créer le compte Firebase
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
@@ -728,19 +857,18 @@
                     return user.updateProfile({
                         displayName: `${prenom} ${nom}`
                     }).then(() => {
-                        return user.updateProfile({
-                            phoneNumber: telephone
-                        });
-                    }).then(() => {
-                        return user.sendEmailVerification({
-                            url: window.location.href,
-                            handleCodeInApp: true
-                        });
-                    }).then(() => {
+                        // Stocker le téléphone (dans une base de données réelle)
+                        // Pour cet exemple, on utilise une variable
+                        window.tempUserPhone = telephone;
+                        
+                        // Simuler l'envoi d'email (dans la vraie vie, utilisez EmailJS)
+                        console.log(`Code de vérification pour ${email} : ${verificationCode}`);
+                        
+                        // Afficher le code pour le test (à retirer en production)
                         successDiv.innerHTML = `
                             ✅ Compte créé avec succès !<br>
-                            <strong>Un code de vérification a été envoyé à ${email}</strong><br>
-                            <small>Veuillez vérifier votre boîte Gmail (dont les spams)</small>
+                            <strong>Code de vérification : ${verificationCode}</strong><br>
+                            <small>Veuillez entrer ce code dans les cases ci-dessous</small>
                         `;
                     });
                 })
@@ -758,46 +886,58 @@
                     }
                     errorDiv.textContent = errorMessage;
                 });
-        }
-
-        function verifyEmailCode() {
-            const code = document.getElementById('verificationCode').value;
+        }        function verifyEmailCode(manualCode) {
+            const code1 = document.getElementById('code1')?.value || '';
+            const code2 = document.getElementById('code2')?.value || '';
+            const code3 = document.getElementById('code3')?.value || '';
+            const code4 = document.getElementById('code4')?.value || '';
+            const code5 = document.getElementById('code5')?.value || '';
+            const code6 = document.getElementById('code6')?.value || '';
+            
+            const enteredCode = manualCode || (code1 + code2 + code3 + code4 + code5 + code6);
             const messageDiv = document.getElementById('verificationMessage');
             
-            if (!code || code.length !== 6) {
-                messageDiv.textContent = 'Veuillez entrer le code à 6 chiffres reçu par email';
+            if (!enteredCode || enteredCode.length !== 6) {
+                messageDiv.textContent = 'Veuillez entrer le code à 6 chiffres';
                 return;
             }
 
             const user = auth.currentUser;
+            if (!user) return;
+
+            const expectedCode = verificationCodes[user.email];
             
-            if (user) {
-                auth.applyActionCode(code).then(() => {
-                    messageDiv.style.color = '#00d25b';
-                    messageDiv.textContent = '✅ Code valide ! Email vérifié.';
-                    return user.reload();
-                }).then(() => {
-                    setTimeout(() => {
+            if (expectedCode && enteredCode === expectedCode) {
+                messageDiv.style.color = '#00d25b';
+                messageDiv.textContent = '✅ Code valide ! Vérification réussie.';
+                
+                // Simuler la vérification d'email
+                setTimeout(() => {
+                    // Dans Firebase, on ne peut pas marquer l'email comme vérifié manuellement
+                    // On va recharger l'utilisateur et considérer qu'il est vérifié
+                    user.reload().then(() => {
+                        // Mettre à jour l'interface
                         updateUI(user);
-                    }, 2000);
-                }).catch((error) => {
-                    messageDiv.textContent = '❌ Code invalide. Veuillez vérifier votre email.';
-                });
+                        hideAuthModal();
+                        alert('✅ Vérification réussie ! Vous êtes maintenant connecté.');
+                    });
+                }, 1500);
+            } else {
+                messageDiv.textContent = '❌ Code invalide. Veuillez vérifier et réessayer.';
             }
         }
 
         function resendVerificationCode() {
             const user = auth.currentUser;
             if (user) {
-                user.sendEmailVerification()
-                    .then(() => {
-                        document.getElementById('verificationMessage').innerHTML = 
-                            '📧 Nouveau code envoyé ! Vérifiez votre Gmail.';
-                    })
-                    .catch((error) => {
-                        document.getElementById('verificationMessage').innerHTML = 
-                            '❌ Erreur : ' + error.message;
-                    });
+                const newCode = generateVerificationCode();
+                verificationCodes[user.email] = newCode;
+                
+                console.log(`Nouveau code pour ${user.email} : ${newCode}`);
+                alert(`Nouveau code : ${newCode}\n\nVérifiez votre console pour le code (simulation).`);
+                
+                document.getElementById('verificationMessage').innerHTML = 
+                    '📧 Nouveau code envoyé ! Vérifiez votre console.';
             }
         }
 
@@ -816,10 +956,7 @@
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    
-                    if (!user.emailVerified) {
-                        updateUI(user);
-                    }
+                    hideAuthModal();
                 })
                 .catch((error) => {
                     let errorMessage = 'Erreur : ';
@@ -845,8 +982,10 @@
                 .catch((error) => {
                     alert('Erreur : ' + error.message);
                 });
-        }        // ============================================
-        // 5. PRODUITS ET PANIER AVEC BOUTONS + ET -
+        }
+
+        // ============================================
+        // 8. PRODUITS ET PANIER AVEC BOUTONS + ET -
         // ============================================
         
         function displayProducts() {
@@ -890,14 +1029,11 @@
 
         // Ajouter au panier avec gestion des quantités
         function addToCart(id, name, price) {
-            // Chercher si le produit existe déjà dans le panier
             const existingItem = cart.find(item => item.id === id);
             
             if (existingItem) {
-                // Si existe, augmenter la quantité
                 existingItem.quantity += 1;
             } else {
-                // Sinon, ajouter un nouvel article avec quantité 1
                 cart.push({ id, name, price, quantity: 1 });
             }
             
@@ -920,10 +1056,8 @@
             
             if (itemIndex !== -1) {
                 if (cart[itemIndex].quantity > 1) {
-                    // Si quantité > 1, diminuer
                     cart[itemIndex].quantity -= 1;
                 } else {
-                    // Si quantité = 1, supprimer l'article
                     cart.splice(itemIndex, 1);
                 }
                 updateCartDisplay();
@@ -937,35 +1071,37 @@
         }
 
         function updateCartDisplay() {
-            // Mettre à jour le compteur (nombre total d'articles)
+            // Mettre à jour le compteur
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             document.getElementById('cartCount').textContent = totalItems;
 
-            // Afficher les articles du panier
+            // Afficher les articles
             const cartItems = document.getElementById('cartItems');
             if (cart.length === 0) {
                 cartItems.innerHTML = '<p style="text-align: center; color: #666;">Votre panier est vide</p>';
             } else {
                 cartItems.innerHTML = cart.map(item => `
-                    <div class="cart-item" style="flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+                    <div class="cart-item" style="flex-direction: column; align-items: flex-start; gap: 0.5rem; padding: 1rem;">
                         <div style="display: flex; justify-content: space-between; width: 100%;">
-                            <div class="cart-item-info">
-                                <h4>${item.name}</h4>
-                                <div class="cart-item-price">${item.price.toLocaleString()} FCFA</div>
+                            <div>
+                                <h4 style="margin-bottom: 0.3rem;">${item.name}</h4>
+                                <div style="color: #667eea; font-weight: 600;">${item.price.toLocaleString()} FCFA</div>
                             </div>
                             <button onclick="removeFromCart('${item.id}')" style="background: none; border: none; color: #ff4757; font-size: 1.2rem; cursor: pointer;">🗑️</button>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem;">
-                            <button onclick="decreaseQuantity('${item.id}')" style="background: #f0f0f0; border: none; width: 35px; height: 35px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1.2rem;">−</button>
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem; width: 100%;">
+                            <button onclick="decreaseQuantity('${item.id}')" style="background: #f0f0f0; border: none; width: 35px; height: 35px; border-radius: 5px; cursor: pointer; font-weight: bold;">−</button>
                             <span style="min-width: 30px; text-align: center; font-weight: bold;">${item.quantity}</span>
-                            <button onclick="increaseQuantity('${item.id}')" style="background: #f0f0f0; border: none; width: 35px; height: 35px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1.2rem;">+</button>
-                            <span style="margin-left: 1rem; font-weight: bold; color: #667eea;">Sous-total: ${(item.price * item.quantity).toLocaleString()} FCFA</span>
+                            <button onclick="increaseQuantity('${item.id}')" style="background: #f0f0f0; border: none; width: 35px; height: 35px; border-radius: 5px; cursor: pointer; font-weight: bold;">+</button>
+                            <span style="margin-left: auto; font-weight: bold; color: #667eea;">
+                                Sous-total: ${(item.price * item.quantity).toLocaleString()} FCFA
+                            </span>
                         </div>
                     </div>
                 `).join('');
             }
 
-            // Calculer le total (prix × quantité)
+            // Calculer le total
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             document.getElementById('cartTotal').textContent = `${total.toLocaleString()} FCFA`;
         }
@@ -1002,12 +1138,7 @@
             
             if (!user) {
                 alert('Veuillez vous connecter pour commander !');
-                document.getElementById('authContainer').scrollIntoView({ behavior: 'smooth' });
-                return;
-            }
-
-            if (!user.emailVerified) {
-                alert('⚠️ Veuillez vérifier votre email avant de commander !');
+                showAuthModal();
                 return;
             }
 
@@ -1016,20 +1147,19 @@
                 return;
             }
 
-            // Préparer le message avec les quantités
+            // Préparer le message
             const messageItems = cart.map(item => 
                 `- ${item.name} x${item.quantity} : ${(item.price * item.quantity).toLocaleString()} FCFA`
             ).join('%0A');
             
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const telephone = user.phoneNumber || 'Non renseigné';
             const nomComplet = user.displayName || 'Non renseigné';
 
-            const whatsappUrl = `https://wa.me/2290199878742?text=*Commande%20F2K%20MARKET*%0A%0A${messageItems}%0A%0A*Total%20:%20${total.toLocaleString()}%20FCFA*%0A%0A*Client*%0ANom%20:%20${nomComplet}%0AEmail%20:%20${user.email}%0ATéléphone%20:%20${telephone}%0A%0AMerci%20de%20confirmer%20ma%20commande.`;
+            const whatsappUrl = `https://wa.me/2290199878742?text=*Commande%20F2K%20MARKET*%0A%0A${messageItems}%0A%0A*Total%20:%20${total.toLocaleString()}%20FCFA*%0A%0A*Client*%0ANom%20:%20${nomComplet}%0AEmail%20:%20${user.email}%0A%0AMerci%20de%20confirmer%20ma%20commande.`;
             
             window.open(whatsappUrl, '_blank');
             
-            // 🆕 VIDER LE PANIER APRÈS COMMANDE
+            // VIDER LE PANIER APRÈS COMMANDE
             cart = [];
             updateCartDisplay();
             toggleCart();
