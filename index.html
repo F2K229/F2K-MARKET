@@ -943,15 +943,15 @@ canvas{max-height:240px;}
 </footer>
 
 <script type="module">
-import { initializeApp }                         from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp }                         from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword,
          signInWithEmailAndPassword, signOut,
-         onAuthStateChanged }                    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+         onAuthStateChanged }                    from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc,
          updateDoc, deleteDoc, collection,
          query, where, getDocs, orderBy,
          addDoc, serverTimestamp, onSnapshot,
-         arrayUnion, increment }                from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+         arrayUnion, increment }                from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 /* ── CONFIG ── */
 const firebaseConfig = {
@@ -960,7 +960,8 @@ const firebaseConfig = {
   projectId:"f2k-market-5a1cf",
   storageBucket:"f2k-market-5a1cf.firebasestorage.app",
   messagingSenderId:"346564648549",
-  appId:"1:346564648549:web:17aed8fe5ddc462cceb08c"
+  appId:"1:346564648549:web:17aed8fe5ddc462cceb08c",
+  measurementId:"G-TMC47NWTLB"
 };
 const CLOUDINARY_CLOUD  = 'f2k-market';
 const CLOUDINARY_PRESET = 'f2kmarket_upload';
