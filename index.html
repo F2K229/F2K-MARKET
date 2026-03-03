@@ -943,25 +943,25 @@ canvas{max-height:240px;}
 </footer>
 
 <script type="module">
-import { initializeApp }                         from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { initializeApp }                         from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword,
          signInWithEmailAndPassword, signOut,
-         onAuthStateChanged }                    from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+         onAuthStateChanged }                    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc,
          updateDoc, deleteDoc, collection,
          query, where, getDocs, orderBy,
          addDoc, serverTimestamp, onSnapshot,
-         arrayUnion, increment }                from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+         arrayUnion, increment }                from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 /* ── CONFIG ── */
 const firebaseConfig = {
-  apiKey:"AIzaSyAfKZKonA3oEsBJ3Ur_PbbR0e61nba1p6Y",
-  authDomain:"f2k-market-5a1cf.firebaseapp.com",
-  projectId:"f2k-market-5a1cf",
-  storageBucket:"f2k-market-5a1cf.firebasestorage.app",
-  messagingSenderId:"346564648549",
-  appId:"1:346564648549:web:17aed8fe5ddc462cceb08c",
-  measurementId:"G-TMC47NWTLB"
+  apiKey:"AIzaSyBp_oCpxYHmd3YMke04XirHpCKn0wskiiM",
+  authDomain:"f2k-market.firebaseapp.com",
+  projectId:"f2k-market",
+  storageBucket:"f2k-market.firebasestorage.app",
+  messagingSenderId:"446238473421",
+  appId:"1:446238473421:web:fb5953134370b012e2fd84",
+  measurementId:"G-WZRLZ99VTP"
 };
 const CLOUDINARY_CLOUD  = 'f2k-market';
 const CLOUDINARY_PRESET = 'f2kmarket_upload';
