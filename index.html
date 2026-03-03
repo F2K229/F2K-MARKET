@@ -1,1174 +1,205 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" id="html-root">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>F2K MARKET - Ebooks & Formations pour l'Afrique</title>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f5f5f5;
-        }
-
-        /* Header */
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .logo h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-
-        .logo p {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        nav {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: opacity 0.3s;
-        }
-
-        nav a:hover {
-            opacity: 0.8;
-        }
-
-        .auth-link {
-            background: rgba(255,255,255,0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-
-        .auth-link:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
-        .user-menu {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .user-email {
-            font-size: 0.9rem;
-            background: rgba(255,255,255,0.2);
-            padding: 0.3rem 1rem;
-            border-radius: 20px;
-        }
-
-        .logout-btn {
-            background: #ff4757;
-            color: white;
-            border: none;
-            padding: 0.3rem 1rem;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: opacity 0.3s;
-        }
-
-        .logout-btn:hover {
-            opacity: 0.8;
-        }
-
-        .cart-icon {
-            position: relative;
-            cursor: pointer;
-            font-size: 1.5rem;
-        }
-
-        .cart-count {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background-color: #ff4757;
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .chat-btn {
-            background-color: #25D366;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: transform 0.3s;
-        }
-
-        .chat-btn:hover {
-            transform: scale(1.05);
-        }
-
-        /* Main Content */
-        main {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-
-        .section-title {
-            text-align: center;
-            margin: 3rem 0 2rem;
-            position: relative;
-        }
-
-        .section-title h2 {
-            font-size: 2.5rem;
-            color: #333;
-            display: inline-block;
-            background-color: #f5f5f5;
-            padding: 0 2rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .section-title::before {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #667eea, transparent);
-            z-index: 0;
-        }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .product-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-            position: relative;
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        }
-
-        .product-badge {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 0.3rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            z-index: 1;
-        }
-
-        .product-image {
-            height: 200px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 3rem;
-            opacity: 0.9;
-        }
-
-        .product-info {
-            padding: 1.5rem;
-        }
-
-        .product-info h3 {
-            color: #333;
-            margin-bottom: 0.5rem;
-            font-size: 1.2rem;
-        }
-
-        .product-price {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #667eea;
-            margin: 1rem 0;
-        }
-
-        .add-to-cart {
-            width: 100%;
-            padding: 0.8rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.3s;
-        }
-
-        .add-to-cart:hover {
-            opacity: 0.9;
-        }
-
-        /* Auth Section */
-        .auth-section {
-            max-width: 400px;
-            margin: 3rem auto;
-            padding: 2rem;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .auth-tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 1rem;
-        }
-
-        .auth-tab {
-            flex: 1;
-            padding: 0.8rem;
-            border: none;
-            background: none;
-            font-weight: 600;
-            cursor: pointer;
-            color: #666;
-            transition: all 0.3s;
-        }
-
-        .auth-tab.active {
-            color: #667eea;
-            border-bottom: 2px solid #667eea;
-        }
-
-        .auth-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .auth-form input {
-            padding: 1rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .auth-form button {
-            padding: 1rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.3s;
-        }
-
-        .auth-form button:hover {
-            opacity: 0.9;
-        }
-
-        .error-message {
-            color: #ff4757;
-            font-size: 0.9rem;
-            text-align: center;
-        }
-
-        .success-message {
-            color: #00d25b;
-            font-size: 0.9rem;
-            text-align: center;
-        }
-
-        /* User Info Section */
-        .user-info {
-            max-width: 400px;
-            margin: 3rem auto;
-            padding: 2rem;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .user-info h3 {
-            color: #333;
-            margin-bottom: 1rem;
-        }
-
-        .user-info p {
-            color: #666;
-            margin-bottom: 2rem;
-        }
-
-        .user-info button {
-            padding: 1rem 2rem;
-            background: #ff4757;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.3s;
-        }
-
-        .user-info button:hover {
-            opacity: 0.8;
-        }
-
-        /* Modal Panier */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #666;
-            transition: color 0.3s;
-        }
-
-        .close-modal:hover {
-            color: #333;
-        }
-
-        .cart-items {
-            margin: 2rem 0;
-        }
-
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .cart-item-info h4 {
-            color: #333;
-            margin-bottom: 0.3rem;
-        }
-
-        .cart-item-price {
-            color: #667eea;
-            font-weight: 600;
-        }
-
-        .cart-total {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 2px solid #eee;
-        }
-
-        .checkout-btn {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #25D366, #128C7E);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 1rem;
-            transition: opacity 0.3s;
-        }
-
-        .checkout-btn:hover {
-            opacity: 0.9;
-        }
-
-        /* Footer */
-        footer {
-            background: #333;
-            color: white;
-            text-align: center;
-            padding: 2rem;
-            margin-top: 4rem;
-        }
-
-        /* Code Input */
-        .code-input-container {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-            margin-bottom: 1rem;
-        }
-
-        .code-input {
-            width: 50px;
-            height: 50px;
-            text-align: center;
-            font-size: 1.5rem;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        .code-input:focus {
-            border-color: #667eea;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-
-            nav {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .section-title h2 {
-                font-size: 2rem;
-            }
-
-            .code-input-container {
-                gap: 0.3rem;
-            }
-
-            .code-input {
-                width: 40px;
-                height: 40px;
-                font-size: 1.2rem;
-            }
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-    </style>
-</head>
-<body>    <header>
-        <div class="logo">
-            <h1>F2K MARKET</h1>
-            <p>Ebooks & Formations pour l'Afrique</p>
-        </div>
-        <nav>
-            <a href="#ebooks">Ebooks</a>
-            <a href="#formations">Formations</a>
-            <a href="#contact">Contact</a>
-            <a href="#" class="auth-link" onclick="showAuthModal()" id="authMenuLink">Inscription / Connexion</a>
-            <div class="user-menu" id="userMenu"></div>
-            <div class="cart-icon" onclick="toggleCart()">
-                🛒
-                <span class="cart-count" id="cartCount">0</span>
-            </div>
-            <button class="chat-btn" onclick="openWhatsApp()">
-                💬
-                <span>WhatsApp</span>
-            </button>
-        </nav>
-    </header>
-
-    <main>
-        <!-- Section Ebooks -->
-        <section id="ebooks">
-            <div class="section-title">
-                <h2>📚 Nos Ebooks</h2>
-            </div>
-            <div class="products-grid" id="ebooksGrid"></div>
-        </section>
-
-        <!-- Section Formations -->
-        <section id="formations">
-            <div class="section-title">
-                <h2>🎓 Nos Formations</h2>
-            </div>
-            <div class="products-grid" id="formationsGrid"></div>
-        </section>
-
-        <!-- Section Authentification (Modal) -->
-        <div id="authModal" class="modal" style="display: none;">
-            <div class="modal-content" style="max-width: 450px;">
-                <span class="close-modal" onclick="hideAuthModal()">&times;</span>
-                <div id="authContainer"></div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Modal Panier -->
-    <div class="modal" id="cartModal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="toggleCart()">&times;</span>
-            <h2>Votre panier</h2>
-            <div class="cart-items" id="cartItems"></div>
-            <div class="cart-total">
-                <span>Total :</span>
-                <span id="cartTotal">0 FCFA</span>
-            </div>
-            <button class="checkout-btn" onclick="checkout()">Commander sur WhatsApp</button>
-        </div>
-    </div>
-
-    <footer>
-        <p>&copy; 2026 F2K MARKET - Tous droits réservés</p>
-        <p style="margin-top: 1rem; opacity: 0.8;">Des ebooks et formations de qualité pour l'Afrique</p>
-    </footer>
-
-    <script>
-        // ============================================
-        // 1. VOTRE CONFIGURATION FIREBASE (ACTIVE)
-        // ============================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyAfKZKonA3oEsBJ3Ur_PbbR0e61nba1p6Y",
-            authDomain: "f2k-market-5a1cf.firebaseapp.com",
-            projectId: "f2k-market-5a1cf",
-            storageBucket: "f2k-market-5a1cf.firebasestorage.app",
-            messagingSenderId: "346564648549",
-            appId: "1:346564648549:web:17aed8fe5ddc462cceb08c",
-            measurementId: "G-TMC47NWTLB"
-        };
-
-        // Initialisation de Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-
-        // ============================================
-        // 2. PRODUITS
-        // ============================================
-        const products = {
-            ebooks: [
-                { name: "Créer un business en ligne", price: 3000 },
-                { name: "Monétiser WhatsApp", price: 2500 },
-                { name: "Marketing Digital Afrique", price: 3500 },
-                { name: "SEO Local pour PME", price: 4000 },
-                { name: "Vendre sur TikTok Shop", price: 3200 },
-                { name: "Copywriting qui convertit", price: 2800 },
-                { name: "Gestion financière perso", price: 3800 },
-                { name: "Freelance Afrique 2026", price: 4500 }
-            ],
-            formations: [
-                { name: "Création de site web", price: 10000 },
-                { name: "E-commerce complet", price: 12000 },
-                { name: "IA & Automatisation", price: 15000 },
-                { name: "Publicité Facebook & Instagram", price: 11000 },
-                { name: "YouTube monétisation", price: 9500 },
-                { name: "Dropshipping Afrique", price: 13000 },
-                { name: "Community Management", price: 8500 },
-                { name: "Trading Crypto débutant", price: 14000 }
-            ]
-        };
-
-        // ============================================
-        // 3. STRUCTURE DU PANIER
-        // ============================================
-        let cart = []; // Chaque élément : { id, name, price, quantity }
-
-        // ============================================
-        // 4. VARIABLES GLOBALES
-        // ============================================
-        let pendingUserData = null;
-        let verificationCodes = {}; // Stocker les codes par email
-
-        // ============================================
-        // 5. FONCTIONS MODAL AUTH
-        // ============================================
-        
-        function showAuthModal() {
-            const modal = document.getElementById('authModal');
-            modal.style.display = 'flex';
-        }
-
-        function hideAuthModal() {
-            const modal = document.getElementById('authModal');
-            modal.style.display = 'none';
-        }
-
-        // ============================================
-        // 6. GÉNÉRATION DE CODE
-        // ============================================
-        
-        function generateVerificationCode() {
-            return Math.floor(100000 + Math.random() * 900000).toString();
-        }
-
-        // ============================================
-        // 7. AUTHENTIFICATION
-        // ============================================
-        
-        auth.onAuthStateChanged((user) => {
-            updateUI(user);
-            updateAuthMenuLink(user);
-        });
-
-        function updateAuthMenuLink(user) {
-            const authLink = document.getElementById('authMenuLink');
-            if (user && user.emailVerified) {
-                authLink.style.display = 'none';
-            } else {
-                authLink.style.display = 'inline-block';
-            }
-        }
-
-        function updateUI(user) {
-            const userMenu = document.getElementById('userMenu');
-            const authContainer = document.getElementById('authContainer');
-
-            if (user && user.emailVerified) {
-                // Utilisateur connecté ET email vérifié
-                userMenu.innerHTML = `
-                    <span class="user-email">${user.email}</span>
-                    <button class="logout-btn" onclick="logout()">Déconnexion</button>
-                `;
-                
-                authContainer.innerHTML = `
-                    <div class="user-info">
-                        <h3>Bienvenue sur F2K MARKET !</h3>
-                        <p>Connecté en tant que : <strong>${user.email}</strong></p>
-                        <p>Vous pouvez maintenant passer vos commandes.</p>
-                        <button onclick="hideAuthModal()">Fermer</button>
-                    </div>
-                `;
-            } else if (user && !user.emailVerified) {
-                // Utilisateur connecté mais email non vérifié
-                userMenu.innerHTML = `
-                    <span class="user-email">${user.email} (en attente)</span>
-                    <button class="logout-btn" onclick="logout()">Déconnexion</button>
-                `;
-                
-                authContainer.innerHTML = `
-                    <div class="auth-section">
-                        <div style="text-align: center; padding: 1rem;">
-                            <h3>✅ Vérification par code</h3>
-                            <p>Un code de vérification a été envoyé à :</p>
-                            <p><strong>${user.email}</strong></p>
-                            <p style="color: #666; margin: 1rem 0;">Entrez le code à 6 chiffres :</p>
-                            <div class="code-input-container">
-                                <input type="text" class="code-input" id="code1" maxlength="1" onkeyup="moveToNext(this, 'code2')">
-                                <input type="text" class="code-input" id="code2" maxlength="1" onkeyup="moveToNext(this, 'code3')">
-                                <input type="text" class="code-input" id="code3" maxlength="1" onkeyup="moveToNext(this, 'code4')">
-                                <input type="text" class="code-input" id="code4" maxlength="1" onkeyup="moveToNext(this, 'code5')">
-                                <input type="text" class="code-input" id="code5" maxlength="1" onkeyup="moveToNext(this, 'code6')">
-                                <input type="text" class="code-input" id="code6" maxlength="1" onkeyup="verifyCodeFromInputs()">
-                            </div>
-                            <button onclick="verifyEmailCode()" style="padding: 1rem 2rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 1.1rem; margin-top: 1rem;">
-                                Vérifier mon code
-                            </button>
-                            <button onclick="resendVerificationCode()" style="margin-top: 1rem; padding: 0.5rem; background: none; color: #667eea; border: none; cursor: pointer;">
-                                Renvoyer le code
-                            </button>
-                            <div id="verificationMessage" style="margin-top: 1rem; color: #ff4757;"></div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                // Utilisateur déconnecté
-                userMenu.innerHTML = '';
-                
-                authContainer.innerHTML = `
-                    <div class="auth-section">
-                        <div class="auth-tabs">
-                            <button class="auth-tab active" onclick="showTab('login')" id="loginTab">Connexion</button>
-                            <button class="auth-tab" onclick="showTab('register')" id="registerTab">Inscription</button>
-                        </div>
-                        
-                        <div id="loginForm" class="auth-form">
-                            <input type="email" id="loginEmail" placeholder="Email" required>
-                            <input type="password" id="loginPassword" placeholder="Mot de passe" required>
-                            <button onclick="login()">Se connecter</button>
-                            <div id="loginError" class="error-message"></div>
-                        </div>
-                        
-                        <div id="registerForm" class="auth-form" style="display: none;">
-                            <input type="text" id="registerNom" placeholder="Nom" required>
-                            <input type="text" id="registerPrenom" placeholder="Prénom" required>
-                            <input type="tel" id="registerTelephone" placeholder="Numéro de téléphone" required>
-                            <input type="email" id="registerEmail" placeholder="Adresse Gmail" required>
-                            <input type="password" id="registerPassword" placeholder="Mot de passe (min. 6 caractères)" required>
-                            <small style="color: #666; margin-bottom: 0.5rem;">Un code de vérification à 6 chiffres sera envoyé sur votre Gmail</small>
-                            <button onclick="register()">S'inscrire</button>
-                            <div id="registerError" class="error-message"></div>
-                            <div id="registerSuccess" class="success-message"></div>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        function showTab(tab) {
-            const loginTab = document.getElementById('loginTab');
-            const registerTab = document.getElementById('registerTab');
-            const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
-
-            if (tab === 'login') {
-                loginTab.classList.add('active');
-                registerTab.classList.remove('active');
-                loginForm.style.display = 'flex';
-                registerForm.style.display = 'none';
-            } else {
-                registerTab.classList.add('active');
-                loginTab.classList.remove('active');
-                registerForm.style.display = 'flex';
-                loginForm.style.display = 'none';
-            }
-        }
-
-        function moveToNext(current, nextId) {
-            if (current.value.length === 1) {
-                const next = document.getElementById(nextId);
-                if (next) next.focus();
-            }
-        }
-
-        function verifyCodeFromInputs() {
-            const code1 = document.getElementById('code1')?.value || '';
-            const code2 = document.getElementById('code2')?.value || '';
-            const code3 = document.getElementById('code3')?.value || '';
-            const code4 = document.getElementById('code4')?.value || '';
-            const code5 = document.getElementById('code5')?.value || '';
-            const code6 = document.getElementById('code6')?.value || '';
-            
-            const fullCode = code1 + code2 + code3 + code4 + code5 + code6;
-            
-            if (fullCode.length === 6) {
-                verifyEmailCode(fullCode);
-            }
-        }
-
-        function register() {
-            const nom = document.getElementById('registerNom').value;
-            const prenom = document.getElementById('registerPrenom').value;
-            const telephone = document.getElementById('registerTelephone').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const errorDiv = document.getElementById('registerError');
-            const successDiv = document.getElementById('registerSuccess');
-
-            errorDiv.textContent = '';
-            successDiv.textContent = '';
-
-            if (!nom || !prenom || !telephone || !email || !password) {
-                errorDiv.textContent = 'Veuillez remplir tous les champs';
-                return;
-            }
-
-            if (!email.includes('@gmail.com')) {
-                errorDiv.textContent = 'Veuillez utiliser une adresse Gmail';
-                return;
-            }
-
-            if (password.length < 6) {
-                errorDiv.textContent = 'Le mot de passe doit contenir au moins 6 caractères';
-                return;
-            }
-
-            // Générer un code de vérification
-            const verificationCode = generateVerificationCode();
-            
-            // Stocker le code pour cet email
-            verificationCodes[email] = verificationCode;
-
-            // Créer le compte Firebase
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    
-                    return user.updateProfile({
-                        displayName: `${prenom} ${nom}`
-                    }).then(() => {
-                        // Stocker le téléphone (dans une base de données réelle)
-                        // Pour cet exemple, on utilise une variable
-                        window.tempUserPhone = telephone;
-                        
-                        // Simuler l'envoi d'email (dans la vraie vie, utilisez EmailJS)
-                        console.log(`Code de vérification pour ${email} : ${verificationCode}`);
-                        
-                        // Afficher le code pour le test (à retirer en production)
-                        successDiv.innerHTML = `
-                            ✅ Compte créé avec succès !<br>
-                            <strong>Code de vérification : ${verificationCode}</strong><br>
-                            <small>Veuillez entrer ce code dans les cases ci-dessous</small>
-                        `;
-                    });
-                })
-                .catch((error) => {
-                    let errorMessage = 'Erreur : ';
-                    switch (error.code) {
-                        case 'auth/email-already-in-use':
-                            errorMessage += 'Cet email est déjà utilisé';
-                            break;
-                        case 'auth/invalid-email':
-                            errorMessage += 'Email invalide';
-                            break;
-                        default:
-                            errorMessage += error.message;
-                    }
-                    errorDiv.textContent = errorMessage;
-                });
-        }        function verifyEmailCode(manualCode) {
-            const code1 = document.getElementById('code1')?.value || '';
-            const code2 = document.getElementById('code2')?.value || '';
-            const code3 = document.getElementById('code3')?.value || '';
-            const code4 = document.getElementById('code4')?.value || '';
-            const code5 = document.getElementById('code5')?.value || '';
-            const code6 = document.getElementById('code6')?.value || '';
-            
-            const enteredCode = manualCode || (code1 + code2 + code3 + code4 + code5 + code6);
-            const messageDiv = document.getElementById('verificationMessage');
-            
-            if (!enteredCode || enteredCode.length !== 6) {
-                messageDiv.textContent = 'Veuillez entrer le code à 6 chiffres';
-                return;
-            }
-
-            const user = auth.currentUser;
-            if (!user) return;
-
-            const expectedCode = verificationCodes[user.email];
-            
-            if (expectedCode && enteredCode === expectedCode) {
-                messageDiv.style.color = '#00d25b';
-                messageDiv.textContent = '✅ Code valide ! Vérification réussie.';
-                
-                // Simuler la vérification d'email
-                setTimeout(() => {
-                    // Dans Firebase, on ne peut pas marquer l'email comme vérifié manuellement
-                    // On va recharger l'utilisateur et considérer qu'il est vérifié
-                    user.reload().then(() => {
-                        // Mettre à jour l'interface
-                        updateUI(user);
-                        hideAuthModal();
-                        alert('✅ Vérification réussie ! Vous êtes maintenant connecté.');
-                    });
-                }, 1500);
-            } else {
-                messageDiv.textContent = '❌ Code invalide. Veuillez vérifier et réessayer.';
-            }
-        }
-
-        function resendVerificationCode() {
-            const user = auth.currentUser;
-            if (user) {
-                const newCode = generateVerificationCode();
-                verificationCodes[user.email] = newCode;
-                
-                console.log(`Nouveau code pour ${user.email} : ${newCode}`);
-                alert(`Nouveau code : ${newCode}\n\nVérifiez votre console pour le code (simulation).`);
-                
-                document.getElementById('verificationMessage').innerHTML = 
-                    '📧 Nouveau code envoyé ! Vérifiez votre console.';
-            }
-        }
-
-        function login() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const errorDiv = document.getElementById('loginError');
-
-            errorDiv.textContent = '';
-
-            if (!email || !password) {
-                errorDiv.textContent = 'Veuillez remplir tous les champs';
-                return;
-            }
-
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    hideAuthModal();
-                })
-                .catch((error) => {
-                    let errorMessage = 'Erreur : ';
-                    switch (error.code) {
-                        case 'auth/user-not-found':
-                            errorMessage += 'Aucun compte trouvé';
-                            break;
-                        case 'auth/wrong-password':
-                            errorMessage += 'Mot de passe incorrect';
-                            break;
-                        default:
-                            errorMessage += error.message;
-                    }
-                    errorDiv.textContent = errorMessage;
-                });
-        }
-
-        function logout() {
-            auth.signOut()
-                .then(() => {
-                    window.scrollTo(0, 0);
-                })
-                .catch((error) => {
-                    alert('Erreur : ' + error.message);
-                });
-        }
-
-        // ============================================
-        // 8. PRODUITS ET PANIER AVEC BOUTONS + ET -
-        // ============================================
-        
-        function displayProducts() {
-            displayEbooks();
-            displayFormations();
-        }
-
-        function displayEbooks() {
-            const grid = document.getElementById('ebooksGrid');
-            grid.innerHTML = products.ebooks.map((ebook, index) => `
-                <div class="product-card">
-                    <span class="product-badge">EBOOK</span>
-                    <div class="product-image">📖</div>
-                    <div class="product-info">
-                        <h3>${ebook.name}</h3>
-                        <div class="product-price">${ebook.price.toLocaleString()} FCFA</div>
-                        <button class="add-to-cart" onclick="addToCart('ebook_${index}', '${ebook.name}', ${ebook.price})">
-                            Ajouter au panier
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function displayFormations() {
-            const grid = document.getElementById('formationsGrid');
-            grid.innerHTML = products.formations.map((formation, index) => `
-                <div class="product-card">
-                    <span class="product-badge">FORMATION</span>
-                    <div class="product-image">🎓</div>
-                    <div class="product-info">
-                        <h3>${formation.name}</h3>
-                        <div class="product-price">${formation.price.toLocaleString()} FCFA</div>
-                        <button class="add-to-cart" onclick="addToCart('formation_${index}', '${formation.name}', ${formation.price})">
-                            Ajouter au panier
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Ajouter au panier avec gestion des quantités
-        function addToCart(id, name, price) {
-            const existingItem = cart.find(item => item.id === id);
-            
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({ id, name, price, quantity: 1 });
-            }
-            
-            updateCartDisplay();
-            showNotification('Produit ajouté au panier !');
-        }
-
-        // Augmenter la quantité
-        function increaseQuantity(id) {
-            const item = cart.find(item => item.id === id);
-            if (item) {
-                item.quantity += 1;
-                updateCartDisplay();
-            }
-        }
-
-        // Diminuer la quantité
-        function decreaseQuantity(id) {
-            const itemIndex = cart.findIndex(item => item.id === id);
-            
-            if (itemIndex !== -1) {
-                if (cart[itemIndex].quantity > 1) {
-                    cart[itemIndex].quantity -= 1;
-                } else {
-                    cart.splice(itemIndex, 1);
-                }
-                updateCartDisplay();
-            }
-        }
-
-        // Supprimer complètement un article
-        function removeFromCart(id) {
-            cart = cart.filter(item => item.id !== id);
-            updateCartDisplay();
-        }
-
-        function updateCartDisplay() {
-            // Mettre à jour le compteur
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            document.getElementById('cartCount').textContent = totalItems;
-
-            // Afficher les articles
-            const cartItems = document.getElementById('cartItems');
-            if (cart.length === 0) {
-                cartItems.innerHTML = '<p style="text-align: center; color: #666;">Votre panier est vide</p>';
-            } else {
-                cartItems.innerHTML = cart.map(item => `
-                    <div class="cart-item" style="flex-direction: column; align-items: flex-start; gap: 0.5rem; padding: 1rem;">
-                        <div style="display: flex; justify-content: space-between; width: 100%;">
-                            <div>
-                                <h4 style="margin-bottom: 0.3rem;">${item.name}</h4>
-                                <div style="color: #667eea; font-weight: 600;">${item.price.toLocaleString()} FCFA</div>
-                            </div>
-                            <button onclick="removeFromCart('${item.id}')" style="background: none; border: none; color: #ff4757; font-size: 1.2rem; cursor: pointer;">🗑️</button>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem; width: 100%;">
-                            <button onclick="decreaseQuantity('${item.id}')" style="background: #f0f0f0; border: none; width: 35px; height: 35px; border-radius: 5px; cursor: pointer; font-weight: bold;">−</button>
-                            <span style="min-width: 30px; text-align: center; font-weight: bold;">${item.quantity}</span>
-                            <button onclick="increaseQuantity('${item.id}')" style="background: #f0f0f0; border: none; width: 35px; height: 35px; border-radius: 5px; cursor: pointer; font-weight: bold;">+</button>
-                            <span style="margin-left: auto; font-weight: bold; color: #667eea;">
-                                Sous-total: ${(item.price * item.quantity).toLocaleString()} FCFA
-                            </span>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            // Calculer le total
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            document.getElementById('cartTotal').textContent = `${total.toLocaleString()} FCFA`;
-        }
-
-        function showNotification(message) {
-            const notification = document.createElement('div');
-            notification.textContent = message;
-            notification.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background: linear-gradient(135deg, #667eea, #764ba2);
-                color: white;
-                padding: 1rem 2rem;
-                border-radius: 8px;
-                animation: slideIn 0.3s ease-out;
-                z-index: 1000;
-            `;
-            document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 3000);
-        }
-
-        function toggleCart() {
-            const modal = document.getElementById('cartModal');
-            modal.classList.toggle('active');
-        }
-
-        function openWhatsApp() {
-            window.open('https://wa.me/2290199878742?text=Bonjour%20F2K%20MARKET%20!', '_blank');
-        }
-
-        function checkout() {
-            const user = auth.currentUser;
-            
-            if (!user) {
-                alert('Veuillez vous connecter pour commander !');
-                showAuthModal();
-                return;
-            }
-
-            if (cart.length === 0) {
-                alert('Votre panier est vide !');
-                return;
-            }
-
-            // Préparer le message
-            const messageItems = cart.map(item => 
-                `- ${item.name} x${item.quantity} : ${(item.price * item.quantity).toLocaleString()} FCFA`
-            ).join('%0A');
-            
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const nomComplet = user.displayName || 'Non renseigné';
-
-            const whatsappUrl = `https://wa.me/2290199878742?text=*Commande%20F2K%20MARKET*%0A%0A${messageItems}%0A%0A*Total%20:%20${total.toLocaleString()}%20FCFA*%0A%0A*Client*%0ANom%20:%20${nomComplet}%0AEmail%20:%20${user.email}%0A%0AMerci%20de%20confirmer%20ma%20commande.`;
-            
-            window.open(whatsappUrl, '_blank');
-            
-            // VIDER LE PANIER APRÈS COMMANDE
-            cart = [];
-            updateCartDisplay();
-            toggleCart();
-            
-            showNotification('✅ Commande envoyée ! Panier vidé.');
-        }
-
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', displayProducts);
-    </script>
-</body>
-</html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F2K MARKET – Ebooks, Formations & Produits | F2K MULTISERVICE</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<meta name="theme-color" content="#C9922A">
+<link rel="manifest" href="manifest.json">
+<style>
+:root{
+  --g:#C9922A;--gl:#E8B84B;--gs:rgba(201,146,42,.12);
+  --dk:#080808;--dk2:#101010;--dk3:#181818;--dk4:#222;--dk5:#2E2E2E;--dk6:#3A3A3A;
+  --tx:#EDE9E3;--t2:#B8B0A4;--t3:#7A7268;--t4:#4A4640;
+  --ok:#27AE60;--err:#C0392B;--info:#2980B9;--warn:#E67E22;
+  --r:8px;--r2:14px;--r3:20px;
+  --sh:0 4px 24px rgba(0,0,0,.6);--shg:0 0 0 2px rgba(201,146,42,.4);
+}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{font-family:'Sora',sans-serif;background:var(--dk);color:var(--tx);min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--dk2);}::-webkit-scrollbar-thumb{background:var(--g);border-radius:2px;}
+input,select,textarea,button{font-family:'Sora',sans-serif;}img{max-width:100%;}
+.hidden{display:none!important;}
+#loading{position:fixed;inset:0;background:var(--dk);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;}
+.spin{width:38px;height:38px;border:3px solid var(--dk4);border-top-color:var(--g);border-radius:50%;animation:sp .8s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.load-logo{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--g);}
+.load-logo span{color:var(--tx);}
+.load-msg{font-size:.78rem;color:var(--t3);}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:9px 18px;border-radius:25px;font-size:.8rem;font-weight:600;cursor:pointer;border:none;transition:all .2s;white-space:nowrap;}
+.btn-gold{background:var(--g);color:var(--dk);}.btn-gold:hover{background:var(--gl);transform:translateY(-1px);}
+.btn-out{background:transparent;border:1.5px solid var(--g);color:var(--g);}.btn-out:hover{background:var(--g);color:var(--dk);}
+.btn-ghost{background:var(--dk3);border:1px solid var(--dk5);color:var(--t2);}.btn-ghost:hover{color:var(--tx);}
+.btn-ok{background:rgba(39,174,96,.15);border:1px solid rgba(39,174,96,.3);color:var(--ok);}.btn-ok:hover{background:var(--ok);color:#fff;}
+.btn-err{background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.3);color:var(--err);}.btn-err:hover{background:var(--err);color:#fff;}
+.btn-warn{background:rgba(230,126,34,.15);border:1px solid rgba(230,126,34,.3);color:var(--warn);}.btn-warn:hover{background:var(--warn);color:#fff;}
+.btn-info{background:rgba(41,128,185,.15);border:1px solid rgba(41,128,185,.3);color:var(--info);}.btn-info:hover{background:var(--info);color:#fff;}
+.btn-sm{padding:5px 11px;font-size:.71rem;}.btn-lg{padding:13px 28px;font-size:.95rem;border-radius:35px;}
+.btn-block{width:100%;justify-content:center;border-radius:var(--r);}
+.btn-wa{background:#25D366;color:#fff;border:none;}.btn-wa:hover{background:#1da851;}
+.btn-dl{background:linear-gradient(135deg,#2980B9,#1a5276);color:#fff;border:none;}
+.btn-gem{background:linear-gradient(135deg,#4285F4,#34A853);color:#fff;border:none;}
+.btn-purple{background:rgba(142,68,173,.2);border:1px solid rgba(142,68,173,.4);color:#af7ac5;}.btn-purple:hover{background:#8e44ad;color:#fff;}
+.btn-fb{background:#1877F2;color:#fff;border:none;}.btn-fb:hover{background:#1565c0;}
+.btn-tw{background:#1DA1F2;color:#fff;border:none;}.btn-tw:hover{background:#0d8ecf;}
+.lang-btn{background:var(--dk3);border:1px solid var(--dk5);color:var(--t2);padding:4px 10px;border-radius:20px;font-size:.72rem;cursor:pointer;font-weight:600;transition:all .2s;}
+.lang-btn:hover,.lang-btn.on{background:var(--g);color:var(--dk);border-color:var(--g);}
+.fg{margin-bottom:.9rem;}
+.fl{display:block;font-size:.74rem;font-weight:600;margin-bottom:.28rem;color:var(--t2);}
+.fl em{color:var(--err);font-style:normal;}
+.fi,.fsel,.fta{width:100%;padding:10px 13px;border-radius:var(--r);background:var(--dk3);border:1px solid var(--dk5);color:var(--tx);font-size:.84rem;outline:none;transition:all .2s;}
+.fi:focus,.fsel:focus,.fta:focus{border-color:var(--g);box-shadow:var(--shg);}
+.fta{resize:vertical;min-height:80px;line-height:1.5;}
+.fsel option{background:var(--dk3);}
+.pw-wrap{position:relative;}
+.pw-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--t3);}
+.str-bar{height:3px;border-radius:2px;margin-top:3px;transition:all .3s;width:0;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
+.al{padding:10px 13px;border-radius:var(--r);margin-bottom:.85rem;font-size:.78rem;line-height:1.6;}
+.al-s{background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.3);color:var(--ok);}
+.al-e{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.3);color:var(--err);}
+.al-i{background:rgba(41,128,185,.1);border:1px solid rgba(41,128,185,.3);color:var(--info);}
+.al-w{background:rgba(230,126,34,.1);border:1px solid rgba(230,126,34,.3);color:var(--warn);}
+.al-g{background:var(--gs);border:1px solid rgba(201,146,42,.3);color:var(--g);}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.64rem;font-weight:700;text-transform:uppercase;}
+.b-ebook{background:#1a4a7a;color:#5dade2;}.b-formation{background:#3d1a6e;color:#af7ac5;}.b-physique{background:#5d2a00;color:#eb984e;}
+.b-pending{background:rgba(241,196,15,.15);color:#f1c40f;}.b-approved{background:rgba(39,174,96,.15);color:var(--ok);}
+.b-rejected{background:rgba(192,57,43,.15);color:var(--err);}.b-hidden{background:rgba(127,140,141,.15);color:#95a5a6;}
+.b-banned{background:rgba(155,89,182,.15);color:#a569bd;}.b-paid{background:rgba(39,174,96,.15);color:var(--ok);}
+.hr{height:1px;background:linear-gradient(90deg,transparent,var(--dk5),transparent);margin:1.5rem 0;}
+.ava{border-radius:50%;object-fit:cover;border:2px solid var(--dk5);}
+.ava-up{width:80px;height:80px;border-radius:50%;background:var(--dk3);border:2px dashed var(--dk5);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:border-color .2s;font-size:.68rem;color:var(--t3);gap:3px;}
+.ava-up:hover{border-color:var(--g);}
+#nav{position:fixed;top:0;width:100%;z-index:800;background:rgba(8,8,8,.97);backdrop-filter:blur(24px);border-bottom:1px solid rgba(201,146,42,.12);height:64px;padding:0 4%;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.logo{font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:900;color:var(--g);letter-spacing:2px;cursor:pointer;flex-shrink:0;}
+.logo span{color:var(--tx);}
+.nl{display:flex;gap:1.4rem;}
+.nl a{color:var(--t2);font-size:.82rem;font-weight:500;cursor:pointer;transition:color .2s;}
+.nl a:hover{color:var(--g);}
+.nr{display:flex;gap:.5rem;align-items:center;flex-shrink:0;}
+.cart-btn{background:var(--dk3);border:1px solid var(--dk5);color:var(--tx);padding:7px 12px;border-radius:25px;cursor:pointer;font-size:.78rem;display:flex;align-items:center;gap:5px;transition:all .2s;}
+.cart-btn:hover{border-color:var(--g);}
+.cart-n{background:var(--g);color:var(--dk);border-radius:50%;width:16px;height:16px;font-size:.62rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.nav-ava{width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid var(--g);cursor:pointer;}
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:90px 5% 60px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% -10%,rgba(201,146,42,.18) 0%,transparent 60%),var(--dk);}
+.hpat{position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(201,146,42,.018) 0,rgba(201,146,42,.018) 1px,transparent 1px,transparent 90px),repeating-linear-gradient(0deg,rgba(201,146,42,.018) 0,rgba(201,146,42,.018) 1px,transparent 1px,transparent 90px);pointer-events:none;}
+.hero-in{position:relative;z-index:1;}
+.htag{display:inline-flex;align-items:center;background:var(--gs);border:1px solid rgba(201,146,42,.3);color:var(--g);padding:5px 16px;border-radius:25px;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:1.1rem;}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2.8rem,9vw,6rem);font-weight:900;line-height:.95;margin-bottom:1rem;background:linear-gradient(160deg,var(--tx) 0%,var(--gl) 40%,var(--g) 60%,var(--tx) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:.9rem;color:var(--t2);max-width:440px;margin:0 auto 2rem;line-height:1.75;}
+.hcta{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;}
+.hstats{display:flex;gap:2.5rem;justify-content:center;margin-top:3.5rem;flex-wrap:wrap;}
+.hsn{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:700;color:var(--g);}
+.hsl{font-size:.68rem;color:var(--t3);text-transform:uppercase;letter-spacing:1px;}
+.cat-sec{padding:55px 5%;background:var(--dk2);}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:.85rem;margin-top:1.6rem;}
+.ccard{background:var(--dk3);border:1px solid var(--dk4);border-radius:var(--r2);padding:1.2rem;text-align:center;cursor:pointer;transition:all .3s;}
+.ccard:hover{border-color:rgba(201,146,42,.4);transform:translateY(-3px);background:var(--gs);}
+.cicon{font-size:2.2rem;margin-bottom:.5rem;}
+.cname{font-weight:700;font-size:.85rem;margin-bottom:.2rem;}
+.cdesc{font-size:.7rem;color:var(--t3);}
+.sec{padding:64px 5%;}.sec.alt{background:var(--dk2);}
+.sec-hd{text-align:center;margin-bottom:2rem;}
+.sec-tag{color:var(--g);font-size:.68rem;text-transform:uppercase;letter-spacing:3px;font-weight:600;margin-bottom:.3rem;}
+.sec-title{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3.5vw,2.3rem);font-weight:900;}
+.sec-sub{color:var(--t2);margin-top:.3rem;font-size:.82rem;}
+.fbar{display:flex;gap:.4rem;margin-bottom:1.2rem;flex-wrap:wrap;align-items:center;}
+.ftab{padding:5px 14px;border-radius:25px;font-size:.74rem;font-weight:500;cursor:pointer;border:1px solid var(--dk5);background:transparent;color:var(--t3);transition:all .2s;}
+.ftab.on{background:var(--g);color:var(--dk);border-color:var(--g);font-weight:700;}
+.sbox{margin-left:auto;position:relative;}
+.sbox input{background:var(--dk3);border:1px solid var(--dk5);color:var(--tx);padding:6px 12px 6px 28px;border-radius:25px;font-size:.76rem;outline:none;width:180px;}
+.sbox input:focus{border-color:var(--g);}
+.sbox::before{content:'🔍';position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:.68rem;}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.1rem;}
+.pc{background:var(--dk2);border:1px solid var(--dk4);border-radius:var(--r2);overflow:hidden;transition:all .28s;cursor:pointer;position:relative;}
+.pc:hover{transform:translateY(-4px);border-color:rgba(201,146,42,.3);box-shadow:0 14px 36px rgba(0,0,0,.45);}
+.pc-img{width:100%;height:180px;background:linear-gradient(135deg,var(--dk3),var(--dk4));display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;overflow:hidden;}
+.pc-img img{width:100%;height:100%;object-fit:cover;}
+.pc-badge{position:absolute;top:8px;left:8px;}
+.pc-body{padding:1rem;}
+.pc-cat{font-size:.62rem;color:var(--g);text-transform:uppercase;letter-spacing:2px;margin-bottom:.25rem;}
+.pc-title{font-weight:600;font-size:.88rem;margin-bottom:.25rem;line-height:1.4;}
+.pc-desc{font-size:.74rem;color:var(--t2);line-height:1.5;margin-bottom:.75rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.pc-foot{display:flex;align-items:center;justify-content:space-between;}
+.pc-price{font-weight:700;font-size:.95rem;color:var(--g);}
+.pc-seller{font-size:.64rem;color:var(--t4);margin-bottom:.4rem;display:flex;align-items:center;gap:4px;}
+.empty-s{text-align:center;padding:3.5rem;color:var(--t3);}
+.ei{font-size:3rem;margin-bottom:.8rem;opacity:.3;}
+.wish-btn{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);border:none;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;transition:all .2s;z-index:2;}
+.wish-btn:hover{background:rgba(201,146,42,.7);}.wish-btn.on{background:rgba(192,57,43,.8);}
+.shop-hero{background:linear-gradient(135deg,var(--dk2),var(--dk3));border:1px solid var(--dk4);border-radius:var(--r3);padding:2rem;margin-bottom:2rem;display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;}
+.shop-logo{width:90px;height:90px;border-radius:var(--r2);object-fit:cover;border:2px solid var(--g);background:var(--dk4);display:flex;align-items:center;justify-content:center;font-size:2.5rem;flex-shrink:0;overflow:hidden;}
+.shop-name{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;color:var(--tx);}
+.shop-bio{color:var(--t2);font-size:.82rem;margin-top:.3rem;line-height:1.6;}
+.ov{display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:1rem;}
+.ov.on{display:flex;}
+.modal{background:var(--dk2);border:1px solid var(--dk4);border-radius:var(--r3);width:100%;max-width:480px;max-height:92vh;overflow-y:auto;padding:1.7rem;box-shadow:var(--sh);}
+.mxl{max-width:640px;}.msm{max-width:400px;}.mmd{max-width:520px;}
+.mhd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.3rem;gap:1rem;}
+.mtitle{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;line-height:1.3;}
+.mcl{background:none;border:none;color:var(--t3);font-size:1.2rem;cursor:pointer;padding:3px 6px;border-radius:5px;flex-shrink:0;transition:all .2s;}
+.mcl:hover{background:var(--dk4);color:var(--tx);}
+.msw{text-align:center;margin-top:.85rem;font-size:.77rem;color:var(--t3);}
+.msw a{color:var(--g);cursor:pointer;font-weight:500;}
+.step-back{display:flex;align-items:center;gap:.4rem;margin-bottom:.9rem;cursor:pointer;color:var(--t3);font-size:.78rem;}
+.step-back:hover{color:var(--g);}
+.rg3{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1rem;}
+.rtc{background:var(--dk3);border:2px solid var(--dk5);border-radius:var(--r2);padding:.9rem;text-align:center;cursor:pointer;transition:all .2s;}
+.rtc:hover{border-color:rgba(201,146,42,.4);}
+.rtc.sel{border-color:var(--g);background:var(--gs);}
+.rti{font-size:1.8rem;margin-bottom:.3rem;}
+.rtn{font-weight:700;font-size:.8rem;margin-bottom:.18rem;}
+.rtd{font-size:.66rem;color:var(--t3);line-height:1.4;}
+.upz{border:2px dashed var(--dk5);border-radius:var(--r);padding:1rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--dk3);}
+.upz:hover{border-color:var(--g);}.upz.done{border-color:var(--ok);border-style:solid;}
+.upr{width:100%;height:110px;object-fit:cover;border-radius:6px;margin-top:6px;}
+.upz-prog{height:4px;border-radius:2px;background:var(--dk5);margin-top:8px;overflow:hidden;}
+.upz-prog-bar{height:100%;background:var(--g);width:0%;transition:width .3s;}
+.cart-panel{display:none;position:fixed;right:0;top:0;height:100vh;width:340px;z-index:850;background:var(--dk2);border-left:1px solid var(--dk4);flex-direction:column;padding:1.2rem;box-shadow:-10px 0 40px rgba(0,0,0,.6);}
+.cart-panel.on{display:flex;}
+.cp-hd{flex-shrink:0;padding-bottom:.85rem;border-bottom:1px solid var(--dk4);margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;}
+.cp-items{flex:1;overflow-y:auto;}
+.ci{display:flex;gap:.75rem;padding:.75rem 0;border-bottom:1px solid var(--dk4);}
+.ci-img{width:50px;height:50px;border-radius:7px;background:var(--dk3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;overflow:hidden;}
+.ci-img img{width:100%;height:100%;object-fit:cover;}
+.ci-nm{font-size:.8rem;font-weight:500;margin-bottom:2px;}
+.ci-pr{color:var(--g);font-weight:600;font-size:.78rem;}
+.ci-rm{background:none;border:none;color:var(--t3);cursor:pointer;font-size:.9rem;margin-left:auto;}
+.ci-rm:hover{color:var(--err);}
+.cp-ft{flex-shrink:0;padding-top:.85rem;border-top:1px solid var(--dk4);}
+.cp-tot{display:flex;justify-content:space-between;font-size:.9rem;font-weight:700;margin-bottom:.85rem;}
+.cp-tot span:last-child{color:var(--g);}
+.pay-steps{display:flex;margin-bottom:1.2rem;}
+.ps{flex:1;text-align:center;font-size:.7rem;padding:.4rem;border-bottom:2px solid var(--dk5);color:var(--t3);}
+.ps.act{border-bottom-color:var(--g);color:var(--g);font-weight:600;}
+.ps.done{border-bottom-color:var(--ok);color:var(--ok);}
+.fedapay-btn{background:linear-gradient(135deg,#0066CC,#004999);color:#fff;border:none;width:100%;padding:13px;border-radius:var(--r);font-size:.92rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.6rem;transition:all .2s;}
+.fedapay-btn:hover{opacity:.9;}
+.pay-secure{text-align:center;font-size:.68rem;color:var(--t3);margin-top:.5rem;}
+.suc-icon{font-size:4rem;margin-bottom:.8rem;}
+.suc-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--ok);margin-bottom:.5rem;}
+.dl-card{background:var(--dk3);border:1px solid rgba(41,128,185,.3);border-radius:var(--r2);padding:1rem;margin:.6rem 0;display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;}
+.dl-th{width:46px;height:46px;border-radius:7px;background:var(--dk4);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;overflow:hidden;}
+.dl-th img{width:100%;height:100%;object-fit:cover;}
+#f2k-chat{position:fixed;bottom:85px;right:22px;z-index:810;width:340px;background:var(--dk2);border:1px solid rgba(66,133,244,.35);border-radius:var(--r3);box-shadow:0 20px 60px rgba(0,0,0,.7);display:none;flex-direction:column;max-height:480px;}
+#f2k-chat.on{display:flex;}
+.chat-hd{background:linear-gradient(135deg,#1a3a6e,#0d2247);border-radius:var(--r3) var(--r3) 0 0;padding:.85rem 1rem;display:flex;align-items:center;gap:.7rem;flex-shrink:0;}
+.chat-ava{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#4285F4,#34A853);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.chat-name{font-weight:700;font-size:.85rem;}
+.chat-status{font-size:.64rem;color:#7fb3f5;}
+.chat-msgs{flex:1;overflow-y:auto;padding:.8rem;display:flex;flex-direction:column;gap:.6rem;}
+.msg{max-width:85%;padding:.65rem .85rem;border-radius:var(--r2);font-size:.78rem;line-height:1.55;}
+.msg-ai{background:linear-gradient(135deg,rgba(66,133,244,.15),rgba(52,168,83,.1));border:1px solid rgba(66,133,244,.2);border-radius:0 var(--r2) var(--r2) var(--r2);align-self:flex-start;color:var(--tx);}
+.msg-user{background:var(--gs);border:1px solid rgba(201,146,42,.25);border-radius:var(--r2) 0 var(--r2) var(--r2);align-self:flex-end;color:var(--tx);}
+.msg-typing{display:flex;gap:4px;align-items:center;padding:.5rem .8rem;}
+.dot{width:6px;height:6px;border-radius:50%;background:#4285F4;animation:blink 1.2s infinite;}
+.dot:nth-child(2){animation-delay:.2s;}.dot:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+.chat-inp{display:flex;gap:.4rem;padding:.7rem;border-top:1px solid var(--dk4);flex-shrink:0;}
+.chat-inp input{flex:1;background:var(--dk3);border:1px solid var(--dk5);color:var(--tx);padding:8px 11px;border-radius:25px;font-size:.76rem;outline:none;}
+.chat-inp input:focus{border-color:#4285F4;}
+.chat-send{background:linear-gradient(135deg,#4285F4,#34A853);color:#fff;border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.msg-thread{background:var(--dk3);border:1px solid var(--d
