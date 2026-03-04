@@ -1065,10 +1065,16 @@ window.goDash=()=>{
 
 /* ── PRODUCTS ── */
 async function loadProducts(){
-  document.getElementById('load-msg').textContent='Chargement des produits...';
-  const snap=await getDocs(query(collection(db,'products'),where('status','==','approved')));
-  allProducts=snap.docs.map(d=>({id:d.id,...d.data()}));
-  renderAll();updStats();
+  try{
+    document.getElementById('load-msg').textContent='Chargement des produits...';
+    const snap=await getDocs(collection(db,'products'));
+    allProducts=snap.docs.map(d=>({id:d.id,...d.data()})).filter(p=>p.status==='approved');
+    renderAll();updStats();
+  }catch(e){
+    console.warn('loadProducts error:',e);
+    allProducts=[];
+    renderAll();updStats();
+  }
 }
 
 function renderAll(){
