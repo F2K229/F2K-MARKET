@@ -943,15 +943,15 @@ canvas{max-height:240px;}
 </footer>
 
 <script type="module">
-import { initializeApp }                         from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp }                         from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword,
          signInWithEmailAndPassword, signOut,
-         onAuthStateChanged }                    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+         onAuthStateChanged }                    from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc,
          updateDoc, deleteDoc, collection,
          query, where, getDocs, orderBy,
          addDoc, serverTimestamp, onSnapshot,
-         arrayUnion, increment }                from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+         arrayUnion, increment }                from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 /* ── CONFIG ── */
 const firebaseConfig = {
@@ -1013,17 +1013,23 @@ async function cldDelete(publicId){
 }
 
 /* ── BOOT ── */
+// Timeout securite : afficher le site apres 8s meme si Firebase ne repond pas
+const _safetyTimer = setTimeout(()=>{ try{hideLoading();}catch(e){} }, 8000);
+
 onAuthStateChanged(auth, async user=>{
+  clearTimeout(_safetyTimer);
   if(user){
     CU=user;
-    const snap=await getDoc(doc(db,'users',user.uid));
-    if(snap.exists()){CUdata=snap.data();applySession();}
+    try{
+      const snap=await getDoc(doc(db,'users',user.uid));
+      if(snap.exists()){CUdata=snap.data();applySession();}
+    }catch(e){console.warn('Firestore:',e);}
   } else {
     CU=null;CUdata=null;
     document.getElementById('auth-btns').style.display='flex';
     document.getElementById('user-btns').style.display='none';
   }
-  await loadProducts();
+  try{ await loadProducts(); }catch(e){ console.warn('Products:',e); }
   hideLoading();
 });
 
