@@ -2148,10 +2148,11 @@ window.installPWA = async () => {
   deferredPrompt = null;
   toast(outcome === 'accepted' ? '✅ App installée !' : 'Installation annulée');
 };
-// Register service worker
+// Service Worker désactivé temporairement
 if('serviceWorker' in navigator){
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  // Désinscrire tous les anciens SW pour forcer rechargement frais
+  navigator.serviceWorker.getRegistrations().then(regs=>{
+    regs.forEach(r=>r.unregister());
   });
 }
 
