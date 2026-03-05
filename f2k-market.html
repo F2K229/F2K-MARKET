@@ -1,0 +1,2241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>F2K MARKET – Marketplace Mondiale</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
+<style>
+:root{--primary:#FF6B00;--primary-dark:#e05a00;--dark:#0D0D1A;--dark2:#161628;--dark3:#1e1e35;--text:#e8e8f0;--muted:#8888aa;--success:#22c55e;--danger:#ef4444;--warning:#f59e0b;--info:#3b82f6;--card:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--r:12px;--rl:20px;--sh:0 8px 32px rgba(0,0,0,.4);--tr:.25s ease}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;overflow-x:hidden}
+a{text-decoration:none;color:inherit}img{max-width:100%;display:block}ul{list-style:none}
+.hidden{display:none!important}.container{max-width:1200px;margin:0 auto;padding:0 20px}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:var(--primary);border-radius:3px}
+
+/* ── NAVBAR ── */
+.navbar{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;gap:1rem;padding:.7rem 2rem;background:rgba(13,13,26,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-brand{display:flex;align-items:center;gap:.5rem;flex-shrink:0;cursor:pointer}
+.logo-icon{font-size:1.5rem;filter:drop-shadow(0 0 8px var(--primary))}
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:2px;color:#fff}
+.logo-accent{color:var(--primary)}
+.nav-search{flex:1;display:flex;max-width:420px;background:var(--card);border:1px solid var(--border);border-radius:999px;overflow:hidden}
+.nav-search input{flex:1;padding:.45rem 1rem;background:transparent;border:none;color:var(--text);font-family:'Nunito',sans-serif;font-size:.9rem;outline:none}
+.nav-search input::placeholder{color:var(--muted)}
+.btn-search{padding:.45rem 1rem;background:var(--primary);border:none;cursor:pointer;font-size:1rem;transition:var(--tr)}
+.btn-search:hover{background:var(--primary-dark)}
+.nav-links{display:flex;align-items:center;gap:.8rem;margin-left:auto}
+.nav-link{color:var(--muted);font-weight:700;transition:var(--tr);font-size:.85rem;cursor:pointer;white-space:nowrap}
+.nav-link:hover{color:var(--primary)}
+.btn-nl{padding:.35rem .9rem;border-radius:999px;border:1px solid var(--border);color:var(--text);font-weight:700;font-size:.82rem;transition:var(--tr);cursor:pointer;background:transparent}
+.btn-nl:hover{border-color:var(--primary);color:var(--primary)}
+.btn-nr{padding:.35rem .9rem;border-radius:999px;background:var(--primary);color:#fff;font-weight:700;font-size:.82rem;transition:var(--tr);cursor:pointer;border:none}
+.btn-nr:hover{background:var(--primary-dark)}
+.btn-logout{padding:.35rem .9rem;border-radius:999px;background:transparent;border:1px solid var(--danger);color:var(--danger);cursor:pointer;font-weight:700;font-size:.82rem;transition:var(--tr)}
+.btn-logout:hover{background:var(--danger);color:#fff}
+.cart-badge{background:var(--primary);color:#fff;font-size:.6rem;font-weight:800;padding:1px 5px;border-radius:999px;vertical-align:top}
+.nav-toggle{display:none;background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;margin-left:.5rem}
+
+/* ── PAGES ── */
+.page{display:none;min-height:100vh;padding-top:60px}
+.page.active{display:block}
+
+/* ── BUTTONS ── */
+.btn-primary{display:inline-flex;align-items:center;gap:.4rem;padding:.75rem 1.8rem;border-radius:999px;background:var(--primary);color:#fff;font-weight:800;font-size:.9rem;transition:var(--tr);border:none;cursor:pointer;font-family:'Nunito',sans-serif}
+.btn-primary:hover{background:var(--primary-dark);transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,107,0,.4)}
+.btn-secondary{display:inline-flex;align-items:center;gap:.4rem;padding:.75rem 1.8rem;border-radius:999px;background:transparent;color:#fff;font-weight:800;font-size:.9rem;border:2px solid rgba(255,255,255,.3);transition:var(--tr);cursor:pointer;font-family:'Nunito',sans-serif}
+.btn-secondary:hover{border-color:var(--primary);color:var(--primary);transform:translateY(-2px)}
+.btn-form{width:100%;padding:.85rem;background:var(--primary);color:#fff;border:none;border-radius:var(--r);font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer;transition:var(--tr)}
+.btn-form:hover{background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,107,0,.3)}
+.btn-form:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-sm{padding:.28rem .65rem;border-radius:var(--r);border:none;cursor:pointer;font-size:.78rem;font-weight:700;transition:var(--tr);font-family:'Nunito',sans-serif}
+.btn-approve{background:rgba(34,197,94,.15);color:var(--success);border:1px solid rgba(34,197,94,.3)}.btn-approve:hover{background:var(--success);color:#fff}
+.btn-ban{background:rgba(245,158,11,.15);color:var(--warning);border:1px solid rgba(245,158,11,.3)}.btn-ban:hover{background:var(--warning);color:#fff}
+.btn-delete{background:rgba(239,68,68,.15);color:var(--danger);border:1px solid rgba(239,68,68,.3)}.btn-delete:hover{background:var(--danger);color:#fff}
+.btn-edit{background:rgba(59,130,246,.15);color:var(--info);border:1px solid rgba(59,130,246,.3)}.btn-edit:hover{background:var(--info);color:#fff}
+.btn-wa{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem 1rem;border-radius:var(--r);background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);color:#25d366;font-weight:700;font-size:.85rem;transition:var(--tr);cursor:pointer;font-family:'Nunito',sans-serif}
+.btn-wa:hover{background:rgba(37,211,102,.25)}
+.btn-fedapay{width:100%;padding:.85rem;border-radius:var(--r);background:linear-gradient(135deg,#1a56db,#1e429f);color:#fff;border:none;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer;transition:var(--tr);display:flex;align-items:center;justify-content:center;gap:.6rem}
+.btn-fedapay:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,86,219,.4)}
+.btn-fedapay:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:6rem 2rem 4rem}
+.hero-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at 20% 50%,rgba(255,107,0,.15) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,215,0,.08) 0%,transparent 50%),var(--dark)}
+.hero-bg::after{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,107,0,.1) 1px,transparent 1px);background-size:40px 40px;opacity:.3}
+.hero-content{position:relative;z-index:1;flex:1;max-width:600px}
+.hero-badge{display:inline-block;padding:.4rem 1rem;border-radius:999px;background:rgba(255,107,0,.15);border:1px solid rgba(255,107,0,.3);color:var(--primary);font-size:.82rem;font-weight:700;margin-bottom:1.5rem}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,10vw,8rem);line-height:.9;letter-spacing:4px;color:#fff}
+.hero-title span{color:var(--primary);text-shadow:0 0 40px rgba(255,107,0,.5)}
+.hero-sub{font-size:1rem;color:var(--muted);line-height:1.7;margin:1.5rem 0}
+.hero-cta{display:flex;gap:1rem;flex-wrap:wrap}
+.hero-stats{display:flex;gap:2rem;margin-top:2.5rem;flex-wrap:wrap}
+.hstat span{display:block;font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--primary);line-height:1}
+.hstat small{color:var(--muted);font-size:.82rem}
+.hero-visual{position:relative;flex:1;height:400px;display:none}
+@media(min-width:900px){.hero-visual{display:block}}
+.fc{position:absolute;padding:.6rem 1.2rem;border-radius:var(--r);background:var(--card);border:1px solid var(--border);font-weight:700;font-size:.9rem;animation:float 4s ease-in-out infinite;backdrop-filter:blur(10px)}
+.c1{top:10%;left:20%;animation-delay:0s}.c2{top:30%;right:10%;animation-delay:.5s}.c3{top:55%;left:10%;animation-delay:1s}.c4{top:70%;right:25%;animation-delay:1.5s}.c5{top:5%;right:30%;animation-delay:2s}.c6{top:45%;left:40%;animation-delay:2.5s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideIn{from{transform:translateX(100px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ── SECTIONS ── */
+.section{padding:5rem 0}.bg-alt{background:var(--dark2)}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4vw,3rem);letter-spacing:2px;text-align:center;margin-bottom:3rem;color:#fff}
+.sec-title span{color:var(--primary)}
+
+/* ── CATEGORIES ── */
+.cats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem}
+.cat-card{display:flex;flex-direction:column;align-items:center;padding:1.8rem 1rem;border-radius:var(--rl);background:var(--card);border:1px solid var(--border);text-align:center;transition:var(--tr);cursor:pointer}
+.cat-card:hover{border-color:var(--primary);transform:translateY(-4px);background:rgba(255,107,0,.08)}
+.cat-icon{font-size:2.3rem;margin-bottom:.7rem}
+.cat-card h3{font-size:.95rem;font-weight:800;color:#fff}
+.cat-card p{font-size:.78rem;color:var(--muted);margin-top:.2rem}
+
+/* ── PRODUCTS ── */
+.prods-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}
+.prod-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;transition:var(--tr);cursor:pointer}
+.prod-card:hover{border-color:var(--primary);transform:translateY(-4px);box-shadow:0 12px 32px rgba(255,107,0,.15)}
+.prod-img{position:relative;height:180px;overflow:hidden;background:var(--dark3)}
+.prod-img img{width:100%;height:100%;object-fit:cover}
+.prod-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem}
+.type-badge{position:absolute;top:.5rem;right:.5rem;padding:.2rem .6rem;border-radius:999px;font-size:.68rem;font-weight:800;text-transform:uppercase}
+.type-badge.d{background:rgba(59,130,246,.2);color:var(--info);border:1px solid var(--info)}
+.type-badge.p{background:rgba(34,197,94,.2);color:var(--success);border:1px solid var(--success)}
+.prod-info{padding:1rem}
+.prod-info h3{font-size:.95rem;font-weight:800;color:#fff;margin-bottom:.3rem;line-height:1.3}
+.prod-desc{font-size:.78rem;color:var(--muted);margin-bottom:.7rem;line-height:1.5}
+.prod-foot{display:flex;justify-content:space-between;align-items:center}
+.prod-price{font-weight:900;color:var(--primary);font-size:.95rem}
+.btn-cart{padding:.4rem .75rem;border-radius:var(--r);background:var(--primary);border:none;cursor:pointer;font-size:.9rem;transition:var(--tr)}
+.btn-cart:hover{background:var(--primary-dark);transform:scale(1.1)}
+.no-results,.loading{color:var(--muted);text-align:center;padding:3rem;grid-column:1/-1;font-size:1rem}
+
+/* ── SELL SECTION ── */
+.sell-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.sell-text h2{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:2px;color:#fff;margin-bottom:1rem}
+.sell-text p{color:var(--muted);line-height:1.7;margin-bottom:1.5rem}
+.sell-features li{padding:.4rem 0;color:var(--text);font-weight:600}
+.sell-types{display:flex;flex-direction:column;gap:1.5rem}
+.sell-type{padding:1.5rem;border-radius:var(--rl);background:var(--card);border:1px solid var(--border);transition:var(--tr)}
+.sell-type:hover{border-color:var(--primary)}
+.sell-type-icon{font-size:2rem;margin-bottom:.5rem}
+.sell-type h3{font-size:1rem;font-weight:800;color:#fff;margin-bottom:.3rem}
+.sell-type p{font-size:.85rem;color:var(--muted)}
+
+/* ── FOOTER ── */
+.footer{background:var(--dark);border-top:1px solid var(--border);padding:4rem 0 2rem}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1.5fr;gap:2rem}
+.footer-brand p{color:var(--muted);font-size:.88rem;margin-top:.8rem;line-height:1.6}
+.footer-links{display:flex;flex-direction:column;gap:.4rem}
+.footer-links h4{font-weight:800;color:#fff;margin-bottom:.5rem}
+.footer-links a,.footer-links span{color:var(--muted);font-size:.88rem;transition:var(--tr);cursor:pointer}
+.footer-links a:hover,.footer-links span:hover{color:var(--primary)}
+.footer-contact h4{font-weight:800;color:#fff;margin-bottom:.6rem}
+.footer-contact a{color:var(--muted);font-size:.88rem;transition:var(--tr);display:block;margin-top:.4rem}
+.footer-contact a:hover{color:var(--primary)}
+.copyright{text-align:center;color:var(--muted);font-size:.8rem;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+
+/* ── FORMS ── */
+.form-wrap{max-width:520px;margin:2rem auto;padding:2.5rem;border-radius:var(--rl);background:var(--dark2);border:1px solid var(--border);box-shadow:var(--sh)}
+.form-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;color:#fff;text-align:center;margin-bottom:.4rem}
+.form-title span{color:var(--primary)}
+.form-sub{text-align:center;color:var(--muted);font-size:.88rem;margin-bottom:2rem}
+.fg{margin-bottom:1.1rem}
+.fg label{display:block;font-weight:700;font-size:.82rem;color:var(--muted);margin-bottom:.35rem}
+.fc-inp{width:100%;padding:.7rem 1rem;background:var(--card);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:'Nunito',sans-serif;font-size:.92rem;transition:var(--tr)}
+.fc-inp:focus{outline:none;border-color:var(--primary);background:rgba(255,107,0,.05)}
+.fc-inp::placeholder{color:var(--muted)}
+select.fc-inp{cursor:pointer}
+select.fc-inp option{background:var(--dark2)}
+textarea.fc-inp{resize:vertical;min-height:90px}
+.form-foot{text-align:center;margin-top:1.3rem;color:var(--muted);font-size:.88rem}
+.form-foot a,.form-foot span{color:var(--primary);font-weight:700;cursor:pointer}
+.ferr{padding:.75rem 1rem;border-radius:var(--r);background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#ef4444;font-size:.88rem;margin-bottom:1rem}
+.fsuc{padding:.75rem 1rem;border-radius:var(--r);background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#22c55e;font-size:.88rem;margin-bottom:1rem}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:2rem;right:2rem;z-index:9999;padding:1rem 1.5rem;border-radius:var(--r);background:var(--dark2);border:1px solid var(--primary);color:#fff;font-weight:700;box-shadow:var(--sh);animation:slideIn .3s ease;max-width:340px}
+
+/* ── MOBILE MENU ── */
+.mob-menu{position:fixed;top:60px;left:0;right:0;z-index:999;background:var(--dark2);border-bottom:1px solid var(--border);padding:1rem;display:flex;flex-direction:column;gap:.4rem}
+.mob-menu span{padding:.75rem 1rem;font-weight:700;border-radius:var(--r);transition:var(--tr);cursor:pointer;display:block;font-size:.9rem}
+.mob-menu span:hover{background:var(--card);color:var(--primary)}
+
+/* ── DASHBOARD ── */
+.db-layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 60px)}
+.sidebar{background:var(--dark2);border-right:1px solid var(--border);padding:1.5rem 0;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto}
+.sb-brand{padding:0 1.2rem 1.2rem;border-bottom:1px solid var(--border)}
+.sb-nav{padding:.8rem 0}
+.sb-link{display:flex;align-items:center;gap:.75rem;padding:.75rem 1.2rem;color:var(--muted);font-weight:700;font-size:.88rem;transition:var(--tr);cursor:pointer}
+.sb-link:hover,.sb-link.active{color:var(--primary);background:rgba(255,107,0,.08);border-right:3px solid var(--primary)}
+.sb-link .ico{font-size:1rem}
+.mc{padding:1.5rem}
+.ph{margin-bottom:1.5rem}
+.ph h1{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:2px;color:#fff}
+.ph p{color:var(--muted);margin-top:.2rem}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:1rem;margin-bottom:1.5rem}
+.stat-card{padding:1.3rem;border-radius:var(--rl);background:var(--card);border:1px solid var(--border)}
+.stat-card .s-ico{font-size:1.8rem;margin-bottom:.4rem}
+.stat-card .s-val{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--primary)}
+.stat-card .s-lbl{color:var(--muted);font-size:.8rem;font-weight:700}
+
+/* ── TABLE ── */
+.dtable{width:100%;border-collapse:collapse}
+.dtable th{text-align:left;padding:.7rem 1rem;background:var(--dark3);color:var(--muted);font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.dtable td{padding:.7rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle;font-size:.87rem}
+.dtable tr:hover td{background:rgba(255,255,255,.02)}
+.tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border)}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:.18rem .55rem;border-radius:999px;font-size:.72rem;font-weight:800;text-transform:uppercase}
+.bs{background:rgba(34,197,94,.15);color:var(--success);border:1px solid rgba(34,197,94,.3)}
+.bd{background:rgba(239,68,68,.15);color:var(--danger);border:1px solid rgba(239,68,68,.3)}
+.bw{background:rgba(245,158,11,.15);color:var(--warning);border:1px solid rgba(245,158,11,.3)}
+.bi{background:rgba(59,130,246,.15);color:var(--info);border:1px solid rgba(59,130,246,.3)}
+
+/* ── CARD ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);padding:1.3rem;margin-bottom:1.3rem}
+.card-title{font-weight:800;color:#fff;margin-bottom:.9rem;font-size:.95rem}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.82);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:1rem}
+.modal{background:var(--dark2);border:1px solid var(--border);border-radius:var(--rl);padding:2rem;max-width:560px;width:100%;max-height:92vh;overflow-y:auto}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:2px;color:#fff;margin-bottom:1.3rem}
+
+/* ── FILTERS ── */
+.filters-bar{display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:1.5rem;padding:1rem;background:var(--card);border-radius:var(--rl);border:1px solid var(--border)}
+.fg2{display:flex;flex-direction:column;gap:.3rem}
+.fg2 label{font-size:.72rem;font-weight:800;color:var(--muted);text-transform:uppercase}
+.fsel{padding:.38rem .75rem;border-radius:var(--r);background:var(--dark);border:1px solid var(--border);color:var(--text);font-family:'Nunito',sans-serif;font-size:.82rem;cursor:pointer}
+.fsel option{background:var(--dark2)}
+
+/* ── CART SPECIFICS ── */
+.fee-row{display:flex;justify-content:space-between;padding:.28rem 0;font-size:.86rem}
+.fee-row.total-row{font-size:1.05rem;font-weight:900;color:var(--primary);border-top:1px solid var(--border);padding-top:.7rem;margin-top:.3rem}
+.fee-row .fl{color:var(--muted)}
+.fee-row.comm .fl,.fee-row.comm span:last-child{color:var(--warning);font-weight:700}
+.pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.3rem}
+.pay-opt{padding:.9rem;border-radius:var(--r);border:2px solid var(--border);cursor:pointer;text-align:center;transition:var(--tr);background:var(--card)}
+.pay-opt:hover,.pay-opt.sel{border-color:var(--primary);background:rgba(255,107,0,.08)}
+.pay-opt .po-ico{font-size:1.8rem;margin-bottom:.3rem}
+.pay-opt .po-name{font-weight:800;font-size:.88rem;color:#fff}
+.pay-opt .po-desc{font-size:.7rem;color:var(--muted);margin-top:.15rem}
+.fpbadge{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.5rem;border-radius:var(--r);background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);font-size:.73rem;color:var(--info);margin-top:.7rem;font-weight:600}
+
+/* ── WALLET ── */
+.wlt-hero{background:linear-gradient(135deg,rgba(255,107,0,.15),rgba(255,215,0,.08));border:1px solid rgba(255,107,0,.25);border-radius:20px;padding:2rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.wlt-hero::before{content:'💰';font-size:8rem;position:absolute;right:-1rem;top:-1rem;opacity:.07;line-height:1}
+.wlt-bal{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,6vw,4rem);color:var(--primary);letter-spacing:2px;line-height:1}
+.wlt-lbl{color:var(--muted);font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:.3rem}
+.wlt-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.3rem}
+.wlt-stat{text-align:center}
+.wlt-stat .v{font-weight:900;font-size:1.1rem;color:#fff}
+.wlt-stat .l{font-size:.72rem;color:var(--muted);margin-top:.2rem}
+.tx-item{display:flex;align-items:center;gap:1rem;padding:.85rem 1rem;border-bottom:1px solid var(--border)}
+.tx-item:last-child{border-bottom:none}
+.tx-ico{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.tx-ico.cr{background:rgba(34,197,94,.15)}.tx-ico.db{background:rgba(239,68,68,.15)}
+.tx-amt{font-weight:900;font-size:.95rem}
+.tx-amt.cr{color:var(--success)}.tx-amt.db{color:var(--danger)}
+.momo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1.1rem}
+.momo-btn{padding:.75rem .4rem;border-radius:var(--r);border:2px solid var(--border);background:var(--card);cursor:pointer;text-align:center;transition:var(--tr)}
+.momo-btn:hover,.momo-btn.sel{border-color:var(--primary);background:rgba(255,107,0,.08)}
+.momo-btn .ml{font-size:1.4rem;margin-bottom:.25rem}
+.momo-btn .mn{font-size:.75rem;font-weight:800;color:#fff}
+.wd-item{display:flex;justify-content:space-between;align-items:center;padding:.85rem 1rem;border-bottom:1px solid var(--border);gap:1rem}
+.wd-item:last-child{border-bottom:none}
+
+/* ── UPLOAD ── */
+.upload-lbl{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.65rem 1rem;border-radius:var(--r);cursor:pointer;background:rgba(255,107,0,.08);border:1px dashed var(--primary);color:var(--primary);font-weight:700;font-size:.87rem;transition:.25s;margin-top:.4rem}
+.upload-lbl:hover{background:rgba(255,107,0,.18)}
+
+/* ── ROLE CARDS ── */
+.role-cards{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.3rem}
+.role-card{padding:1rem;border-radius:var(--r);border:2px solid var(--border);text-align:center;cursor:pointer;transition:.25s;background:var(--card)}
+.role-card:hover,.role-card.sel{border-color:var(--primary);background:rgba(255,107,0,.08)}
+
+/* ── PROFILE AVATAR ── */
+.avatar{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--primary)}
+.avatar-ph{width:80px;height:80px;border-radius:50%;background:rgba(255,107,0,.15);border:3px solid var(--primary);display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0}
+
+/* ── CHAT ── */
+.chat-list-item{display:flex;align-items:center;gap:.8rem;padding:.85rem 1rem;border-bottom:1px solid var(--border);cursor:pointer;transition:.2s}
+.chat-list-item:hover,.chat-list-item.active{background:rgba(255,107,0,.07)}
+.chat-bubble{max-width:72%;padding:.65rem .9rem;border-radius:var(--rl);font-size:.9rem;line-height:1.5;margin-bottom:.5rem;word-break:break-word}
+.chat-bubble.mine{background:var(--primary);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.chat-bubble.theirs{background:var(--dark3);color:var(--text);border-bottom-left-radius:4px}
+.chat-meta{font-size:.7rem;color:var(--muted);margin-top:.15rem}
+.chat-time-mine{text-align:right}.chat-time-theirs{text-align:left}
+.unread-dot{width:9px;height:9px;border-radius:50%;background:var(--primary);flex-shrink:0}
+
+/* ── DELIVERY FORM ── */
+.delivery-options{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1rem}
+.del-opt{padding:.8rem;border-radius:var(--r);border:2px solid var(--border);cursor:pointer;text-align:center;transition:var(--tr);background:var(--card);font-size:.82rem;font-weight:700}
+.del-opt:hover,.del-opt.sel{border-color:var(--primary);background:rgba(255,107,0,.08);color:var(--primary)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1000px){.footer-grid{grid-template-columns:1fr 1fr}.sell-grid{grid-template-columns:1fr}.db-layout{grid-template-columns:1fr}.sidebar{position:static;height:auto}}
+@media(max-width:700px){.navbar{padding:.65rem 1rem}.nav-search,.nav-links{display:none}.nav-toggle{display:block}.hero{padding:5rem 1rem 3rem}.footer-grid{grid-template-columns:1fr}.cats-grid{grid-template-columns:repeat(2,1fr)}.prods-grid{grid-template-columns:repeat(2,1fr)}.stats-row{grid-template-columns:1fr 1fr}.pay-methods{grid-template-columns:1fr}.momo-grid{grid-template-columns:1fr 1fr}.wlt-stats{grid-template-columns:1fr 1fr}.delivery-options{grid-template-columns:1fr}}
+@media(max-width:400px){.prods-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ NAVBAR ══════════════ -->
+<nav class="navbar">
+  <div class="nav-brand" onclick="go('home')">
+    <span class="logo-icon">⚡</span>
+    <span class="logo-text">F2K <span class="logo-accent">MARKET</span></span>
+  </div>
+  <div class="nav-search">
+    <input type="text" id="navSearch" placeholder="Rechercher partout dans le monde..." onkeydown="if(event.key==='Enter')go('products',{search:this.value})"/>
+    <button class="btn-search" onclick="go('products',{search:document.getElementById('navSearch').value})">🔍</button>
+  </div>
+  <div class="nav-links">
+    <span class="nav-link" onclick="go('products')">🛍️ Produits</span>
+    <span class="nav-link" onclick="go('sellers')">🏪 Vendeurs</span>
+    <div id="navGuest" style="display:flex;align-items:center;gap:.5rem">
+      <button class="btn-nl" onclick="go('login')">Connexion</button>
+      <button class="btn-nr" onclick="go('register')">S'inscrire</button>
+    </div>
+    <div id="navUser" class="hidden" style="display:flex;align-items:center;gap:.7rem">
+      <span class="nav-link" id="navDash" onclick="go('dashboard')">Mon espace</span>
+      <span class="nav-link" onclick="go('wallet')" style="color:var(--warning)">💰 Wallet</span>
+      <span class="nav-link" id="navMsgs" onclick="go('messages')" style="position:relative">
+        💬 Messages<span id="unreadBadge" class="hidden" style="position:absolute;top:-6px;right:-8px;background:var(--danger);color:#fff;font-size:.6rem;padding:1px 5px;border-radius:999px;font-weight:800"></span>
+      </span>
+      <button class="btn-logout" id="btnLogout">Déco.</button>
+    </div>
+    <span onclick="go('cart')" style="cursor:pointer;font-size:1.05rem;white-space:nowrap">🛒 <span class="cart-badge" id="cartBadge">0</span></span>
+  </div>
+  <button class="nav-toggle" onclick="toggleMob()">☰</button>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mob-menu hidden" id="mobMenu">
+  <span onclick="go('home');toggleMob()">🏠 Accueil</span>
+  <span onclick="go('products');toggleMob()">📦 Produits</span>
+  <span onclick="go('sellers');toggleMob()">🏪 Vendeurs</span>
+  <span onclick="go('cart');toggleMob()">🛒 Panier</span>
+  <span id="mobLogin" onclick="go('login');toggleMob()">🔐 Connexion</span>
+  <span id="mobReg" onclick="go('register');toggleMob()">📝 S'inscrire</span>
+  <span id="mobDash" class="hidden" onclick="go('dashboard');toggleMob()">👤 Mon espace</span>
+  <span id="mobWallet" class="hidden" onclick="go('wallet');toggleMob()">💰 Wallet</span>
+  <span id="mobMsgs" class="hidden" onclick="go('messages');toggleMob()">💬 Messages</span>
+  <span id="mobLogout" class="hidden" onclick="doLogout()">🚪 Déconnexion</span>
+</div>
+
+<!-- ══════════════ PAGES ══════════════ -->
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-badge">🌍 Marketplace Mondiale · Siège au Bénin</div>
+      <h1 class="hero-title">F2K <span>MARKET</span></h1>
+      <p class="hero-sub">La plateforme internationale où vendeurs et acheteurs du monde entier se rencontrent. Produits numériques & physiques livrés partout.</p>
+      <div class="hero-cta">
+        <button class="btn-primary" onclick="go('products')">🛍️ Explorer les produits</button>
+        <button class="btn-secondary" onclick="go('register',{role:'seller'})">🏪 Devenir vendeur</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><span id="hProd">0</span><small>Produits</small></div>
+        <div class="hstat"><span id="hSell">0</span><small>Vendeurs</small></div>
+        <div class="hstat"><span id="hOrd">0</span><small>Commandes</small></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="fc c1">📱 Téléphones</div><div class="fc c2">📚 E-Books</div>
+      <div class="fc c3">👕 Mode</div><div class="fc c4">🎧 High-Tech</div>
+      <div class="fc c5">🎓 Formations</div><div class="fc c6">🌍 Mondial</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="sec-title">Parcourir par <span>catégorie</span></h2>
+      <div class="cats-grid">
+        <div class="cat-card" onclick="go('products',{cat:'ebooks'})"><div class="cat-icon">📚</div><h3>E-Books</h3><p>Livres numériques</p></div>
+        <div class="cat-card" onclick="go('products',{cat:'formations'})"><div class="cat-icon">🎓</div><h3>Formations</h3><p>Cours & tutoriels</p></div>
+        <div class="cat-card" onclick="go('products',{cat:'documents'})"><div class="cat-icon">📄</div><h3>Documents</h3><p>Templates & ressources</p></div>
+        <div class="cat-card" onclick="go('products',{cat:'telephones'})"><div class="cat-icon">📱</div><h3>Téléphones</h3><p>Smartphones & accessoires</p></div>
+        <div class="cat-card" onclick="go('products',{cat:'vetements'})"><div class="cat-icon">👕</div><h3>Mode & Moto</h3><p>Vêtements & équipements</p></div>
+        <div class="cat-card" onclick="go('products',{cat:'electronique'})"><div class="cat-icon">🎧</div><h3>Électronique</h3><p>Audio, batteries...</p></div>
+        <div class="cat-card" onclick="go('products',{cat:'alimentation'})"><div class="cat-icon">🌽</div><h3>Alimentation</h3><p>Maïs, haricots & plus</p></div>
+        <div class="cat-card" onclick="go('products',{cat:'autres'})"><div class="cat-icon">📦</div><h3>Autres</h3><p>Tout le reste</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-alt">
+    <div class="container">
+      <h2 class="sec-title">Produits en <span>vedette</span></h2>
+      <div class="prods-grid" id="featuredProds"><div class="loading">Chargement...</div></div>
+      <div style="text-align:center;margin-top:2rem">
+        <button class="btn-primary" onclick="go('products')">Voir tous les produits →</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:linear-gradient(135deg,var(--dark2),rgba(255,107,0,.04))">
+    <div class="container">
+      <div class="sell-grid">
+        <div class="sell-text">
+          <h2>Vendez sur F2K MARKET</h2>
+          <p>Rejoignez des vendeurs du monde entier sur notre plateforme internationale.</p>
+          <ul class="sell-features">
+            <li>✅ Inscription gratuite & rapide</li>
+            <li>✅ Tableau de bord complet</li>
+            <li>✅ Portefeuille & retraits Mobile Money</li>
+            <li>✅ Messagerie directe avec l'admin</li>
+            <li>✅ Support dédié 7j/7</li>
+          </ul>
+          <button class="btn-primary" onclick="go('register',{role:'seller'})">Commencer à vendre</button>
+        </div>
+        <div class="sell-types">
+          <div class="sell-type"><div class="sell-type-icon">💻</div><h3>Produits Numériques</h3><p>E-books, formations, documents, templates</p></div>
+          <div class="sell-type"><div class="sell-type-icon">📦</div><h3>Produits Physiques</h3><p>Vêtements, électronique, alimentation, moto...</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="logo-text" style="font-size:1.5rem">⚡ F2K <span class="logo-accent">MARKET</span></div>
+          <p>La marketplace internationale de référence pour les produits numériques et physiques. Siège social au Bénin, commerce mondial.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Navigation</h4>
+          <span onclick="go('products')">Produits</span>
+          <span onclick="go('sellers')">Vendeurs</span>
+          <span onclick="go('register',{role:'seller'})">Devenir vendeur</span>
+          <span onclick="go('cart')">Panier</span>
+        </div>
+        <div class="footer-links">
+          <h4>Mon compte</h4>
+          <span onclick="go('login')">Connexion</span>
+          <span onclick="go('dashboard')">Tableau de bord</span>
+          <span onclick="go('wallet')">Mon wallet</span>
+          <span onclick="go('messages')">Messages</span>
+        </div>
+        <div class="footer-contact">
+          <h4>Contact & Support</h4>
+          <a href="https://wa.me/22999878742" target="_blank" class="btn-wa" style="width:fit-content">💬 WhatsApp +229 99878742</a>
+          <a href="mailto:f2kmultiservice@gmail.com">📧 f2kmultiservice@gmail.com</a>
+          <p style="color:var(--muted);font-size:.8rem;margin-top:.5rem">Lun–Sam · 8h–20h (WAT)</p>
+        </div>
+      </div>
+      <div class="copyright">
+        © 2025 <strong>F2K MULTISERVICE</strong>. Tous droits réservés. | Marketplace mondiale, siège au Bénin 🇧🇯
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- LOGIN -->
+<div class="page" id="page-login" style="display:flex;align-items:center;justify-content:center">
+  <div class="form-wrap" style="width:100%">
+    <div class="form-title">⚡ F2K <span>MARKET</span></div>
+    <p class="form-sub">Connectez-vous à votre compte</p>
+    <div id="loginErr" class="ferr hidden"></div>
+    <div id="loginSuc" class="fsuc hidden"></div>
+    <div class="fg"><label>Email *</label><input type="email" class="fc-inp" id="liEmail" placeholder="votre@email.com"/></div>
+    <div class="fg"><label>Mot de passe *</label><input type="password" class="fc-inp" id="liPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="btn-form" onclick="doLogin()" style="margin-top:.8rem">Se connecter</button>
+    <p class="form-foot">Pas de compte ? <span onclick="go('register')">S'inscrire</span></p>
+    <p class="form-foot" style="margin-top:.5rem"><span onclick="go('home')">← Retour à l'accueil</span></p>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div class="page" id="page-register" style="display:flex;align-items:center;justify-content:center">
+  <div class="form-wrap" style="width:100%;max-width:580px">
+    <div class="form-title">Créer un <span>compte</span></div>
+    <div id="regErr" class="ferr hidden"></div>
+    <div id="regSuc" class="fsuc hidden"></div>
+    <div class="role-cards">
+      <div class="role-card sel" id="rcClient" onclick="selRole('client')"><div style="font-size:2rem">🛒</div><div style="font-weight:800;margin-top:.4rem">Client</div><div style="font-size:.75rem;color:var(--muted)">Acheter</div></div>
+      <div class="role-card" id="rcSeller" onclick="selRole('seller')"><div style="font-size:2rem">🏪</div><div style="font-weight:800;margin-top:.4rem">Vendeur</div><div style="font-size:.75rem;color:var(--muted)">Vendre</div></div>
+    </div>
+    <div class="fg"><label>Nom complet *</label><input type="text" class="fc-inp" id="reName" placeholder="Jean Dupont"/></div>
+    <div class="fg"><label>Email *</label><input type="email" class="fc-inp" id="reEmail" placeholder="votre@email.com"/></div>
+    <div class="fg"><label>Téléphone WhatsApp *</label><input type="tel" class="fc-inp" id="rePhone" placeholder="+229 XX XX XX XX"/></div>
+    <div class="fg"><label>Pays de résidence *</label><input type="text" class="fc-inp" id="reCountry" placeholder="Bénin, France, Sénégal..."/></div>
+    <div class="fg"><label>Mot de passe * (min. 6 caractères)</label><input type="password" class="fc-inp" id="rePwd" placeholder="••••••••"/></div>
+    <!-- Photo de profil -->
+    <div class="fg">
+      <label>Photo de profil (optionnel)</label>
+      <div id="reAvatarPrev" style="width:80px;height:80px;border-radius:50%;background:var(--dark3);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:.5rem">👤</div>
+      <label for="reAvatarFile" class="upload-lbl" style="width:fit-content">📷 Choisir une photo</label>
+      <input type="file" id="reAvatarFile" accept="image/*" style="display:none"/>
+      <input type="hidden" id="reAvatar"/>
+    </div>
+    <!-- Champs vendeur -->
+    <div id="sellerFields" class="hidden">
+      <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0"/>
+      <p style="font-weight:800;color:var(--primary);margin-bottom:1rem">🏪 Informations Boutique</p>
+      <div class="fg"><label>Nom de la boutique *</label><input type="text" class="fc-inp" id="reShop" placeholder="Ma Super Boutique"/></div>
+      <div class="fg"><label>Type de produits *</label>
+        <select class="fc-inp" id="reSelType">
+          <option value="">-- Choisir --</option>
+          <option value="digital">💻 Numériques (E-books, formations...)</option>
+          <option value="physical">📦 Physiques (vêtements, électronique...)</option>
+          <option value="both">🔄 Les deux</option>
+        </select>
+      </div>
+      <div class="fg"><label>Description de votre boutique</label><textarea class="fc-inp" id="reShopDesc" placeholder="Décrivez ce que vous vendez, votre spécialité..."></textarea></div>
+      <!-- Logo boutique -->
+      <div class="fg">
+        <label>Logo de la boutique (optionnel)</label>
+        <div id="reLogoPrev" style="width:70px;height:70px;border-radius:var(--r);background:var(--dark3);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin-bottom:.5rem">🏪</div>
+        <label for="reLogoFile" class="upload-lbl" style="width:fit-content">🖼️ Logo boutique</label>
+        <input type="file" id="reLogoFile" accept="image/*" style="display:none"/>
+        <input type="hidden" id="reLogo"/>
+      </div>
+      <div style="padding:.8rem 1rem;border-radius:var(--r);background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);font-size:.84rem;color:var(--warning);margin-bottom:1rem">⚠️ Votre compte vendeur sera validé par l'administrateur avant activation.</div>
+    </div>
+    <button class="btn-form" onclick="doRegister()">Créer mon compte</button>
+    <p class="form-foot">Déjà un compte ? <span onclick="go('login')">Se connecter</span></p>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<div class="page" id="page-products">
+  <div style="max-width:1300px;margin:0 auto;padding:1.5rem">
+    <div class="ph"><h1 style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:2px;color:#fff">Tous les <span style="color:var(--primary)">Produits</span></h1><p id="prodsCount" style="color:var(--muted)">Chargement...</p></div>
+    <div class="filters-bar">
+      <div class="fg2"><label>Type</label><select class="fsel" id="fType" onchange="filterProds()"><option value="">Tous</option><option value="digital">💻 Numérique</option><option value="physical">📦 Physique</option></select></div>
+      <div class="fg2"><label>Catégorie</label><select class="fsel" id="fCat" onchange="filterProds()"><option value="">Toutes</option><option value="ebooks">E-Books</option><option value="formations">Formations</option><option value="documents">Documents</option><option value="telephones">Téléphones</option><option value="vetements">Vêtements</option><option value="electronique">Électronique</option><option value="alimentation">Alimentation</option><option value="autres">Autres</option></select></div>
+      <div class="fg2"><label>Prix max (FCFA)</label><input type="number" class="fsel" id="fPrice" placeholder="Tous" oninput="filterProds()" style="width:110px"/></div>
+      <div class="fg2"><label>Trier</label><select class="fsel" id="fSort" onchange="filterProds()"><option value="recent">Plus récent</option><option value="price-asc">Prix ↑</option><option value="price-desc">Prix ↓</option></select></div>
+      <div class="fg2"><label>Recherche</label><input type="text" class="fsel" id="fSearch" placeholder="Mot clé..." oninput="filterProds()" style="width:150px"/></div>
+      <button class="btn-sm btn-edit" onclick="resetProdFilters()" style="align-self:flex-end">🔄 Reset</button>
+    </div>
+    <div class="prods-grid" id="prodsGrid"><div class="loading">Chargement...</div></div>
+  </div>
+</div>
+
+<!-- PRODUCT DETAIL -->
+<div class="page" id="page-product-detail">
+  <div style="max-width:1000px;margin:0 auto;padding:1.5rem" id="pdContent"><div class="loading">Chargement...</div></div>
+</div>
+
+<!-- CART -->
+<div class="page" id="page-cart">
+  <div style="max-width:1100px;margin:0 auto;padding:1.5rem">
+    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:2px;color:#fff;margin-bottom:1.5rem">🛒 Mon <span style="color:var(--primary)">Panier</span></h1>
+    <div id="cartGrid" style="display:grid;grid-template-columns:1fr 390px;gap:1.5rem;align-items:start">
+      <div><div id="cartItems"></div></div>
+      <div>
+        <div class="card"><div class="card-title">📋 Résumé</div><div id="cartSumm"></div><div id="cartBreak" style="margin-top:.9rem"></div></div>
+        <div class="card">
+          <div class="card-title">👤 Vos coordonnées</div>
+          <div class="fg"><label>Nom complet *</label><input type="text" class="fc-inp" id="coName" placeholder="Votre nom"/></div>
+          <div class="fg"><label>Email *</label><input type="email" class="fc-inp" id="coEmail" placeholder="votre@email.com"/></div>
+          <div class="fg"><label>Téléphone *</label><input type="tel" class="fc-inp" id="coPhone" placeholder="+229 ou international"/></div>
+        </div>
+        <!-- LIVRAISON pour produits physiques -->
+        <div class="card hidden" id="deliveryCard">
+          <div class="card-title">🚚 Livraison (produit physique)</div>
+          <div style="font-size:.82rem;color:var(--muted);margin-bottom:1rem">Les frais de livraison sont à la charge du client.</div>
+          <div class="delivery-options">
+            <div class="del-opt" id="delPickup" onclick="selDelivery('pickup')">🏪 Retrait en boutique</div>
+            <div class="del-opt sel" id="delAddress" onclick="selDelivery('address')">📍 Livraison à domicile</div>
+          </div>
+          <div id="pickupInfo" class="hidden">
+            <div style="padding:.8rem;border-radius:var(--r);background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);font-size:.84rem;color:var(--info)">
+              📍 Adresse de la boutique du vendeur. Le vendeur vous contactera pour confirmer.
+            </div>
+          </div>
+          <div id="addressInfo">
+            <div class="fg"><label>Adresse complète de livraison *</label><textarea class="fc-inp" id="coAddress" placeholder="Numéro, rue, quartier, ville, pays..." style="min-height:75px"></textarea></div>
+            <div class="fg"><label>Code postal / Ville</label><input type="text" class="fc-inp" id="coCity" placeholder="Ex: Cotonou, Lagos, Paris..."/></div>
+            <div class="fg"><label>Pays de livraison</label><input type="text" class="fc-inp" id="coCountry" placeholder="Bénin, France, Sénégal..."/></div>
+          </div>
+          <div class="fg"><label>Notes pour la livraison</label><input type="text" class="fc-inp" id="coNotes" placeholder="Disponibilités, instructions spéciales..."/></div>
+        </div>
+        <!-- PAIEMENT -->
+        <div class="card">
+          <div class="card-title">💳 Mode de paiement</div>
+          <div class="pay-methods">
+            <div class="pay-opt sel" id="pmFeda" onclick="selPay('fedapay')"><div class="po-ico">💳</div><div class="po-name">En ligne</div><div class="po-desc">Mobile Money · FedaPay</div></div>
+            <div class="pay-opt" id="pmWa" onclick="selPay('whatsapp')"><div class="po-ico">💬</div><div class="po-name">WhatsApp</div><div class="po-desc">Commande manuelle</div></div>
+          </div>
+          <div id="cartErr" class="ferr hidden"></div>
+          <div id="payStatus" class="hidden" style="padding:.8rem;border-radius:var(--r);font-weight:700;font-size:.88rem;margin-bottom:.8rem"></div>
+          <div id="fedaDiv">
+            <button class="btn-fedapay" id="fedaBtn" onclick="initFedaPay()"><span>💳</span> Payer maintenant</button>
+            <div class="fpbadge">🔒 Paiement sécurisé · <strong>FedaPay</strong></div>
+          </div>
+          <div id="waDiv" class="hidden">
+            <button class="btn-form" onclick="placeWAOrder()">💬 Commander via WhatsApp</button>
+            <p style="font-size:.73rem;color:var(--muted);text-align:center;margin-top:.6rem">Nous vous contacterons pour finaliser.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="cartEmpty" class="hidden" style="text-align:center;padding:4rem">
+      <div style="font-size:4rem;margin-bottom:1rem">🛒</div>
+      <h2 style="color:#fff;margin-bottom:.5rem">Panier vide</h2>
+      <button class="btn-primary" onclick="go('products')" style="margin-top:1rem">Explorer les produits</button>
+    </div>
+  </div>
+</div>
+
+<!-- SELLERS -->
+<div class="page" id="page-sellers">
+  <div style="max-width:1200px;margin:0 auto;padding:1.5rem">
+    <div class="ph"><h1 style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:2px;color:#fff">Nos <span style="color:var(--primary)">Vendeurs</span></h1></div>
+    <div id="sellersGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem"><div class="loading">Chargement...</div></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page" id="page-dashboard"><div id="dbContent"></div></div>
+
+<!-- WALLET -->
+<div class="page" id="page-wallet">
+  <div style="max-width:900px;margin:0 auto;padding:1.5rem">
+    <div class="wlt-hero">
+      <div class="wlt-lbl">Solde disponible</div>
+      <div class="wlt-bal" id="wBal">—</div>
+      <div style="color:var(--muted);font-size:.82rem;margin-top:.3rem">FCFA</div>
+      <div class="wlt-stats">
+        <div class="wlt-stat"><div class="v" id="wEarned">—</div><div class="l">Total gagné</div></div>
+        <div class="wlt-stat"><div class="v" id="wWithdrawn">—</div><div class="l">Total retiré</div></div>
+        <div class="wlt-stat"><div class="v" id="wPending">—</div><div class="l">En attente</div></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start">
+      <div>
+        <div class="card">
+          <div class="card-title">💸 Demander un retrait</div>
+          <div class="fg"><label>Montant (FCFA) *</label><input type="number" class="fc-inp" id="wdAmt" placeholder="Ex: 5000" min="500"/><div style="font-size:.73rem;color:var(--muted);margin-top:.25rem">Minimum 500 FCFA</div></div>
+          <div class="fg"><label>Opérateur Mobile Money *</label>
+            <div class="momo-grid">
+              <div class="momo-btn" id="mm-mtn" onclick="selMomo('MTN Mobile Money','mtn')"><div class="ml">🟡</div><div class="mn">MTN MoMo</div></div>
+              <div class="momo-btn" id="mm-moov" onclick="selMomo('Moov Money','moov')"><div class="ml">🔵</div><div class="mn">Moov Money</div></div>
+              <div class="momo-btn" id="mm-celtiis" onclick="selMomo('Celtiis Cash','celtiis')"><div class="ml">🟣</div><div class="mn">Celtiis</div></div>
+            </div>
+          </div>
+          <div class="fg"><label>Numéro Mobile Money *</label><input type="tel" class="fc-inp" id="wdPhone" placeholder="+229 XX XX XX XX"/></div>
+          <div class="fg"><label>Nom du titulaire</label><input type="text" class="fc-inp" id="wdHolder" placeholder="Prénom Nom"/></div>
+          <div id="wdErr" class="ferr hidden"></div>
+          <div id="wdSuc" class="fsuc hidden"></div>
+          <button class="btn-form" onclick="submitWD()">💸 Soumettre la demande</button>
+          <p style="font-size:.72rem;color:var(--muted);margin-top:.7rem;text-align:center">Traitement sous 24-48h · <a href="https://wa.me/22999878742" target="_blank" style="color:var(--primary)">💬 WhatsApp</a></p>
+        </div>
+        <div class="card"><div class="card-title">📋 Mes demandes</div><div id="wdList"><p style="color:var(--muted);font-size:.88rem">Chargement...</p></div></div>
+      </div>
+      <div class="card"><div class="card-title">📊 Transactions</div><div id="txList"><p style="color:var(--muted);font-size:.88rem">Chargement...</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MESSAGES -->
+<div class="page" id="page-messages">
+  <div style="max-width:1000px;margin:0 auto;padding:1.5rem">
+    <div class="ph"><h1 style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;color:#fff">💬 <span style="color:var(--primary)">Messages</span></h1></div>
+    <div style="display:grid;grid-template-columns:280px 1fr;gap:1.5rem;min-height:500px" id="chatLayout">
+      <div class="card" style="padding:0;margin-bottom:0">
+        <div style="padding:1rem;border-bottom:1px solid var(--border);font-weight:800;color:#fff">Conversations</div>
+        <div id="chatList"><div style="padding:1.5rem;color:var(--muted);font-size:.88rem;text-align:center">Chargement...</div></div>
+      </div>
+      <div class="card" style="padding:0;margin-bottom:0;display:flex;flex-direction:column" id="chatPanel">
+        <div id="chatHeader" style="padding:1rem;border-bottom:1px solid var(--border)"><div style="color:var(--muted);font-size:.88rem;text-align:center">Sélectionnez une conversation</div></div>
+        <div id="chatMessages" style="flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.3rem;min-height:300px;max-height:400px"></div>
+        <div id="chatInput" style="padding:1rem;border-top:1px solid var(--border);display:flex;gap:.8rem" class="hidden">
+          <input type="text" class="fc-inp" id="msgInput" placeholder="Tapez votre message..." style="flex:1" onkeydown="if(event.key==='Enter')sendMsg()"/>
+          <button class="btn-primary" onclick="sendMsg()" style="padding:.65rem 1.2rem">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MODALS ══════════════ -->
+
+<!-- Order Success -->
+<div id="orderModal" class="modal-overlay hidden">
+  <div class="modal" style="text-align:center;max-width:560px">
+    <div style="font-size:4rem;margin-bottom:1rem" id="omIcon">🎉</div>
+    <div class="modal-title" id="omTitle">Commande confirmée !</div>
+    <p style="color:var(--muted);margin-bottom:.8rem" id="omMsg"></p>
+    <div id="omInfo" style="padding:.9rem;border-radius:var(--r);margin-bottom:1.1rem;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--success);font-size:.88rem;font-weight:700"></div>
+    <p id="omRef" style="color:var(--primary);font-weight:800;font-size:1rem;margin-bottom:.8rem"></p>
+    <!-- DOWNLOAD SECTION: shown only for paid digital products -->
+    <div id="omDownloads" class="hidden" style="margin-bottom:1.2rem">
+      <div style="padding:.7rem 1rem;border-radius:var(--r);background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:var(--info);font-size:.85rem;font-weight:700;margin-bottom:.8rem">
+        📥 Vos produits numériques sont prêts !
+      </div>
+      <div id="omDownloadLinks" style="display:flex;flex-direction:column;gap:.6rem"></div>
+    </div>
+    <!-- WHATSAPP NOTE: shown for digital products paid via WhatsApp -->
+    <div id="omWaDigital" class="hidden" style="padding:.7rem 1rem;border-radius:var(--r);background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.3);color:#25d366;font-size:.83rem;margin-bottom:1rem">
+      💬 Après validation de votre paiement WhatsApp, le vendeur vous enverra le lien de téléchargement.
+    </div>
+    <a id="omWa" href="#" target="_blank" class="btn-wa" style="display:inline-flex;justify-content:center;margin-bottom:.9rem">💬 Support WhatsApp</a><br/>
+    <button class="btn-primary" onclick="document.getElementById('orderModal').classList.add('hidden');go('products')" style="margin-top:.8rem">Continuer les achats</button>
+    <div id="omDownloadHistory" class="hidden" style="margin-top:.8rem">
+      <button class="btn-secondary" onclick="document.getElementById('orderModal').classList.add('hidden');go('dashboard')" style="width:auto;padding:.5rem 1.2rem;font-size:.85rem">📋 Voir mes téléchargements</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm -->
+<div id="confirmModal" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-title" id="cfTitle">Confirmer</div>
+    <p id="cfMsg" style="color:var(--muted);margin-bottom:1.3rem"></p>
+    <div style="display:flex;gap:1rem">
+      <button class="btn-form" id="cfYes" style="background:var(--danger)">Confirmer</button>
+      <button class="btn-form" onclick="closeConfirm()" style="background:var(--card);border:1px solid var(--border)">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- Withdrawal Confirm -->
+<div id="wdModal" class="modal-overlay hidden">
+  <div class="modal" style="text-align:center">
+    <div style="font-size:3rem;margin-bottom:1rem">💸</div>
+    <div class="modal-title">Confirmer le retrait</div>
+    <div id="wdDetails" style="background:var(--dark3);border:1px solid var(--border);border-radius:var(--r);padding:1rem;margin:1rem 0;text-align:left"></div>
+    <p style="color:var(--muted);font-size:.83rem;margin-bottom:1.3rem">Débité après validation par l'administrateur.</p>
+    <div style="display:flex;gap:1rem">
+      <button class="btn-form" id="wdConfBtn" style="background:var(--success)" onclick="confirmWD()">✅ Confirmer</button>
+      <button class="btn-form" onclick="document.getElementById('wdModal').classList.add('hidden')" style="background:var(--card);border:1px solid var(--border)">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Product Modal -->
+<div id="addProdModal" class="modal-overlay hidden">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-title" id="apTitle">➕ Publier un produit</div>
+    <div id="apErr" class="ferr hidden"></div>
+    <div id="apSuc" class="fsuc hidden"></div>
+    <div class="fg"><label>Nom du produit *</label><input type="text" class="fc-inp" id="apName"/></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+      <div class="fg"><label>Type *</label><select class="fc-inp" id="apType" onchange="apToggle()"><option value="">--</option><option value="digital">💻 Numérique</option><option value="physical">📦 Physique</option></select></div>
+      <div class="fg"><label>Catégorie</label><select class="fc-inp" id="apCat"><option value="ebooks">E-Books</option><option value="formations">Formations</option><option value="documents">Documents</option><option value="telephones">Téléphones</option><option value="vetements">Vêtements</option><option value="electronique">Électronique</option><option value="alimentation">Alimentation</option><option value="autres">Autres</option></select></div>
+    </div>
+    <div class="fg"><label>Description</label><textarea class="fc-inp" id="apDesc"></textarea></div>
+    <div class="fg"><label>Prix (FCFA) *</label><input type="number" class="fc-inp" id="apPrice"/></div>
+    <div class="fg">
+      <label>Image du produit</label>
+      <div id="apImgPrev" style="width:100%;height:130px;border-radius:var(--r);background:var(--dark3);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:.5rem;overflow:hidden"><div style="text-align:center;color:var(--muted)"><div style="font-size:2rem">🖼️</div><div style="font-size:.78rem">Aperçu</div></div></div>
+      <label for="apImgFile" class="upload-lbl">📤 Choisir une image (max 5 Mo)</label>
+      <input type="file" id="apImgFile" accept="image/*" style="display:none"/>
+      <input type="hidden" id="apImg"/>
+      <div id="apImgProg" class="hidden" style="margin-top:.5rem;font-size:.82rem"></div>
+    </div>
+    <div id="apDigFields" class="hidden"><div class="fg"><label>Lien fichier numérique</label><input type="url" class="fc-inp" id="apFile" placeholder="https://drive.google.com/..."/></div></div>
+    <div id="apPhyFields" class="hidden">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div class="fg"><label>Stock</label><input type="number" class="fc-inp" id="apStock" placeholder="10"/></div>
+        <div class="fg"><label>Délai livraison</label><input type="text" class="fc-inp" id="apDelivery" placeholder="3-5 jours"/></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:1rem;margin-top:.5rem">
+      <button class="btn-form" onclick="submitProd()">🚀 Publier</button>
+      <button class="btn-form" onclick="document.getElementById('addProdModal').classList.add('hidden')" style="background:var(--card);border:1px solid var(--border)">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast hidden"></div>
+<script type="module">
+// ══════════════════════════════════════════════════════
+// FIREBASE
+// ══════════════════════════════════════════════════════
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+         signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc,
+         getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const FB = initializeApp({
+  apiKey:"AIzaSyA2ZTfMVuOevasNIL160KHRgxKOIleknlI",
+  authDomain:"f2k-market-cb292.firebaseapp.com",
+  projectId:"f2k-market-cb292",
+  storageBucket:"f2k-market-cb292.firebasestorage.app",
+  messagingSenderId:"317078308855",
+  appId:"1:317078308855:web:4ec2a5c1e1e9de5fc750f2"
+});
+const auth = getAuth(FB);
+const db   = getFirestore(FB);
+
+// ══════════════════════════════════════════════════════
+// CONSTANTS
+// ══════════════════════════════════════════════════════
+const ADMIN_EMAIL  = "f2kmultiservice@gmail.com";
+const ADMIN_PHONE  = "22999878742";
+const FEDA_KEY     = "pk_live_ORVqn9pz6gYeLDzjeR9FEple";
+const COMM_RATE    = 0.05;
+const CLD_CLOUD    = "f2k-market";
+const CLD_PRESET   = "f2kmarket_upload";
+
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let CU = null, UD = null, allProds = [];
+let selectedMomo = '', pendingWD = null, pendingOrderId = null;
+let cartPay = 'fedapay', delivType = 'address', cfCb = null;
+let activeChatUid = null, msgUnsub = null;
+
+// ══════════════════════════════════════════════════════
+// ROUTER
+// ══════════════════════════════════════════════════════
+window.go = async function(page, params={}) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('page-' + page);
+  if (!el) { go('home'); return; }
+  el.classList.add('active');
+  window.scrollTo(0,0);
+  document.getElementById('mobMenu').classList.add('hidden');
+
+  if (page==='home')           loadHome();
+  if (page==='products')       loadProductsPage(params);
+  if (page==='product-detail') loadProdDetail(params.id);
+  if (page==='cart')           renderCart();
+  if (page==='sellers')        loadSellers();
+  if (page==='dashboard')      loadDashboard();
+  if (page==='wallet')         loadWallet();
+  if (page==='messages')       loadMessages();
+  if (page==='register' && params.role==='seller') selRole('seller');
+};
+
+window.toggleMob = () => document.getElementById('mobMenu').classList.toggle('hidden');
+
+// ══════════════════════════════════════════════════════
+// AUTH STATE
+// ══════════════════════════════════════════════════════
+onAuthStateChanged(auth, async user => {
+  CU = user;
+  const ng = document.getElementById('navGuest');
+  const nu = document.getElementById('navUser');
+  const mi = ['mobLogin','mobReg'];
+  const mu = ['mobDash','mobWallet','mobMsgs','mobLogout'];
+
+  if (user) {
+    ng.classList.add('hidden'); nu.classList.remove('hidden');
+    mi.forEach(id => document.getElementById(id).classList.add('hidden'));
+    mu.forEach(id => document.getElementById(id).classList.remove('hidden'));
+
+    if (user.email === ADMIN_EMAIL) {
+      UD = { role:'admin', fullname:'F2K ADMIN', status:'approved' };
+      document.getElementById('navDash').textContent = '⚙️ Admin';
+    } else {
+      const snap = await getDoc(doc(db,'users',user.uid));
+      UD = snap.data() || {};
+      document.getElementById('navDash').textContent =
+        UD.role==='seller' ? '🏪 Ma Boutique' : '👤 Mon Compte';
+      // Check unread messages
+      checkUnread();
+    }
+    // Prefill cart
+    document.getElementById('coName').value  = UD.fullname || '';
+    document.getElementById('coEmail').value = user.email;
+    document.getElementById('coPhone').value = UD.phone || '';
+    document.getElementById('wdPhone').value = UD.phone || '';
+    document.getElementById('wdHolder').value = UD.fullname || '';
+  } else {
+    ng.classList.remove('hidden'); nu.classList.add('hidden');
+    mi.forEach(id => document.getElementById(id).classList.remove('hidden'));
+    mu.forEach(id => document.getElementById(id).classList.add('hidden'));
+    UD = null;
+  }
+  updateCartBadge();
+});
+
+document.getElementById('btnLogout').addEventListener('click', doLogout);
+window.doLogout = async () => {
+  await signOut(auth); go('home'); showToast('✅ Déconnecté.');
+};
+
+// ══════════════════════════════════════════════════════
+// CLOUDINARY UPLOAD
+// ══════════════════════════════════════════════════════
+async function uploadImg(file, folder='products') {
+  const fd = new FormData();
+  fd.append('file', file); fd.append('upload_preset', CLD_PRESET);
+  fd.append('folder', `f2k-market/${folder}`);
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLD_CLOUD}/image/upload`, {method:'POST',body:fd});
+  const d = await res.json();
+  if (!d.secure_url) throw new Error('Upload échoué');
+  return d.secure_url;
+}
+
+function bindUpload(fileId, prevId, urlId, progId, folder='products') {
+  const inp = document.getElementById(fileId);
+  if (!inp) return;
+  inp.onchange = async e => {
+    const file = e.target.files[0]; if (!file) return;
+    if (!file.type.startsWith('image/')) { showToast('⚠️ Image uniquement'); return; }
+    if (file.size > 5*1024*1024) { showToast('⚠️ Max 5 Mo'); return; }
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const prev = document.getElementById(prevId);
+      if (!prev) return;
+      if (prev.tagName === 'DIV') prev.innerHTML = `<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:8px"/>`;
+      else { prev.src = ev.target.result; prev.style.display='block'; }
+    };
+    reader.readAsDataURL(file);
+    const prog = document.getElementById(progId);
+    if (prog) { prog.classList.remove('hidden'); prog.style.color=getComputedStyle(document.documentElement).getPropertyValue('--info'); prog.textContent='📤 Upload...'; }
+    try {
+      const url = await uploadImg(file, folder);
+      document.getElementById(urlId).value = url;
+      if (prog) { prog.style.color='#22c55e'; prog.textContent='✅ Image uploadée !'; setTimeout(()=>prog.classList.add('hidden'),3000); }
+    } catch(err) {
+      if (prog) { prog.style.color='#ef4444'; prog.textContent='❌ Erreur upload.'; }
+      document.getElementById(urlId).value = '';
+    }
+  };
+}
+
+// ══════════════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════════════
+window.doLogin = async () => {
+  const email = document.getElementById('liEmail').value.trim();
+  const pwd   = document.getElementById('liPwd').value;
+  const err   = document.getElementById('loginErr');
+  const suc   = document.getElementById('loginSuc');
+  err.classList.add('hidden'); suc.classList.add('hidden');
+
+  if (!email || !pwd) {
+    err.textContent = 'Veuillez remplir l\'email et le mot de passe.';
+    err.classList.remove('hidden'); return;
+  }
+  try {
+    const cred = await signInWithEmailAndPassword(auth, email.trim(), pwd);
+    if (cred.user.email === ADMIN_EMAIL) {
+      suc.textContent = '✅ Bienvenue Admin !'; suc.classList.remove('hidden');
+      setTimeout(() => go('dashboard'), 700); return;
+    }
+    const snap = await getDoc(doc(db,'users',cred.user.uid));
+    const d = snap.data();
+    if (d?.status === 'banned') {
+      await signOut(auth);
+      err.textContent = '🚫 Compte banni. Contactez le support.';
+      err.classList.remove('hidden'); return;
+    }
+    suc.textContent = '✅ Connexion réussie !'; suc.classList.remove('hidden');
+    setTimeout(() => go('dashboard'), 700);
+  } catch(e) {
+    const msg = e.code==='auth/invalid-credential'||e.code==='auth/wrong-password'||e.code==='auth/user-not-found'
+      ? '❌ Email ou mot de passe incorrect.'
+      : e.code==='auth/invalid-email'
+      ? '❌ Adresse email invalide.'
+      : e.code==='auth/too-many-requests'
+      ? '⚠️ Trop de tentatives. Réessayez dans quelques minutes.'
+      : '❌ Erreur : ' + e.message;
+    err.textContent = msg; err.classList.remove('hidden');
+  }
+};
+
+// ══════════════════════════════════════════════════════
+// REGISTER
+// ══════════════════════════════════════════════════════
+let regRole = 'client';
+window.selRole = r => {
+  regRole = r;
+  document.getElementById('rcClient').classList.toggle('sel', r==='client');
+  document.getElementById('rcSeller').classList.toggle('sel', r==='seller');
+  document.getElementById('sellerFields').classList.toggle('hidden', r!=='seller');
+};
+
+// Bind avatar + logo uploads on register page
+bindUpload('reAvatarFile','reAvatarPrev','reAvatar',null,'avatars');
+bindUpload('reLogoFile','reLogoPrev','reLogo',null,'logos');
+
+window.doRegister = async () => {
+  const name    = document.getElementById('reName').value.trim();
+  const email   = document.getElementById('reEmail').value.trim();
+  const phone   = document.getElementById('rePhone').value.trim();
+  const country = document.getElementById('reCountry').value.trim();
+  const pwd     = document.getElementById('rePwd').value;
+  const avatar  = document.getElementById('reAvatar').value;
+  const err     = document.getElementById('regErr');
+  const suc     = document.getElementById('regSuc');
+  err.classList.add('hidden'); suc.classList.add('hidden');
+
+  if (!name||!email||!phone||!country||!pwd) {
+    err.textContent = '⚠️ Tous les champs obligatoires (*) doivent être remplis.';
+    err.classList.remove('hidden'); return;
+  }
+  if (pwd.length < 6) {
+    err.textContent = '⚠️ Le mot de passe doit avoir au moins 6 caractères.';
+    err.classList.remove('hidden'); return;
+  }
+  if (regRole==='seller') {
+    if (!document.getElementById('reShop').value.trim() || !document.getElementById('reSelType').value) {
+      err.textContent = '⚠️ Renseignez le nom et le type de votre boutique.';
+      err.classList.remove('hidden'); return;
+    }
+  }
+
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pwd);
+    const uid  = cred.user.uid;
+    const uData = {
+      uid, fullname:name, email, phone, country,
+      avatar: avatar || '',
+      role: regRole,
+      status: regRole==='seller' ? 'pending' : 'active',
+      createdAt: new Date().toISOString()
+    };
+    if (regRole==='seller') {
+      uData.shopName  = document.getElementById('reShop').value.trim();
+      uData.sellerType= document.getElementById('reSelType').value;
+      uData.shopDesc  = document.getElementById('reShopDesc').value.trim();
+      uData.shopLogo  = document.getElementById('reLogo').value;
+    }
+    await setDoc(doc(db,'users',uid), uData);
+
+    // Create wallet
+    await setDoc(doc(db,'wallets',uid), {uid, balance:0, totalEarned:0, totalWithdrawn:0, updatedAt:new Date().toISOString()});
+
+    suc.textContent = regRole==='seller'
+      ? '✅ Compte créé ! En attente de validation admin. Redirection vers la connexion...'
+      : '✅ Compte créé avec succès ! Redirection...';
+    suc.classList.remove('hidden');
+    setTimeout(() => regRole==='seller' ? go('login') : go('dashboard'), 2000);
+  } catch(e) {
+    err.textContent = e.code==='auth/email-already-in-use'
+      ? '❌ Cette adresse email est déjà utilisée.'
+      : e.code==='auth/invalid-email'
+      ? '❌ Adresse email invalide.'
+      : '❌ Erreur : ' + e.message;
+    err.classList.remove('hidden');
+  }
+};
+
+// ══════════════════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════════════════
+async function loadHome() {
+  try {
+    const [ps, ss, os] = await Promise.all([
+      getDocs(query(collection(db,'products'), where('status','==','active'))),
+      getDocs(query(collection(db,'users'), where('role','==','seller'), where('status','==','approved'))),
+      getDocs(collection(db,'orders'))
+    ]);
+    document.getElementById('hProd').textContent = ps.size;
+    document.getElementById('hSell').textContent = ss.size;
+    document.getElementById('hOrd').textContent  = os.size;
+    let html=''; let n=0;
+    ps.forEach(d=>{ if(n++>=8) return; html+=prodCard(d.id,d.data()); });
+    document.getElementById('featuredProds').innerHTML = html || '<p class="no-results">Aucun produit.</p>';
+  } catch(e) { document.getElementById('featuredProds').innerHTML='<p class="no-results">Erreur.</p>'; }
+}
+
+// ══════════════════════════════════════════════════════
+// PRODUCTS
+// ══════════════════════════════════════════════════════
+async function loadProductsPage(params={}) {
+  if (!allProds.length) {
+    // Public: only show active products (hidden are invisible to visitors)
+    const ps = await getDocs(query(collection(db,'products'), where('status','==','active')));
+    allProds = []; ps.forEach(d => allProds.push({id:d.id,...d.data()}));
+  }
+  if (params.cat)    document.getElementById('fCat').value    = params.cat;
+  if (params.search) document.getElementById('fSearch').value = params.search;
+  filterProds();
+}
+
+window.filterProds = () => {
+  const type=document.getElementById('fType').value;
+  const cat=document.getElementById('fCat').value;
+  const maxP=document.getElementById('fPrice').value;
+  const sort=document.getElementById('fSort').value;
+  const srch=document.getElementById('fSearch').value.toLowerCase();
+  let list = allProds.filter(p =>
+    (!type||p.type===type) &&
+    (!cat||p.category===cat) &&
+    (!maxP||p.price<=+maxP) &&
+    (!srch||`${p.name} ${p.description||''}`.toLowerCase().includes(srch))
+  );
+  if (sort==='price-asc')  list.sort((a,b)=>a.price-b.price);
+  if (sort==='price-desc') list.sort((a,b)=>b.price-a.price);
+  if (sort==='recent')     list.sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+  document.getElementById('prodsCount').textContent = `${list.length} produit(s) trouvé(s)`;
+  document.getElementById('prodsGrid').innerHTML = list.length ? list.map(p=>prodCard(p.id,p)).join('') : '<div class="no-results">😕 Aucun produit trouvé.</div>';
+};
+
+window.resetProdFilters = () => {
+  ['fType','fCat','fSort'].forEach(id=>{const el=document.getElementById(id); if(el)el.value=id==='fSort'?'recent':'';});
+  document.getElementById('fPrice').value='';
+  document.getElementById('fSearch').value='';
+  filterProds();
+};
+
+function prodCard(id, p) {
+  const esc = s => (s||'').replace(/'/g,"\\'");
+  return `<div class="prod-card" onclick="go('product-detail',{id:'${id}'})">
+    <div class="prod-img">
+      ${p.imageUrl?`<img src="${p.imageUrl}" alt="${esc(p.name)}" loading="lazy"/>` : `<div class="prod-ph">${p.type==='digital'?'💻':'📦'}</div>`}
+      <span class="type-badge ${p.type==='digital'?'d':'p'}">${p.type==='digital'?'Numérique':'Physique'}</span>
+    </div>
+    <div class="prod-info">
+      <h3>${p.name||''}</h3>
+      <p class="prod-desc">${(p.description||'').substring(0,80)}...</p>
+      <div style="font-size:.73rem;color:var(--muted);margin-bottom:.5rem">🏪 ${p.sellerName||'F2K MARKET'}</div>
+      <div class="prod-foot">
+        <span class="prod-price">${Number(p.price||0).toLocaleString()} FCFA</span>
+        <button class="btn-cart" onclick="event.stopPropagation();addCart('${id}','${esc(p.name)}',${p.price||0},'${p.imageUrl||''}','${p.type||'physical'}','${p.sellerId||'admin'}')">🛒</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════════
+// PRODUCT DETAIL
+// ══════════════════════════════════════════════════════
+async function loadProdDetail(id) {
+  if (!id) { go('products'); return; }
+  const el = document.getElementById('pdContent');
+  el.innerHTML = '<div class="loading">Chargement...</div>';
+  try {
+    const snap = await getDoc(doc(db,'products',id));
+    if (!snap.exists()) { el.innerHTML='<p style="color:var(--danger);text-align:center;padding:4rem">Produit introuvable.</p>'; return; }
+    const p = snap.data();
+    const esc = s=>(s||'').replace(/'/g,"\\'");
+    el.innerHTML=`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start">
+        <div style="border-radius:20px;overflow:hidden;background:var(--dark2);border:1px solid var(--border);aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:6rem">
+          ${p.imageUrl?`<img src="${p.imageUrl}" alt="${esc(p.name)}" style="width:100%;height:100%;object-fit:cover"/>`:(p.type==='digital'?'💻':'📦')}
+        </div>
+        <div>
+          <span class="badge ${p.type==='digital'?'bi':'bs'}" style="margin-bottom:.8rem">${p.type==='digital'?'💻 Numérique':'📦 Physique'}</span>
+          <h1 style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:2px;color:#fff;margin:.5rem 0;line-height:1.1">${p.name}</h1>
+          <div style="color:var(--muted);font-size:.88rem;margin-bottom:.8rem">🏪 <strong style="color:var(--primary)">${p.sellerName||'F2K MARKET'}</strong>${p.category?' · 📂 '+p.category:''}</div>
+          <div style="font-size:2.3rem;font-weight:900;color:var(--primary);margin:1rem 0">${Number(p.price||0).toLocaleString()} FCFA</div>
+          <p style="color:var(--muted);line-height:1.7;margin-bottom:1.5rem">${p.description||'Aucune description.'}</p>
+          ${p.type==='physical'?`<div style="padding:.75rem 1rem;border-radius:var(--r);background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--success);margin-bottom:1rem;font-weight:700;font-size:.88rem">📦 Stock: ${p.stock>0?(p.stock+' disponible(s)'):'⚠️ Épuisé'} ${p.deliveryTime?'· 🚚 '+p.deliveryTime:''}</div>`:''}
+          ${p.type==='physical'?`<div style="padding:.7rem 1rem;border-radius:var(--r);background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:var(--warning);font-size:.82rem;margin-bottom:1rem">⚠️ Les frais de livraison sont à la charge du client.</div>`:''}
+          <div style="display:flex;gap:1rem;flex-wrap:wrap">
+            <button class="btn-primary" onclick="addCart('${id}','${esc(p.name)}',${p.price||0},'${p.imageUrl||''}','${p.type||'physical'}','${p.sellerId||'admin'}');go('cart')">🛒 Ajouter au panier</button>
+            <a href="https://wa.me/${ADMIN_PHONE}?text=${encodeURIComponent('Bonjour, je suis intéressé par : '+p.name+' ('+Number(p.price||0).toLocaleString()+' FCFA)')}" target="_blank" class="btn-wa">💬 WhatsApp</a>
+          </div>
+          <div style="margin-top:1.5rem;padding:1rem;border-radius:var(--r);background:var(--card);border:1px solid var(--border)">
+            <div style="font-weight:800;color:#fff;margin-bottom:.4rem">🔒 Achat sécurisé</div>
+            <div style="color:var(--muted);font-size:.83rem">✅ Paiement FedaPay · ✅ Support WhatsApp${p.type==='digital'?' · ✅ Livraison instantanée':''}</div>
+          </div>
+        </div>
+      </div>
+      <style>@media(max-width:700px){#pdContent>div{grid-template-columns:1fr!important}}</style>`;
+  } catch(e) { el.innerHTML='<p style="color:var(--danger);text-align:center">Erreur de chargement.</p>'; }
+}
+
+// ══════════════════════════════════════════════════════
+// SELLERS
+// ══════════════════════════════════════════════════════
+async function loadSellers() {
+  const grid = document.getElementById('sellersGrid');
+  try {
+    const snap = await getDocs(query(collection(db,'users'),where('role','==','seller'),where('status','==','approved')));
+    if (snap.empty) { grid.innerHTML=`<div style="text-align:center;padding:4rem;grid-column:1/-1"><div style="font-size:3rem;margin-bottom:1rem">🏪</div><h3 style="color:#fff">Aucun vendeur</h3><button class="btn-primary" onclick="go('register',{role:'seller'})" style="margin-top:1rem">Devenir vendeur</button></div>`; return; }
+    const cards = await Promise.all([...snap.docs].map(async d => {
+      const u = d.data();
+      const ps = await getDocs(query(collection(db,'products'),where('sellerId','==',d.id),where('status','==','active')));
+      return `<div class="card" style="cursor:pointer" onclick="go('products',{seller:'${d.id}'})">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.9rem">
+          ${u.shopLogo?`<img src="${u.shopLogo}" style="width:50px;height:50px;border-radius:var(--r);object-fit:cover;border:2px solid var(--primary)"/>`:
+            `<div style="width:50px;height:50px;border-radius:50%;background:rgba(255,107,0,.15);border:2px solid var(--primary);display:flex;align-items:center;justify-content:center;font-size:1.4rem">🏪</div>`}
+          <div>
+            <h3 style="color:#fff;font-size:.95rem;margin:0">${u.shopName||u.fullname}</h3>
+            <span class="badge ${u.sellerType==='digital'?'bi':u.sellerType==='physical'?'bs':'bw'}" style="font-size:.68rem">${u.sellerType==='digital'?'💻':'u.sellerType==='physical'?'📦':'🔄'} ${u.sellerType||''}</span>
+            <div style="font-size:.73rem;color:var(--muted);margin-top:.2rem">🌍 ${u.country||'—'}</div>
+          </div>
+        </div>
+        ${u.shopDesc?`<p style="color:var(--muted);font-size:.83rem;margin-bottom:.8rem">${(u.shopDesc||'').substring(0,100)}...</p>`:''}
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="color:var(--muted);font-size:.78rem">📦 ${ps.size} produit(s)</span>
+          <span class="btn-sm btn-edit">Voir →</span>
+        </div>
+      </div>`;
+    }));
+    grid.innerHTML = cards.join('');
+  } catch(e) { grid.innerHTML='<p style="color:var(--danger)">Erreur.</p>'; }
+}
+
+// ══════════════════════════════════════════════════════
+// CART
+// ══════════════════════════════════════════════════════
+window.addCart = (id,name,price,img,type,sid) => {
+  let c = JSON.parse(localStorage.getItem('f2k_cart')||'[]');
+  const ex = c.find(i=>i.id===id);
+  if (ex) ex.qty++; else c.push({id,name,price:+price,img,type,sid,qty:1});
+  localStorage.setItem('f2k_cart',JSON.stringify(c));
+  updateCartBadge(); showToast('✅ Ajouté au panier !');
+};
+
+function updateCartBadge() {
+  const c = JSON.parse(localStorage.getItem('f2k_cart')||'[]');
+  document.getElementById('cartBadge').textContent = c.reduce((s,i)=>s+i.qty,0);
+}
+
+function renderCart() {
+  const c = JSON.parse(localStorage.getItem('f2k_cart')||'[]');
+  if (!c.length) {
+    document.getElementById('cartGrid').classList.add('hidden');
+    document.getElementById('cartEmpty').classList.remove('hidden'); return;
+  }
+  document.getElementById('cartGrid').classList.remove('hidden');
+  document.getElementById('cartEmpty').classList.add('hidden');
+
+  let sub=0, iHtml='', sHtml=''; let hasPhys=false;
+  c.forEach((item,i) => {
+    const lt = item.price*item.qty; sub+=lt;
+    if (item.type==='physical') hasPhys=true;
+    iHtml+=`<div class="card" style="display:flex;gap:1rem;align-items:center;margin-bottom:1rem">
+      <div style="width:68px;height:68px;border-radius:var(--r);overflow:hidden;flex-shrink:0;background:var(--dark3);display:flex;align-items:center;justify-content:center;font-size:1.8rem">
+        ${item.img?`<img src="${item.img}" style="width:100%;height:100%;object-fit:cover"/>`:item.type==='digital'?'💻':'📦'}
+      </div>
+      <div style="flex:1;min-width:0"><h3 style="font-size:.9rem;color:#fff;margin-bottom:.2rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.name}</h3><p style="color:var(--muted);font-size:.78rem">${Number(item.price).toLocaleString()} FCFA</p></div>
+      <div style="display:flex;align-items:center;gap:.35rem;flex-shrink:0">
+        <button onclick="cqty(${i},-1)" style="width:24px;height:24px;border-radius:50%;border:1px solid var(--border);background:var(--card);color:#fff;cursor:pointer;font-weight:800;font-size:.85rem">−</button>
+        <span style="font-weight:800;min-width:16px;text-align:center;font-size:.88rem">${item.qty}</span>
+        <button onclick="cqty(${i},1)"  style="width:24px;height:24px;border-radius:50%;border:1px solid var(--border);background:var(--card);color:#fff;cursor:pointer;font-weight:800;font-size:.85rem">+</button>
+      </div>
+      <div style="font-weight:900;color:var(--primary);min-width:85px;text-align:right;font-size:.9rem">${lt.toLocaleString()} FCFA</div>
+      <button onclick="crem(${i})" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:1rem">🗑️</button>
+    </div>`;
+    sHtml+=`<div class="fee-row"><span class="fl">${item.name} ×${item.qty}</span><span>${lt.toLocaleString()} FCFA</span></div>`;
+  });
+
+  const comm = Math.round(sub*COMM_RATE);
+  const total = sub+comm;
+  window._T = {sub,comm,total};
+
+  document.getElementById('cartItems').innerHTML = iHtml;
+  document.getElementById('cartSumm').innerHTML  = sHtml;
+  document.getElementById('cartBreak').innerHTML = `
+    <div class="fee-row"><span class="fl">Sous-total</span><span>${sub.toLocaleString()} FCFA</span></div>
+    <div class="fee-row comm"><span class="fl">⚡ Commission F2K (5%)</span><span>+${comm.toLocaleString()} FCFA</span></div>
+    <div class="fee-row total-row"><span>Total à payer</span><span>${total.toLocaleString()} FCFA</span></div>`;
+
+  // Show delivery form only for physical products
+  document.getElementById('deliveryCard').classList.toggle('hidden', !hasPhys);
+}
+
+window.cqty = (i,d) => { const c=JSON.parse(localStorage.getItem('f2k_cart')||'[]'); c[i].qty=Math.max(1,c[i].qty+d); localStorage.setItem('f2k_cart',JSON.stringify(c)); renderCart(); updateCartBadge(); };
+window.crem = i => { const c=JSON.parse(localStorage.getItem('f2k_cart')||'[]'); c.splice(i,1); localStorage.setItem('f2k_cart',JSON.stringify(c)); renderCart(); updateCartBadge(); };
+
+window.selPay = m => {
+  cartPay=m;
+  ['pmFeda','pmWa'].forEach(id=>document.getElementById(id).classList.toggle('sel',id===('pmFeda'?'fedapay':'whatsapp')));
+  document.getElementById('pmFeda').classList.toggle('sel',m==='fedapay');
+  document.getElementById('pmWa').classList.toggle('sel',m==='whatsapp');
+  document.getElementById('fedaDiv').classList.toggle('hidden',m!=='fedapay');
+  document.getElementById('waDiv').classList.toggle('hidden',m!=='whatsapp');
+};
+
+window.selDelivery = t => {
+  delivType=t;
+  document.getElementById('delPickup').classList.toggle('sel',t==='pickup');
+  document.getElementById('delAddress').classList.toggle('sel',t==='address');
+  document.getElementById('pickupInfo').classList.toggle('hidden',t!=='pickup');
+  document.getElementById('addressInfo').classList.toggle('hidden',t!=='address');
+};
+
+function cartValidate() {
+  const name=document.getElementById('coName').value.trim();
+  const email=document.getElementById('coEmail').value.trim();
+  const phone=document.getElementById('coPhone').value.trim();
+  const err=document.getElementById('cartErr');
+  err.classList.add('hidden');
+  if (!name||!email||!phone) {
+    err.textContent='⚠️ Nom, email et téléphone sont obligatoires.'; err.classList.remove('hidden'); return null;
+  }
+  const c=JSON.parse(localStorage.getItem('f2k_cart')||'[]');
+  const hasPhys=c.some(i=>i.type==='physical');
+  if (hasPhys && delivType==='address') {
+    const addr=document.getElementById('coAddress').value.trim();
+    if (!addr) { err.textContent='⚠️ Veuillez indiquer votre adresse de livraison.'; err.classList.remove('hidden'); return null; }
+  }
+  return {name,email,phone,
+    delivType,
+    address:document.getElementById('coAddress')?.value.trim()||'',
+    city:document.getElementById('coCity')?.value.trim()||'',
+    country:document.getElementById('coCountry')?.value.trim()||'',
+    notes:document.getElementById('coNotes')?.value.trim()||''
+  };
+}
+
+async function saveOrder(coords, method, status, txId=null) {
+  const {sub,comm,total}=window._T;
+  const c=JSON.parse(localStorage.getItem('f2k_cart')||'[]');
+  const ref=await addDoc(collection(db,'orders'),{
+    buyerName:coords.name, buyerEmail:coords.email, buyerPhone:coords.phone,
+    deliveryType:coords.delivType, deliveryAddress:coords.address,
+    deliveryCity:coords.city, deliveryCountry:coords.country, notes:coords.notes,
+    items:c, subtotal:sub, commission:comm, total,
+    paymentMethod:method, paymentStatus:status, transactionId:txId,
+    status:status==='paid'?'processing':'pending',
+    sellerId:c[0]?.sid||'admin',
+    createdAt:new Date().toISOString(), buyerUid:CU?.uid||null
+  });
+  return ref.id;
+}
+
+window.initFedaPay = async () => {
+  const coords=cartValidate(); if(!coords) return;
+  const {total}=window._T;
+  const btn=document.getElementById('fedaBtn');
+  btn.disabled=true; btn.innerHTML='<span style="display:inline-block;animation:spin 1s linear infinite">⏳</span> Initialisation...';
+  try { pendingOrderId=await saveOrder(coords,'fedapay','pending'); }
+  catch(e) { btn.disabled=false; btn.innerHTML='<span>💳</span> Payer maintenant'; document.getElementById('cartErr').textContent='Erreur réseau.'; document.getElementById('cartErr').classList.remove('hidden'); return; }
+  btn.innerHTML='<span>💳</span> Payer maintenant'; btn.disabled=false;
+
+  FedaPay.init({
+    public_key: FEDA_KEY,
+    transaction: { amount:total, description:`Commande F2K MARKET #${pendingOrderId.substring(0,8).toUpperCase()}` },
+    customer: { email:coords.email, lastname:coords.name, phone_number:{number:coords.phone.replace(/\D/g,''),country:'BJ'} },
+    onComplete: async function(resp) {
+      const tx=resp.transaction;
+      const ok=tx&&(tx.status==='approved'||tx.status==='approved_confirmed');
+      try {
+        await updateDoc(doc(db,'orders',pendingOrderId),{
+          paymentStatus:ok?'paid':(tx?'failed':'cancelled'),
+          transactionId:tx?String(tx.id||''):null,
+          status:ok?'processing':'pending'
+        });
+        if(ok){
+          const oSnap=await getDoc(doc(db,'orders',pendingOrderId));
+          if(oSnap.exists()) await distributeEarnings({id:pendingOrderId,...oSnap.data()});
+        }
+      } catch(e2) {}
+      if (ok) {
+        showOrderModal({icon:'🎉',title:'Paiement réussi !',msg:'Votre paiement a été confirmé par FedaPay.',info:`✅ Transaction #${tx.id} · ${Number(total).toLocaleString()} FCFA`,oid:pendingOrderId,isPaid:true});
+      } else {
+        const ps=document.getElementById('payStatus');
+        ps.style.background='rgba(239,68,68,.1)'; ps.style.color='var(--danger)'; ps.style.border='1px solid rgba(239,68,68,.3)';
+        ps.textContent=tx?'❌ Paiement refusé. Réessayez.':'⚠️ Paiement annulé.';
+        ps.classList.remove('hidden'); setTimeout(()=>ps.classList.add('hidden'),8000);
+      }
+    }
+  }).open();
+};
+
+window.placeWAOrder = async () => {
+  const coords=cartValidate(); if(!coords) return;
+  const {sub,comm,total}=window._T;
+  const c=JSON.parse(localStorage.getItem('f2k_cart')||'[]');
+  try {
+    const oid=await saveOrder(coords,'whatsapp','pending');
+    const lines=c.map(i=>`• ${i.name} x${i.qty} = ${(i.price*i.qty).toLocaleString()} FCFA`).join('\n');
+    const msg=encodeURIComponent(`🛒 *Commande F2K MARKET*\nRéf: #${oid.substring(0,8).toUpperCase()}\n\n👤 ${coords.name}\n📧 ${coords.email}\n📞 ${coords.phone}\n${coords.delivType==='address'?`📍 ${coords.address}, ${coords.city}, ${coords.country}`:'🏪 Retrait en boutique'}${coords.notes?'\n📝 '+coords.notes:''}\n\n${lines}\n\nSous-total: ${sub.toLocaleString()} FCFA\nCommission (5%): ${comm.toLocaleString()} FCFA\n*TOTAL: ${total.toLocaleString()} FCFA*`);
+    showOrderModal({icon:'💬',title:'Commande enregistrée !',msg:'Finalisez sur WhatsApp.',info:`📋 #${oid.substring(0,8).toUpperCase()} · ${total.toLocaleString()} FCFA`,oid,waMsg:msg});
+  } catch(e) { document.getElementById('cartErr').textContent='Erreur. Contactez-nous.'; document.getElementById('cartErr').classList.remove('hidden'); }
+};
+
+async function showOrderModal({icon,title,msg,info,oid,waMsg,isPaid=false}) {
+  document.getElementById('omIcon').textContent=icon;
+  document.getElementById('omTitle').textContent=title;
+  document.getElementById('omMsg').textContent=msg;
+  document.getElementById('omInfo').textContent=info;
+  document.getElementById('omRef').textContent=`Référence : #${oid.substring(0,8).toUpperCase()}`;
+  document.getElementById('omWa').href=waMsg?`https://wa.me/${ADMIN_PHONE}?text=${waMsg}`:`https://wa.me/${ADMIN_PHONE}`;
+  localStorage.setItem('f2k_cart','[]'); updateCartBadge();
+
+  // Handle digital product downloads
+  const dlSection  = document.getElementById('omDownloads');
+  const dlLinks    = document.getElementById('omDownloadLinks');
+  const waDig      = document.getElementById('omWaDigital');
+  const dlHistory  = document.getElementById('omDownloadHistory');
+  dlSection.classList.add('hidden');
+  waDig.classList.add('hidden');
+  dlHistory.classList.add('hidden');
+
+  try {
+    const oSnap = await getDoc(doc(db,'orders',oid));
+    if (oSnap.exists()) {
+      const oData = oSnap.data();
+      const digitalItems = (oData.items||[]).filter(i=>i.type==='digital');
+      if (digitalItems.length > 0) {
+        if (isPaid) {
+          // Fetch file URLs from products
+          const links = [];
+          for (const item of digitalItems) {
+            try {
+              const pSnap = await getDoc(doc(db,'products',item.id));
+              const fileUrl = pSnap.exists() ? (pSnap.data().fileUrl||'') : '';
+              if (fileUrl) {
+                links.push({name:item.name, url:fileUrl});
+                // Record download
+                await addDoc(collection(db,'downloads'),{
+                  orderId:oid, productId:item.id, productName:item.name,
+                  fileUrl, buyerUid:CU?.uid||null, buyerEmail:oData.buyerEmail||'',
+                  downloadedAt: new Date().toISOString()
+                });
+              }
+            } catch(e) {}
+          }
+          if (links.length > 0) {
+            dlLinks.innerHTML = links.map(l=>`
+              <a href="${l.url}" target="_blank" download
+                 style="display:flex;align-items:center;gap:.7rem;padding:.75rem 1rem;border-radius:var(--r);background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(59,130,246,.08));border:1px solid rgba(59,130,246,.3);color:var(--info);font-weight:800;text-decoration:none;transition:.2s"
+                 onmouseover="this.style.background='rgba(59,130,246,.25)'" onmouseout="this.style.background='linear-gradient(135deg,rgba(59,130,246,.15),rgba(59,130,246,.08))'">
+                <span style="font-size:1.4rem">📥</span>
+                <div style="text-align:left">
+                  <div style="font-size:.9rem">${l.name}</div>
+                  <div style="font-size:.72rem;color:var(--muted);font-weight:400">Cliquer pour télécharger</div>
+                </div>
+                <span style="margin-left:auto;font-size:.8rem">⬇️</span>
+              </a>`).join('');
+            dlSection.classList.remove('hidden');
+            dlHistory.classList.remove('hidden');
+            if (CU) {
+              document.getElementById('omDownloadHistory').classList.remove('hidden');
+            }
+          }
+        } else {
+          // WhatsApp order — inform client
+          waDig.classList.remove('hidden');
+        }
+      }
+    }
+  } catch(e) {}
+
+  document.getElementById('orderModal').classList.remove('hidden');
+}
+
+// ══════════════════════════════════════════════════════
+// WALLET
+// ══════════════════════════════════════════════════════
+async function getOrCreateWallet(uid) {
+  const ref=doc(db,'wallets',uid);
+  const snap=await getDoc(ref);
+  if(snap.exists()) return snap.data();
+  const w={uid,balance:0,totalEarned:0,totalWithdrawn:0,updatedAt:new Date().toISOString()};
+  await setDoc(ref,w); return w;
+}
+async function creditWallet(uid,amount,desc,orderId=null) {
+  const ref=doc(db,'wallets',uid);
+  const snap=await getDoc(ref);
+  const w=snap.exists()?snap.data():{balance:0,totalEarned:0,totalWithdrawn:0};
+  await setDoc(ref,{uid,balance:(w.balance||0)+amount,totalEarned:(w.totalEarned||0)+amount,totalWithdrawn:w.totalWithdrawn||0,updatedAt:new Date().toISOString()},{merge:true});
+  await addDoc(collection(db,'wallet_transactions'),{uid,type:'credit',amount,description:desc,orderId:orderId||null,createdAt:new Date().toISOString()});
+}
+async function debitWallet(uid,amount,desc,wdId=null) {
+  const ref=doc(db,'wallets',uid);
+  const snap=await getDoc(ref);
+  if(!snap.exists()) throw new Error('Wallet introuvable');
+  const w=snap.data();
+  if((w.balance||0)<amount) throw new Error('Solde insuffisant');
+  await updateDoc(ref,{balance:w.balance-amount,totalWithdrawn:(w.totalWithdrawn||0)+amount,updatedAt:new Date().toISOString()});
+  await addDoc(collection(db,'wallet_transactions'),{uid,type:'debit',amount,description:desc,withdrawalId:wdId||null,createdAt:new Date().toISOString()});
+}
+async function distributeEarnings(order) {
+  const{subtotal,commission,sellerId}=order;
+  if(!subtotal||subtotal<=0) return;
+  if(sellerId&&sellerId!=='admin') await creditWallet(sellerId,subtotal-commission,`Vente – Commande #${(order.id||'').substring(0,8).toUpperCase()}`,order.id||null);
+  const aSnap=await getDocs(query(collection(db,'users'),where('email','==',ADMIN_EMAIL)));
+  const adminUid=aSnap.empty?'admin':aSnap.docs[0].id;
+  await creditWallet(adminUid,commission,`Commission 5% – #${(order.id||'').substring(0,8).toUpperCase()}`,order.id||null);
+}
+
+async function loadWallet() {
+  if (!CU) { go('login'); return; }
+  const uid=CU.email===ADMIN_EMAIL?'admin':CU.uid;
+  try {
+    const w=await getOrCreateWallet(uid);
+    document.getElementById('wBal').textContent=Number(w.balance||0).toLocaleString();
+    document.getElementById('wEarned').textContent=Number(w.totalEarned||0).toLocaleString()+' FCFA';
+    document.getElementById('wWithdrawn').textContent=Number(w.totalWithdrawn||0).toLocaleString()+' FCFA';
+
+    const txSnap=await getDocs(query(collection(db,'wallet_transactions'),where('uid','==',uid),orderBy('createdAt','desc')));
+    const txs=txSnap.docs.slice(0,30).map(d=>({id:d.id,...d.data()}));
+    document.getElementById('txList').innerHTML=txs.length?txs.map(tx=>`
+      <div class="tx-item">
+        <div class="tx-ico ${tx.type==='credit'?'cr':'db'}">${tx.type==='credit'?'⬆️':'⬇️'}</div>
+        <div style="flex:1;min-width:0"><div style="font-size:.85rem;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tx.description}</div><div style="font-size:.73rem;color:var(--muted)">${(tx.createdAt||'').substring(0,16).replace('T',' ')}</div></div>
+        <div class="tx-amt ${tx.type==='credit'?'cr':'db'}">${tx.type==='credit'?'+':'-'}${Number(tx.amount||0).toLocaleString()} FCFA</div>
+      </div>`).join(''):'<p style="color:var(--muted);font-size:.88rem;text-align:center;padding:1rem">Aucune transaction.</p>';
+
+    const wdSnap=await getDocs(query(collection(db,'withdrawal_requests'),where('uid','==',uid),orderBy('createdAt','desc')));
+    const wds=wdSnap.docs.map(d=>({id:d.id,...d.data()}));
+    document.getElementById('wPending').textContent=wds.filter(w=>w.status==='pending').reduce((s,w)=>s+w.amount,0).toLocaleString()+' FCFA';
+    const sm={pending:{badge:'bw',label:'⏳ En attente'},approved:{badge:'bs',label:'✅ Approuvé'},rejected:{badge:'bd',label:'❌ Rejeté'}};
+    document.getElementById('wdList').innerHTML=wds.length?wds.map(wd=>`
+      <div class="wd-item">
+        <div style="min-width:0"><div style="font-weight:700;color:#fff;font-size:.88rem">${wd.momoOperator} · ${wd.momoNumber}</div><div style="font-size:.73rem;color:var(--muted)">${(wd.createdAt||'').substring(0,10)}</div>${wd.reason?`<div style="font-size:.73rem;color:var(--danger);margin-top:.15rem">Motif: ${wd.reason}</div>`:''}</div>
+        <div style="text-align:right;flex-shrink:0"><div style="font-weight:900;color:var(--primary)">${Number(wd.amount||0).toLocaleString()} FCFA</div><span class="badge ${sm[wd.status]?.badge||'bw'}">${sm[wd.status]?.label||wd.status}</span></div>
+      </div>`).join(''):'<p style="color:var(--muted);font-size:.88rem;text-align:center;padding:1rem">Aucune demande.</p>';
+  } catch(e) { showToast('❌ Erreur wallet'); }
+}
+
+window.selMomo = (name,key) => {
+  selectedMomo=name;
+  ['mtn','moov','celtiis'].forEach(k=>document.getElementById(`mm-${k}`).classList.toggle('sel',k===key));
+};
+
+window.submitWD = async () => {
+  if(!CU){go('login');return;}
+  const amount=+document.getElementById('wdAmt').value;
+  const phone=document.getElementById('wdPhone').value.trim();
+  const holder=document.getElementById('wdHolder').value.trim();
+  const err=document.getElementById('wdErr');
+  err.classList.add('hidden');
+  if(!amount||amount<500){err.textContent='⚠️ Minimum 500 FCFA.';err.classList.remove('hidden');return;}
+  if(!selectedMomo){err.textContent='⚠️ Choisissez un opérateur.';err.classList.remove('hidden');return;}
+  if(!phone){err.textContent='⚠️ Numéro Mobile Money requis.';err.classList.remove('hidden');return;}
+  const uid=CU.email===ADMIN_EMAIL?'admin':CU.uid;
+  const w=await getOrCreateWallet(uid);
+  if((w.balance||0)<amount){err.textContent=`⚠️ Solde insuffisant (${(w.balance||0).toLocaleString()} FCFA).`;err.classList.remove('hidden');return;}
+  pendingWD={amount,momoOperator:selectedMomo,momoNumber:phone,holderName:holder};
+  document.getElementById('wdDetails').innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:.55rem">
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Montant</span><strong style="color:var(--primary)">${amount.toLocaleString()} FCFA</strong></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Opérateur</span><strong>${selectedMomo}</strong></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Numéro</span><strong>${phone}</strong></div>
+      ${holder?`<div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Titulaire</span><strong>${holder}</strong></div>`:''}
+      <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:.5rem"><span style="color:var(--muted)">Solde après</span><strong>${(w.balance-amount).toLocaleString()} FCFA</strong></div>
+    </div>`;
+  document.getElementById('wdModal').classList.remove('hidden');
+};
+
+window.confirmWD = async () => {
+  if(!pendingWD||!CU) return;
+  const btn=document.getElementById('wdConfBtn');
+  btn.disabled=true; btn.textContent='Envoi...';
+  const uid=CU.email===ADMIN_EMAIL?'admin':CU.uid;
+  try {
+    await addDoc(collection(db,'withdrawal_requests'),{uid,userName:UD?.fullname||CU.email,amount:pendingWD.amount,momoNumber:pendingWD.momoNumber,momoOperator:pendingWD.momoOperator,holderName:pendingWD.holderName,status:'pending',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});
+    document.getElementById('wdModal').classList.add('hidden');
+    document.getElementById('wdSuc').textContent=`✅ Demande de ${pendingWD.amount.toLocaleString()} FCFA envoyée ! Traitement sous 24-48h.`;
+    document.getElementById('wdSuc').classList.remove('hidden');
+    document.getElementById('wdAmt').value=''; selectedMomo='';
+    ['mtn','moov','celtiis'].forEach(k=>document.getElementById(`mm-${k}`).classList.remove('sel'));
+    pendingWD=null; await loadWallet();
+  } catch(e) {
+    document.getElementById('wdModal').classList.add('hidden');
+    document.getElementById('wdErr').textContent='❌ '+e.message;
+    document.getElementById('wdErr').classList.remove('hidden');
+  }
+  btn.disabled=false; btn.textContent='✅ Confirmer';
+};
+
+// ══════════════════════════════════════════════════════
+// MESSAGING
+// ══════════════════════════════════════════════════════
+async function loadMessages() {
+  if (!CU) { go('login'); return; }
+  const isAdmin = CU.email===ADMIN_EMAIL;
+  const chatList = document.getElementById('chatList');
+  chatList.innerHTML='<div style="padding:1.5rem;color:var(--muted);font-size:.88rem;text-align:center">Chargement...</div>';
+
+  if (isAdmin) {
+    // Admin sees all conversations (one per user)
+    const snap = await getDocs(query(collection(db,'users'), where('role','in',['seller','client'])));
+    if (snap.empty) { chatList.innerHTML='<div style="padding:1.5rem;color:var(--muted);font-size:.88rem;text-align:center">Aucun utilisateur.</div>'; return; }
+    chatList.innerHTML = [...snap.docs].map(d => {
+      const u=d.data();
+      return `<div class="chat-list-item" onclick="openChat('${d.id}','${(u.fullname||u.email||'').replace(/'/g,"\\'")}','${u.avatar||''}')">
+        ${u.avatar?`<img src="${u.avatar}" class="avatar" style="width:38px;height:38px"/>`:
+          `<div class="avatar-ph" style="width:38px;height:38px;font-size:1.2rem">👤</div>`}
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;color:#fff;font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.fullname||u.email}</div>
+          <div style="font-size:.73rem;color:var(--muted)">${u.role==='seller'?'🏪 Vendeur':'🛒 Client'} · ${u.country||''}</div>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    // User sees one conversation with admin
+    chatList.innerHTML=`<div class="chat-list-item active" onclick="openChat('admin','F2K ADMIN','')">
+      <div class="avatar-ph" style="width:38px;height:38px;font-size:1.2rem;background:rgba(255,107,0,.2)">⚡</div>
+      <div style="flex:1"><div style="font-weight:700;color:#fff;font-size:.88rem">F2K ADMIN</div><div style="font-size:.73rem;color:var(--muted)">Support officiel</div></div>
+    </div>`;
+    openChat('admin','F2K ADMIN','');
+  }
+}
+
+window.openChat = async (targetUid, targetName, targetAvatar) => {
+  activeChatUid = targetUid;
+  if (msgUnsub) { msgUnsub(); msgUnsub=null; }
+
+  // Mark active
+  document.querySelectorAll('.chat-list-item').forEach(el=>el.classList.remove('active'));
+  event?.currentTarget?.classList?.add('active');
+
+  const header = document.getElementById('chatHeader');
+  header.innerHTML=`<div style="display:flex;align-items:center;gap:.7rem">
+    ${targetAvatar?`<img src="${targetAvatar}" class="avatar" style="width:34px;height:34px"/>`:
+      `<div class="avatar-ph" style="width:34px;height:34px;font-size:1.1rem;background:rgba(255,107,0,.2)">⚡</div>`}
+    <div><div style="font-weight:800;color:#fff">${targetName}</div><div style="font-size:.72rem;color:var(--success)">● En ligne</div></div>
+    <a href="https://wa.me/${ADMIN_PHONE}" target="_blank" class="btn-wa" style="margin-left:auto;font-size:.78rem">💬 WhatsApp</a>
+  </div>`;
+  document.getElementById('chatInput').classList.remove('hidden');
+
+  // Determine conversation ID (always admin-uid or uid-admin)
+  const isAdmin=CU.email===ADMIN_EMAIL;
+  const userUid=isAdmin?targetUid:CU.uid;
+  const convId=`conv_${userUid}`; // one conversation per user with admin
+
+  const msgsEl=document.getElementById('chatMessages');
+  msgsEl.innerHTML='';
+
+  // Listen real-time
+  msgUnsub = onSnapshot(
+    query(collection(db,'messages'), where('convId','==',convId), orderBy('createdAt','asc')),
+    snap => {
+      msgsEl.innerHTML='';
+      snap.docs.forEach(d => {
+        const m=d.data();
+        const mine=m.senderId===CU.uid||(isAdmin&&m.senderRole==='admin');
+        msgsEl.innerHTML+=`
+          <div style="display:flex;flex-direction:column;align-items:${mine?'flex-end':'flex-start'}">
+            <div class="chat-bubble ${mine?'mine':'theirs'}">${m.text}</div>
+            <div class="chat-meta ${mine?'chat-time-mine':'chat-time-theirs'}">${(m.createdAt||'').substring(11,16)}</div>
+          </div>`;
+      });
+      msgsEl.scrollTop=msgsEl.scrollHeight;
+      // Mark read
+      if (!isAdmin) markRead(convId);
+    }
+  );
+};
+
+window.sendMsg = async () => {
+  const input=document.getElementById('msgInput');
+  const text=input.value.trim(); if(!text||!CU||!activeChatUid) return;
+  input.value='';
+  const isAdmin=CU.email===ADMIN_EMAIL;
+  const userUid=isAdmin?activeChatUid:CU.uid;
+  const convId=`conv_${userUid}`;
+  await addDoc(collection(db,'messages'),{
+    convId, text,
+    senderId: CU.uid,
+    senderRole: isAdmin?'admin':'user',
+    senderName: UD?.fullname||CU.email,
+    receiverId: isAdmin?activeChatUid:'admin',
+    read: false,
+    createdAt: new Date().toISOString()
+  });
+  // Update unread for receiver
+  if (!isAdmin) {
+    await setDoc(doc(db,'conv_meta',convId),{userId:CU.uid,lastMsg:text,lastAt:new Date().toISOString(),unreadAdmin:true},{merge:true});
+  } else {
+    await setDoc(doc(db,'conv_meta',convId),{lastMsg:text,lastAt:new Date().toISOString(),unreadUser:true},{merge:true});
+  }
+};
+
+async function markRead(convId) {
+  await setDoc(doc(db,'conv_meta',convId),{unreadUser:false},{merge:true});
+}
+
+async function checkUnread() {
+  if (!CU||CU.email===ADMIN_EMAIL) return;
+  try {
+    const meta=await getDoc(doc(db,'conv_meta',`conv_${CU.uid}`));
+    if (meta.exists()&&meta.data().unreadUser) {
+      document.getElementById('unreadBadge').textContent='!';
+      document.getElementById('unreadBadge').classList.remove('hidden');
+    }
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════════════
+async function loadDashboard() {
+  if (!CU) { go('login'); return; }
+  const el=document.getElementById('dbContent');
+  if (CU.email===ADMIN_EMAIL) { renderAdminDB(el); return; }
+  if (!UD) { const s=await getDoc(doc(db,'users',CU.uid)); UD=s.data()||{}; }
+  if (UD.role==='seller') renderSellerDB(el);
+  else renderBuyerDB(el);
+}
+
+// ── BUYER DB ──────────────────────────────────────────
+function renderBuyerDB(el) {
+  el.innerHTML=`<div class="db-layout"><aside class="sidebar">
+    <div class="sb-brand">
+      ${UD?.avatar?`<img src="${UD.avatar}" class="avatar" style="width:50px;height:50px;margin-bottom:.5rem"/>`:
+        `<div class="avatar-ph" style="width:50px;height:50px;font-size:1.3rem;margin-bottom:.5rem">👤</div>`}
+      <div style="font-weight:800;color:#fff;font-size:.9rem">${UD?.fullname||''}</div>
+      <div style="font-size:.75rem;color:var(--muted)">${UD?.country||''}</div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-link active" onclick="bSec('orders',this)"><span class="ico">🛒</span>Mes Commandes</div>
+      <div class="sb-link" onclick="bSec('downloads',this)"><span class="ico">📥</span>Mes Téléchargements</div>
+      <div class="sb-link" onclick="bSec('profile',this)"><span class="ico">👤</span>Mon Profil</div>
+      <div class="sb-link" onclick="go('wallet')"><span class="ico">💰</span>Mon Wallet</div>
+      <div class="sb-link" onclick="go('messages')"><span class="ico">💬</span>Messages</div>
+      <div class="sb-link" onclick="go('products')"><span class="ico">🛍️</span>Parcourir</div>
+    </nav>
+  </aside>
+  <main class="mc">
+    <div id="bOrders"></div>
+    <div id="bDownloads" class="hidden"></div>
+    <div id="bProfile" class="hidden"></div>
+  </main></div>`;
+  loadBuyerOrders();
+}
+window.bSec=(s,el)=>{
+  document.querySelectorAll('#dbContent .sb-link').forEach(l=>l.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.getElementById('bOrders').classList.toggle('hidden',s!=='orders');
+  document.getElementById('bDownloads').classList.toggle('hidden',s!=='downloads');
+  document.getElementById('bProfile').classList.toggle('hidden',s!=='profile');
+  if(s==='orders')loadBuyerOrders();
+  if(s==='downloads')loadBuyerDownloads();
+  if(s==='profile')renderBuyerProfile();
+};
+async function loadBuyerDownloads(){
+  const el=document.getElementById('bDownloads'); if(!el) return;
+  el.innerHTML='<div class="ph"><h1>📥 Mes Téléchargements</h1><p>Retrouvez tous vos produits numériques achetés</p></div><div class="loading">Chargement...</div>';
+  try{
+    const snap=await getDocs(query(collection(db,'downloads'),where('buyerEmail','==',CU.email),orderBy('downloadedAt','desc')));
+    if(snap.empty){
+      el.innerHTML=`<div class="ph"><h1>📥 Mes Téléchargements</h1></div>
+        <div class="card" style="text-align:center;padding:3rem">
+          <div style="font-size:3rem;margin-bottom:1rem">📭</div>
+          <h3 style="color:#fff;margin-bottom:.5rem">Aucun téléchargement</h3>
+          <p style="color:var(--muted);margin-bottom:1.5rem">Achetez un produit numérique pour le retrouver ici.</p>
+          <button class="btn-primary" onclick="go('products',{cat:'ebooks'})">🛍️ Voir les produits numériques</button>
+        </div>`;
+      return;
+    }
+    // Group by orderId
+    const downloads=[...snap.docs].map(d=>({id:d.id,...d.data()}));
+    el.innerHTML=`<div class="ph"><h1>📥 Mes Téléchargements</h1><p>${downloads.length} fichier(s) disponible(s)</p></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem">
+        ${downloads.map(dl=>`
+          <div class="card" style="margin-bottom:0">
+            <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:1rem">
+              <div style="width:42px;height:42px;border-radius:var(--r);background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">💻</div>
+              <div style="min-width:0">
+                <div style="font-weight:800;color:#fff;font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${dl.productName}</div>
+                <div style="font-size:.72rem;color:var(--muted)">Acheté le ${(dl.downloadedAt||'').substring(0,10)}</div>
+              </div>
+            </div>
+            <a href="${dl.fileUrl}" target="_blank" download
+               style="display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:.65rem;border-radius:var(--r);background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(59,130,246,.1));border:1px solid rgba(59,130,246,.3);color:var(--info);font-weight:800;font-size:.88rem;text-decoration:none;transition:.2s"
+               onmouseover="this.style.background='rgba(59,130,246,.3)'" onmouseout="this.style.background='linear-gradient(135deg,rgba(59,130,246,.2),rgba(59,130,246,.1))'">
+              📥 Re-télécharger
+            </a>
+            <div style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:.4rem">Commande #${(dl.orderId||'').substring(0,8).toUpperCase()}</div>
+          </div>`).join('')}
+      </div>`;
+  }catch(e){el.innerHTML='<div class="ph"><h1>📥 Mes Téléchargements</h1></div><p style="color:var(--danger)">Erreur de chargement.</p>';}
+}
+
+async function loadBuyerOrders(){
+  const el=document.getElementById('bOrders'); if(!el) return;
+  el.innerHTML='<div class="loading">Chargement...</div>';
+  try{
+    const snap=await getDocs(query(collection(db,'orders'),where('buyerEmail','==',CU.email)));
+    el.innerHTML=`<div class="ph"><h1>Mes Commandes</h1></div>`+(snap.empty?
+      `<div class="card" style="text-align:center;padding:3rem"><div style="font-size:3rem;margin-bottom:1rem">🛒</div><h3 style="color:#fff;margin-bottom:.5rem">Aucune commande</h3><button class="btn-primary" onclick="go('products')" style="margin-top:.8rem">Découvrir les produits</button></div>`:
+      '<div style="display:flex;flex-direction:column;gap:1rem">'+[...snap.docs].map(d=>{const o=d.data();return`<div class="card" style="margin-bottom:0;display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:1rem">
+        <div><code style="color:var(--primary);font-size:.78rem">#${d.id.substring(0,8).toUpperCase()}</code>
+        <p style="color:#fff;font-weight:700;margin-top:.3rem;font-size:.9rem">${(o.items||[]).map(i=>i.name).join(', ')||'-'}</p>
+        <p style="color:var(--muted);font-size:.82rem">${(o.createdAt||'').substring(0,10)} · ${o.paymentMethod||'-'}</p>
+        ${o.deliveryAddress?`<p style="color:var(--muted);font-size:.78rem;margin-top:.2rem">📍 ${o.deliveryAddress}${o.deliveryCity?', '+o.deliveryCity:''}</p>`:''}</div>
+        <div style="text-align:right">
+          <div style="font-size:1.1rem;font-weight:900;color:var(--primary)">${Number(o.total||0).toLocaleString()} FCFA</div>
+          <span class="badge ${o.status==='delivered'?'bs':o.status==='cancelled'?'bd':'bw'}" style="margin-top:.3rem">${o.status||'pending'}</span>
+          <span class="badge ${o.paymentStatus==='paid'?'bs':'bw'}" style="margin-top:.3rem;margin-left:.3rem">${o.paymentStatus==='paid'?'💳 Payé':'⏳ En attente'}</span>
+        </div>
+      </div>`;}).join('')+'</div>');
+  }catch(e){el.innerHTML='<p style="color:var(--danger)">Erreur.</p>';}
+}
+function renderBuyerProfile(){
+  const el=document.getElementById('bProfile'); if(!el) return;
+  el.innerHTML=`<div class="ph"><h1>Mon Profil</h1></div><div class="card" style="max-width:480px">
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
+      ${UD?.avatar?`<img src="${UD.avatar}" class="avatar"/>`:
+        `<div class="avatar-ph">👤</div>`}
+      <div><div style="font-weight:800;color:#fff;font-size:1rem">${UD?.fullname||'-'}</div><div style="color:var(--muted);font-size:.85rem">${CU.email}</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.7rem">
+      <div><label style="font-size:.72rem;color:var(--muted);text-transform:uppercase">Téléphone</label><p>${UD?.phone||'-'}</p></div>
+      <div><label style="font-size:.72rem;color:var(--muted);text-transform:uppercase">Pays</label><p>🌍 ${UD?.country||'-'}</p></div>
+      <hr style="border:none;border-top:1px solid var(--border)"/>
+      <button class="btn-secondary" onclick="go('register',{role:'seller'})" style="width:auto;padding:.6rem 1.2rem">🏪 Devenir vendeur</button>
+    </div>
+  </div>`;
+}
+
+// ── SELLER DB ─────────────────────────────────────────
+function renderSellerDB(el) {
+  const isPending=UD?.status==='pending';
+  el.innerHTML=`
+  ${isPending?`<div style="position:sticky;top:60px;z-index:99;padding:.9rem 2rem;text-align:center;background:rgba(245,158,11,.15);border-bottom:1px solid rgba(245,158,11,.3);color:var(--warning);font-weight:700;font-size:.88rem">⏳ Compte en attente de validation admin · <a href="https://wa.me/${ADMIN_PHONE}" target="_blank" style="color:var(--primary)">Contacter l'admin</a></div>`:''}
+  <div class="db-layout">
+  <aside class="sidebar">
+    <div class="sb-brand">
+      ${UD?.shopLogo?`<img src="${UD.shopLogo}" style="width:50px;height:50px;border-radius:var(--r);object-fit:cover;border:2px solid var(--primary);margin-bottom:.5rem"/>`:
+        (UD?.avatar?`<img src="${UD.avatar}" class="avatar" style="width:50px;height:50px;margin-bottom:.5rem"/>`:
+        `<div class="avatar-ph" style="width:50px;height:50px;font-size:1.3rem;margin-bottom:.5rem">🏪</div>`)}
+      <div style="font-weight:800;color:var(--primary);font-size:.88rem">${UD?.shopName||UD?.fullname||''}</div>
+      <div style="font-size:.73rem;color:var(--muted)">🌍 ${UD?.country||''}</div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-link active" onclick="sSec('overview',this)"><span class="ico">📊</span>Tableau de bord</div>
+      <div class="sb-link" onclick="sSec('products',this)"><span class="ico">📦</span>Mes Produits</div>
+      <div class="sb-link" onclick="openAddProd()"><span class="ico">➕</span>Ajouter un produit</div>
+      <div class="sb-link" onclick="sSec('orders',this)"><span class="ico">🛒</span>Mes Commandes</div>
+      <div class="sb-link" onclick="go('wallet')"><span class="ico">💰</span>Mon Portefeuille</div>
+      <div class="sb-link" onclick="go('messages')"><span class="ico">💬</span>Messages Admin</div>
+      <div class="sb-link" onclick="sSec('profile',this)"><span class="ico">👤</span>Mon Profil</div>
+    </nav>
+    <div style="padding:1rem;border-top:1px solid var(--border)"><a href="https://wa.me/${ADMIN_PHONE}" target="_blank" class="btn-wa" style="font-size:.78rem">💬 Support WhatsApp</a></div>
+  </aside>
+  <main class="mc">
+    <div id="sOverview"></div>
+    <div id="sProducts" class="hidden"></div>
+    <div id="sOrders" class="hidden"></div>
+    <div id="sProfile" class="hidden"></div>
+  </main></div>`;
+  loadSellerOverview();
+}
+window.sSec=(s,el)=>{
+  document.querySelectorAll('#dbContent .sb-link').forEach(l=>l.classList.remove('active'));
+  if(el)el.classList.add('active');
+  ['overview','products','orders','profile'].forEach(k=>document.getElementById('s'+k[0].toUpperCase()+k.slice(1))?.classList.toggle('hidden',k!==s));
+  if(s==='overview')loadSellerOverview();
+  if(s==='products')loadSellerProducts();
+  if(s==='orders')loadSellerOrders();
+  if(s==='profile')renderSellerProfile();
+};
+async function loadSellerOverview(){
+  const el=document.getElementById('sOverview'); if(!el) return;
+  try{
+    const [ps,os,wlt]=await Promise.all([
+      getDocs(query(collection(db,'products'),where('sellerId','==',CU.uid))),
+      getDocs(query(collection(db,'orders'),where('sellerId','==',CU.uid))),
+      getOrCreateWallet(CU.uid)
+    ]);
+    let rev=0; os.forEach(d=>{const o=d.data();rev+=(o.subtotal||0)-(o.commission||0);});
+    el.innerHTML=`<div class="ph"><h1>Tableau de bord</h1><p>Boutique : ${UD?.shopName||''}</p></div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="s-ico">📦</div><div class="s-val">${ps.size}</div><div class="s-lbl">Produits</div></div>
+        <div class="stat-card"><div class="s-ico">🛒</div><div class="s-val">${os.size}</div><div class="s-lbl">Commandes</div></div>
+        <div class="stat-card"><div class="s-ico">💰</div><div class="s-val" style="font-size:1.2rem">${rev.toLocaleString()}</div><div class="s-lbl">FCFA Gains</div></div>
+        <div class="stat-card" style="cursor:pointer;border-color:rgba(255,215,0,.3)" onclick="go('wallet')"><div class="s-ico">💳</div><div class="s-val" style="font-size:1.2rem">${Number(wlt.balance||0).toLocaleString()}</div><div class="s-lbl">Solde wallet → Retirer</div></div>
+      </div>
+      <div class="card"><div class="card-title">Dernières commandes</div>${
+        os.empty?'<p style="color:var(--muted)">Aucune commande.</p>':
+        [...os.docs].slice(0,5).map(d=>{const o=d.data();return`<div style="padding:.7rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:.5rem"><div><strong style="font-size:.88rem">#${d.id.substring(0,8).toUpperCase()}</strong> – ${o.buyerName||'Invité'}</div><div style="display:flex;gap:.4rem;align-items:center"><strong style="color:var(--primary)">${Number(o.total||0).toLocaleString()} FCFA</strong><span class="badge bw">${o.status||'pending'}</span></div></div>`;}).join('')
+      }</div>`;
+  }catch(e){el.innerHTML='<p style="color:var(--danger)">Erreur.</p>';}
+}
+async function loadSellerProducts(){
+  const el=document.getElementById('sProducts'); if(!el) return;
+  const snap=await getDocs(query(collection(db,'products'),where('sellerId','==',CU.uid)));
+  el.innerHTML=`<div class="ph"><h1>Mes Produits</h1>
+    <div style="display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;margin-top:.5rem">
+      <button class="btn-primary" onclick="openAddProd()">➕ Ajouter</button>
+      <div style="display:flex;gap:.4rem">
+        <button class="btn-sm btn-edit" id="spfAll" onclick="filterSellerProds('all')" style="font-weight:900">Tous</button>
+        <button class="btn-sm btn-approve" onclick="filterSellerProds('active')">✅ Actifs</button>
+        <button class="btn-sm btn-ban" onclick="filterSellerProds('hidden')">👁️ Masqués</button>
+      </div>
+    </div>
+  </div>`+
+    (snap.empty?'<div class="card" style="text-align:center;padding:2rem;color:var(--muted)">Aucun produit. Cliquez sur ➕ Ajouter.</div>':
+    '<div class="tbl-wrap"><table class="dtable" id="spTable"><thead><tr><th>Produit</th><th>Type</th><th>Prix</th><th>Statut</th><th>Actions</th></tr></thead><tbody>'+
+    [...snap.docs].map(d=>{const p=d.data();const isHidden=p.status==='hidden';return`<tr data-status="${p.status||'active'}">
+      <td>
+        <div style="display:flex;align-items:center;gap:.6rem">
+          ${p.imageUrl?`<img src="${p.imageUrl}" style="width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0"/>`:
+            `<div style="width:36px;height:36px;border-radius:6px;background:var(--dark3);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">${p.type==='digital'?'💻':'📦'}</div>`}
+          <div>
+            <strong style="font-size:.88rem">${p.name}</strong>
+            ${p.type==='digital'&&p.fileUrl?`<div style="font-size:.72rem;color:var(--success);margin-top:.1rem">🔗 Lien fichier défini</div>`:
+              (p.type==='digital'&&!p.fileUrl?`<div style="font-size:.72rem;color:var(--danger);margin-top:.1rem">⚠️ Pas de lien fichier !</div>`:'')}
+          </div>
+        </div>
+      </td>
+      <td><span class="badge ${p.type==='digital'?'bi':'bs'}">${p.type==='digital'?'💻':'📦'} ${p.type}</span></td>
+      <td><strong style="color:var(--primary)">${Number(p.price).toLocaleString()} FCFA</strong></td>
+      <td>
+        ${p.status==='active'?'<span class="badge bs">✅ Actif</span>':
+          p.status==='hidden'?'<span class="badge bw">👁️ Masqué</span>':
+          '<span class="badge bd">❌ Inactif</span>'}
+      </td>
+      <td>
+        <div style="display:flex;gap:.3rem;flex-wrap:wrap">
+          ${isHidden
+            ?`<button class="btn-sm btn-approve" onclick="sellerToggleProd('${d.id}','active')" title="Rendre visible">👁️ Afficher</button>`
+            :`<button class="btn-sm btn-ban"    onclick="sellerToggleProd('${d.id}','hidden')" title="Masquer">🙈 Masquer</button>`}
+          <button class="btn-sm btn-delete" onclick="delProd('${d.id}','${(p.name||'').replace(/'/g,"\\'")}')">🗑️ Supprimer</button>
+        </div>
+      </td>
+    </tr>`;}).join('')+'</tbody></table></div>');
+}
+async function loadSellerOrders(){
+  const el=document.getElementById('sOrders'); if(!el) return;
+  const snap=await getDocs(query(collection(db,'orders'),where('sellerId','==',CU.uid)));
+  el.innerHTML='<div class="ph"><h1>Mes Commandes</h1></div>'+(snap.empty?'<p style="color:var(--muted)">Aucune commande.</p>':'<div class="tbl-wrap"><table class="dtable"><thead><tr><th>Réf</th><th>Client</th><th>Total</th><th>Livraison</th><th>Paiement</th><th>Statut</th></tr></thead><tbody>'+
+    [...snap.docs].map(d=>{const o=d.data();return`<tr>
+      <td><code>#${d.id.substring(0,8).toUpperCase()}</code></td>
+      <td>${o.buyerName||'Invité'}<br><small style="color:var(--muted)">${o.buyerPhone||''}</small></td>
+      <td><strong style="color:var(--primary)">${Number(o.total||0).toLocaleString()} FCFA</strong></td>
+      <td style="font-size:.78rem">${o.deliveryType==='pickup'?'🏪 Retrait':'📍 '+[o.deliveryAddress,o.deliveryCity,o.deliveryCountry].filter(Boolean).join(', ')}</td>
+      <td><span class="badge ${o.paymentStatus==='paid'?'bs':'bw'}">${o.paymentStatus==='paid'?'💳 Payé':'⏳ Attente'}</span></td>
+      <td><span class="badge ${o.status==='delivered'?'bs':o.status==='cancelled'?'bd':'bw'}">${o.status||'pending'}</span></td>
+    </tr>`;}).join('')+'</tbody></table></div>');
+}
+function renderSellerProfile(){
+  const el=document.getElementById('sProfile'); if(!el) return;
+  el.innerHTML=`<div class="ph"><h1>Mon Profil</h1></div><div class="card" style="max-width:500px">
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
+      ${UD?.shopLogo?`<img src="${UD.shopLogo}" style="width:55px;height:55px;border-radius:var(--r);object-fit:cover;border:2px solid var(--primary)"/>`:
+        (UD?.avatar?`<img src="${UD.avatar}" class="avatar" style="width:55px;height:55px"/>`:
+        `<div class="avatar-ph" style="width:55px;height:55px;font-size:1.4rem">🏪</div>`)}
+      <div><div style="font-weight:800;color:var(--primary)">${UD?.shopName||''}</div><div style="font-weight:700;color:#fff">${UD?.fullname||''}</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.7rem">
+      <div><label style="font-size:.72rem;color:var(--muted);text-transform:uppercase">Email</label><p>${CU.email}</p></div>
+      <div><label style="font-size:.72rem;color:var(--muted);text-transform:uppercase">Téléphone WhatsApp</label><p>${UD?.phone||'-'}</p></div>
+      <div><label style="font-size:.72rem;color:var(--muted);text-transform:uppercase">Pays</label><p>🌍 ${UD?.country||'-'}</p></div>
+      <div><label style="font-size:.72rem;color:var(--muted);text-transform:uppercase">Type boutique</label><p>${UD?.sellerType||'-'}</p></div>
+      <div><label style="font-size:.72rem;color:var(--muted);text-transform:uppercase">Statut</label><span class="badge ${UD?.status==='approved'?'bs':'bw'}">${UD?.status||'-'}</span></div>
+    </div>
+  </div>`;
+}
+window.sellerToggleProd=async(pid,status)=>{
+  await updateDoc(doc(db,'products',pid),{status});
+  allProds=[];
+  showToast(status==='hidden'?'🙈 Produit masqué (invisible aux visiteurs)':'✅ Produit visible !');
+  loadSellerProducts();
+};
+window.filterSellerProds=filter=>{
+  document.querySelectorAll('#spTable tbody tr').forEach(r=>{
+    const s=r.dataset.status||'active';
+    r.style.display=(filter==='all'||s===filter)?'':'none';
+  });
+};
+window.delProd=(pid,name)=>openConfirm(`Supprimer "${name}" ?`,'Suppression définitive. Irréversible.',async()=>{await deleteDoc(doc(db,'products',pid));allProds=[];showToast('🗑️ Produit supprimé.');loadSellerProducts();});
+
+// ── ADD PRODUCT ────────────────────────────────────────
+window.openAddProd=()=>{
+  if(UD?.status==='pending'){showToast('⚠️ Compte en attente de validation.');return;}
+  ['apName','apDesc','apPrice','apFile','apStock','apDelivery'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('apType').value=''; document.getElementById('apCat').value='ebooks';
+  document.getElementById('apImg').value='';
+  document.getElementById('apImgPrev').innerHTML='<div style="text-align:center;color:var(--muted)"><div style="font-size:2rem">🖼️</div><div style="font-size:.78rem">Aperçu</div></div>';
+  document.getElementById('apDigFields').classList.add('hidden'); document.getElementById('apPhyFields').classList.add('hidden');
+  document.getElementById('apErr').classList.add('hidden'); document.getElementById('apSuc').classList.add('hidden');
+  document.getElementById('apTitle').textContent=CU?.email===ADMIN_EMAIL?'➕ Ajouter un produit (Admin)':'➕ Publier un produit';
+  document.getElementById('addProdModal').classList.remove('hidden');
+  bindUpload('apImgFile','apImgPrev','apImg','apImgProg','products');
+};
+window.apToggle=()=>{
+  const t=document.getElementById('apType').value;
+  document.getElementById('apDigFields').classList.toggle('hidden',t!=='digital');
+  document.getElementById('apPhyFields').classList.toggle('hidden',t!=='physical');
+};
+window.submitProd=async()=>{
+  const name=document.getElementById('apName').value.trim();
+  const type=document.getElementById('apType').value;
+  const price=document.getElementById('apPrice').value;
+  const err=document.getElementById('apErr'); const suc=document.getElementById('apSuc');
+  err.classList.add('hidden'); suc.classList.add('hidden');
+  if(!name||!type||!price){err.textContent='⚠️ Nom, type et prix obligatoires.';err.classList.remove('hidden');return;}
+  const isA=CU?.email===ADMIN_EMAIL;
+  const data={name,type,category:document.getElementById('apCat').value,description:document.getElementById('apDesc').value.trim(),
+    price:+price,imageUrl:document.getElementById('apImg').value,
+    sellerName:isA?'F2K MULTISERVICE':(UD?.shopName||UD?.fullname||''),
+    sellerId:isA?'admin':CU.uid,status:'active',createdAt:new Date().toISOString()};
+  if(type==='digital')data.fileUrl=document.getElementById('apFile').value.trim();
+  if(type==='physical'){data.stock=+document.getElementById('apStock').value||0;data.deliveryTime=document.getElementById('apDelivery').value.trim();}
+  try{
+    await addDoc(collection(db,'products'),data);
+    suc.textContent='✅ Produit publié !'; suc.classList.remove('hidden'); allProds=[];
+    setTimeout(()=>document.getElementById('addProdModal').classList.add('hidden'),1500);
+  }catch(e){err.textContent='❌ '+e.message;err.classList.remove('hidden');}
+};
+
+// ══════════════════════════════════════════════════════
+// ADMIN DB
+// ══════════════════════════════════════════════════════
+function renderAdminDB(el) {
+  el.innerHTML=`<div class="db-layout">
+  <aside class="sidebar">
+    <div class="sb-brand"><div style="font-size:.73rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Panel Admin</div><div style="font-weight:800;color:var(--primary);font-size:.88rem;margin-top:.3rem">F2K MULTISERVICE</div></div>
+    <nav class="sb-nav">
+      <div class="sb-link active" onclick="aSec('overview',this)"><span class="ico">📊</span>Vue d'ensemble</div>
+      <div class="sb-link" onclick="aSec('sellers',this)"><span class="ico">🏪</span>Vendeurs</div>
+      <div class="sb-link" onclick="aSec('buyers',this)"><span class="ico">👥</span>Acheteurs</div>
+      <div class="sb-link" onclick="aSec('products',this)"><span class="ico">📦</span>Produits</div>
+      <div class="sb-link" onclick="aSec('orders',this)"><span class="ico">🛒</span>Commandes</div>
+      <div class="sb-link" onclick="openAddProd()"><span class="ico">➕</span>Ajouter produit</div>
+      <div class="sb-link" onclick="aSec('wallets',this)"><span class="ico">💰</span>Portefeuilles</div>
+      <div class="sb-link" onclick="aSec('withdrawals',this)"><span class="ico">💸</span>Retraits</div>
+      <div class="sb-link" onclick="go('messages')"><span class="ico">💬</span>Messages</div>
+      <div class="sb-link" onclick="go('wallet')"><span class="ico">💳</span>Mon Wallet</div>
+    </nav>
+  </aside>
+  <main class="mc">
+    <div id="aOverview"></div>
+    <div id="aSellers"     class="hidden"></div>
+    <div id="aBuyers"      class="hidden"></div>
+    <div id="aProducts"    class="hidden"></div>
+    <div id="aOrders"      class="hidden"></div>
+    <div id="aWallets"     class="hidden"></div>
+    <div id="aWithdrawals" class="hidden"></div>
+  </main></div>`;
+  loadAdminOverview();
+}
+window.aSec=(s,el)=>{
+  document.querySelectorAll('#dbContent .sb-link').forEach(l=>l.classList.remove('active'));
+  if(el)el.classList.add('active');
+  ['overview','sellers','buyers','products','orders','wallets','withdrawals'].forEach(k=>{const e=document.getElementById('a'+k[0].toUpperCase()+k.slice(1));if(e)e.classList.toggle('hidden',k!==s);});
+  if(s==='overview')loadAdminOverview();
+  if(s==='sellers')loadAdminSellers();
+  if(s==='buyers')loadAdminBuyers();
+  if(s==='products')loadAdminProducts();
+  if(s==='orders')loadAdminOrders();
+  if(s==='wallets')loadAdminWallets();
+  if(s==='withdrawals')loadAdminWithdrawals();
+};
+
+async function loadAdminOverview(){
+  const el=document.getElementById('aOverview'); if(!el) return;
+  const [users,prods,ords,wlt,wds]=await Promise.all([
+    getDocs(collection(db,'users')),
+    getDocs(query(collection(db,'products'),where('status','==','active'))),
+    getDocs(collection(db,'orders')),
+    getOrCreateWallet('admin'),
+    getDocs(query(collection(db,'withdrawal_requests'),where('status','==','pending')))
+  ]);
+  let pending=0,approved=0,buyers=0;
+  users.forEach(d=>{const u=d.data();if(u.role==='seller'){if(u.status==='pending')pending++;else if(u.status==='approved')approved++;}else if(u.role==='client')buyers++;});
+  el.innerHTML=`<div class="ph"><h1>Vue d'ensemble</h1><p>© F2K MULTISERVICE – Marketplace Mondiale</p></div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="s-ico">⏳</div><div class="s-val">${pending}</div><div class="s-lbl">Vendeurs en attente</div></div>
+      <div class="stat-card"><div class="s-ico">✅</div><div class="s-val">${approved}</div><div class="s-lbl">Vendeurs actifs</div></div>
+      <div class="stat-card"><div class="s-ico">👥</div><div class="s-val">${buyers}</div><div class="s-lbl">Acheteurs</div></div>
+      <div class="stat-card"><div class="s-ico">📦</div><div class="s-val">${prods.size}</div><div class="s-lbl">Produits actifs</div></div>
+      <div class="stat-card"><div class="s-ico">🛒</div><div class="s-val">${ords.size}</div><div class="s-lbl">Commandes</div></div>
+      <div class="stat-card" style="cursor:pointer;border-color:rgba(255,215,0,.3)" onclick="go('wallet')"><div class="s-ico">💰</div><div class="s-val" style="font-size:1.2rem">${Number(wlt.balance||0).toLocaleString()}</div><div class="s-lbl">Mon solde wallet</div></div>
+      <div class="stat-card"><div class="s-ico">💸</div><div class="s-val">${wds.size}</div><div class="s-lbl">Retraits en attente</div></div>
+    </div>
+    <div class="card"><div class="card-title">⏳ Vendeurs en attente de validation</div><div id="pendingSellers">Chargement...</div></div>`;
+  loadPendingSellers();
+}
+
+async function loadPendingSellers(){
+  const el=document.getElementById('pendingSellers'); if(!el)return;
+  const snap=await getDocs(query(collection(db,'users'),where('role','==','seller'),where('status','==','pending')));
+  if(snap.empty){el.innerHTML='<p style="color:var(--muted)">Aucun vendeur en attente ✅</p>';return;}
+  el.innerHTML='<div class="tbl-wrap"><table class="dtable"><thead><tr><th>Nom</th><th>Email</th><th>Boutique</th><th>Pays</th><th>Actions</th></tr></thead><tbody>'+
+    [...snap.docs].map(d=>{const u=d.data();return`<tr>
+      <td><div style="display:flex;align-items:center;gap:.5rem">
+        ${u.avatar?`<img src="${u.avatar}" style="width:32px;height:32px;border-radius:50%;object-fit:cover"/>`:
+          `<div class="avatar-ph" style="width:32px;height:32px;font-size:.9rem">👤</div>`}
+        <strong>${u.fullname}</strong>
+      </div><small style="color:var(--muted)">${u.phone||''}</small></td>
+      <td>${u.email}</td>
+      <td>${u.shopName||'-'}</td>
+      <td>🌍 ${u.country||'-'}</td>
+      <td style="display:flex;gap:.3rem;flex-wrap:wrap">
+        <button class="btn-sm btn-approve" onclick="approveUser('${d.id}')">✅ Approuver</button>
+        <button class="btn-sm btn-delete" onclick="rejectUser('${d.id}','${(u.fullname||'').replace(/'/g,"\\'")}')">❌ Rejeter</button>
+      </td>
+    </tr>`;}).join('')+'</tbody></table></div>';
+}
+
+async function loadAdminSellers(){
+  const el=document.getElementById('aSellers'); if(!el) return;
+  const snap=await getDocs(query(collection(db,'users'),where('role','==','seller')));
+  el.innerHTML='<div class="ph"><h1>Gestion Vendeurs</h1></div><div class="tbl-wrap"><table class="dtable"><thead><tr><th>Vendeur</th><th>Email</th><th>Boutique</th><th>Pays</th><th>Statut</th><th>Actions</th></tr></thead><tbody>'+
+    (snap.empty?'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem">Aucun.</td></tr>':
+    [...snap.docs].map(d=>{const u=d.data();return`<tr>
+      <td><div style="display:flex;align-items:center;gap:.5rem">
+        ${u.avatar?`<img src="${u.avatar}" style="width:30px;height:30px;border-radius:50%;object-fit:cover"/>`:`<div class="avatar-ph" style="width:30px;height:30px;font-size:.9rem">👤</div>`}
+        <strong>${u.fullname}</strong></div></td>
+      <td>${u.email}</td>
+      <td>${u.shopName||'-'}</td>
+      <td>🌍 ${u.country||'-'}</td>
+      <td><span class="badge ${u.status==='approved'?'bs':u.status==='pending'?'bw':'bd'}">${u.status||'-'}</span></td>
+      <td style="display:flex;gap:.3rem;flex-wrap:wrap">
+        ${u.status!=='approved'?`<button class="btn-sm btn-approve" onclick="approveUser('${d.id}')">✅</button>`:''}
+        ${u.status!=='banned'?`<button class="btn-sm btn-ban" onclick="banUser('${d.id}','${(u.fullname||'').replace(/'/g,"\\'")}')">🚫</button>`:`<button class="btn-sm btn-approve" onclick="unbanUser('${d.id}')">🔓</button>`}
+        <button class="btn-sm btn-delete" onclick="deleteUser('${d.id}','${(u.fullname||'').replace(/'/g,"\\'")}')">🗑️</button>
+      </td>
+    </tr>`;}).join(''))+'</tbody></table></div>';
+}
+
+async function loadAdminBuyers(){
+  const el=document.getElementById('aBuyers'); if(!el) return;
+  const snap=await getDocs(query(collection(db,'users'),where('role','==','client')));
+  el.innerHTML='<div class="ph"><h1>Gestion Acheteurs</h1></div><div class="tbl-wrap"><table class="dtable"><thead><tr><th>Nom</th><th>Email</th><th>Téléphone</th><th>Pays</th><th>Statut</th><th>Actions</th></tr></thead><tbody>'+
+    (snap.empty?'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem">Aucun.</td></tr>':
+    [...snap.docs].map(d=>{const u=d.data();return`<tr>
+      <td><div style="display:flex;align-items:center;gap:.5rem">
+        ${u.avatar?`<img src="${u.avatar}" style="width:30px;height:30px;border-radius:50%;object-fit:cover"/>`:`<div class="avatar-ph" style="width:30px;height:30px;font-size:.9rem">👤</div>`}
+        <strong>${u.fullname}</strong></div></td>
+      <td>${u.email}</td><td>${u.phone||'-'}</td><td>🌍 ${u.country||'-'}</td>
+      <td><span class="badge ${(u.status||'active')==='active'?'bs':'bd'}">${u.status||'active'}</span></td>
+      <td style="display:flex;gap:.3rem">
+        ${(u.status||'active')!=='banned'?`<button class="btn-sm btn-ban" onclick="banUser('${d.id}','${(u.fullname||'').replace(/'/g,"\\'")}')">🚫</button>`:`<button class="btn-sm btn-approve" onclick="unbanUser('${d.id}')">🔓</button>`}
+        <button class="btn-sm btn-delete" onclick="deleteUser('${d.id}','${(u.fullname||'').replace(/'/g,"\\'")}')">🗑️</button>
+      </td>
+    </tr>`;}).join(''))+'</tbody></table></div>';
+}
+
+async function loadAdminProducts(){
+  const el=document.getElementById('aProducts'); if(!el) return;
+  // Admin sees ALL products including hidden
+  const snap=await getDocs(collection(db,'products'));
+  el.innerHTML='<div class="ph"><h1>Tous les Produits</h1><button class="btn-primary" onclick="openAddProd()" style="margin-top:.5rem">➕ Ajouter</button></div>'
+  +'<div style="display:flex;gap:.4rem;margin-bottom:1rem;flex-wrap:wrap">'
+  +'<button class="btn-sm btn-edit" onclick="filterAdminProds(\'all\')">Tous ('+snap.size+')</button>'
+  +'<button class="btn-sm btn-approve" onclick="filterAdminProds(\'active\')">✅ Actifs</button>'
+  +'<button class="btn-sm btn-ban" onclick="filterAdminProds(\'hidden\')">👁️ Masqués</button>'
+  +'<button class="btn-sm btn-delete" onclick="filterAdminProds(\'inactive\')">❌ Inactifs</button>'
+  +'</div>'
+  +'<div class="tbl-wrap"><table class="dtable" id="apTable"><thead><tr><th>Produit</th><th>Vendeur</th><th>Prix</th><th>Type</th><th>Statut</th><th>Actions</th></tr></thead><tbody>'+
+    (snap.empty?'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem">Aucun.</td></tr>':
+    [...snap.docs].map(d=>{const p=d.data();return`<tr data-status="${p.status||'active'}">
+      <td>
+        <div style="display:flex;align-items:center;gap:.5rem">
+          ${p.imageUrl?`<img src="${p.imageUrl}" style="width:32px;height:32px;border-radius:5px;object-fit:cover"/>`:
+            `<div style="width:32px;height:32px;border-radius:5px;background:var(--dark3);display:flex;align-items:center;justify-content:center;font-size:.9rem">${p.type==='digital'?'💻':'📦'}</div>`}
+          <strong style="font-size:.86rem">${p.name}</strong>
+        </div>
+      </td>
+      <td style="font-size:.82rem">${p.sellerName||'-'}</td>
+      <td><strong style="color:var(--primary)">${Number(p.price||0).toLocaleString()} FCFA</strong></td>
+      <td><span class="badge ${p.type==='digital'?'bi':'bs'}">${p.type==='digital'?'💻':'📦'} ${p.type}</span></td>
+      <td>${p.status==='active'?'<span class="badge bs">✅ Actif</span>':p.status==='hidden'?'<span class="badge bw">👁️ Masqué</span>':'<span class="badge bd">❌ Inactif</span>'}</td>
+      <td>
+        <div style="display:flex;gap:.3rem;flex-wrap:wrap">
+          ${p.status==='active'
+            ?`<button class="btn-sm btn-ban" onclick="toggleProd('${d.id}','hidden')" title="Masquer">🙈</button>`
+            :`<button class="btn-sm btn-approve" onclick="toggleProd('${d.id}','active')" title="Activer">✅</button>`}
+          <button class="btn-sm btn-delete" onclick="aProdDel('${d.id}','${(p.name||'').replace(/'/g,"\\'")}')">🗑️</button>
+        </div>
+      </td>
+    </tr>`;}).join(''))+'</tbody></table></div>';
+}
+window.filterAdminProds=filter=>{
+  document.querySelectorAll('#apTable tbody tr').forEach(r=>{
+    r.style.display=(filter==='all'||r.dataset.status===filter)?'':'none';
+  });
+};
+
+async function loadAdminOrders(){
+  const el=document.getElementById('aOrders'); if(!el) return;
+  const snap=await getDocs(collection(db,'orders'));
+  el.innerHTML='<div class="ph"><h1>Toutes les Commandes</h1></div><div class="tbl-wrap" style="overflow-x:auto"><table class="dtable"><thead><tr><th>Réf</th><th>Client</th><th>Total</th><th>Livraison</th><th>Paiement</th><th>Statut</th><th>MàJ</th></tr></thead><tbody>'+
+    (snap.empty?'<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem">Aucune commande.</td></tr>':
+    [...snap.docs].map(d=>{const o=d.data();return`<tr>
+      <td><code style="font-size:.78rem">#${d.id.substring(0,8).toUpperCase()}</code><br><small style="color:var(--muted)">${(o.createdAt||'').substring(0,10)}</small></td>
+      <td>${o.buyerName||'Invité'}<br><small style="color:var(--muted)">${o.buyerPhone||''}</small></td>
+      <td><strong style="color:var(--primary)">${Number(o.total||0).toLocaleString()} FCFA</strong></td>
+      <td style="font-size:.78rem">${o.deliveryType==='pickup'?'🏪 Retrait boutique':'📍 '+[o.deliveryAddress,o.deliveryCity,o.deliveryCountry].filter(Boolean).join(', ')}</td>
+      <td><span class="badge ${o.paymentStatus==='paid'?'bs':'bw'}">${o.paymentStatus==='paid'?'💳 Payé':'⏳ Attente'}</span></td>
+      <td><span class="badge ${o.status==='delivered'?'bs':o.status==='cancelled'?'bd':'bw'}">${o.status||'pending'}</span></td>
+      <td><select class="fsel" onchange="updOrder('${d.id}',this.value)" style="font-size:.78rem">
+        ${['pending','processing','shipped','delivered','cancelled'].map(s=>`<option ${o.status===s?'selected':''} value="${s}">${s}</option>`).join('')}
+      </select></td>
+    </tr>`;}).join(''))+'</tbody></table></div>';
+}
+
+async function loadAdminWallets(){
+  const el=document.getElementById('aWallets'); if(!el) return;
+  el.innerHTML='<div class="ph"><h1>Portefeuilles</h1></div><div class="loading">Chargement...</div>';
+  const [aWlt,sellers]=await Promise.all([getOrCreateWallet('admin'),getDocs(query(collection(db,'users'),where('role','==','seller')))]);
+  const rows=[[`<tr><td><strong style="color:var(--primary)">🛡️ F2K ADMIN</strong></td><td><strong style="color:var(--primary)">${Number(aWlt.balance||0).toLocaleString()} FCFA</strong></td><td>${Number(aWlt.totalEarned||0).toLocaleString()} FCFA</td><td>${Number(aWlt.totalWithdrawn||0).toLocaleString()} FCFA</td></tr>`]];
+  await Promise.all([...sellers.docs].map(async d=>{const u=d.data();let w={balance:0,totalEarned:0,totalWithdrawn:0};try{w=await getOrCreateWallet(d.id);}catch(e){}rows.push(`<tr><td><strong>${u.fullname}</strong><br><small style="color:var(--muted)">${u.shopName||''} · 🌍 ${u.country||''}</small></td><td><strong style="color:var(--primary)">${Number(w.balance||0).toLocaleString()} FCFA</strong></td><td>${Number(w.totalEarned||0).toLocaleString()} FCFA</td><td>${Number(w.totalWithdrawn||0).toLocaleString()} FCFA</td></tr>`);}));
+  el.innerHTML='<div class="ph"><h1>Portefeuilles</h1></div><div class="tbl-wrap"><table class="dtable"><thead><tr><th>Utilisateur</th><th>Solde actuel</th><th>Total gagné</th><th>Total retiré</th></tr></thead><tbody>'+rows.flat().join('')+'</tbody></table></div>';
+}
+
+async function loadAdminWithdrawals(){
+  const el=document.getElementById('aWithdrawals'); if(!el) return;
+  const snap=await getDocs(query(collection(db,'withdrawal_requests'),orderBy('createdAt','desc')));
+  const sm={pending:'bw',approved:'bs',rejected:'bd'};
+  el.innerHTML='<div class="ph"><h1>Demandes de Retrait</h1></div><div class="tbl-wrap"><table class="dtable"><thead><tr><th>Demandeur</th><th>Montant</th><th>Opérateur</th><th>Numéro</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead><tbody>'+
+    (snap.empty?'<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem">Aucune demande.</td></tr>':
+    [...snap.docs].map(d=>{const w=d.data();return`<tr>
+      <td><strong>${w.userName||'-'}</strong></td>
+      <td><strong style="color:var(--primary)">${Number(w.amount||0).toLocaleString()} FCFA</strong></td>
+      <td>${w.momoOperator||'-'}</td><td><code>${w.momoNumber||'-'}</code></td>
+      <td><span class="badge ${sm[w.status]||'bw'}">${w.status}</span></td>
+      <td>${(w.createdAt||'').substring(0,10)}</td>
+      <td style="display:flex;gap:.3rem;flex-wrap:wrap">${w.status==='pending'?`
+        <button class="btn-sm btn-approve" onclick="approveWD('${d.id}','${w.userName||''}',${w.amount||0},'${w.uid}')">✅</button>
+        <button class="btn-sm btn-delete" onclick="rejectWD('${d.id}','${w.userName||''}')">❌</button>
+      `:'-'}</td>
+    </tr>`;}).join(''))+'</tbody></table></div>';
+}
+
+// ── ADMIN ACTIONS ─────────────────────────────────────
+window.approveUser=async uid=>{await updateDoc(doc(db,'users',uid),{status:'approved'});showToast('✅ Vendeur approuvé !');loadAdminOverview();};
+window.rejectUser=(uid,name)=>openConfirm(`Rejeter ${name}`,`Le compte de ${name} sera rejeté.`,async()=>{await updateDoc(doc(db,'users',uid),{status:'rejected'});showToast('❌ Compte rejeté.');});
+window.banUser=(uid,name)=>openConfirm(`Bannir ${name}`,'Ce compte sera banni.',async()=>{await updateDoc(doc(db,'users',uid),{status:'banned'});showToast('🚫 Utilisateur banni.');});
+window.unbanUser=async uid=>{await updateDoc(doc(db,'users',uid),{status:'active'});showToast('🔓 Compte rétabli.');};
+window.deleteUser=(uid,name)=>openConfirm(`Supprimer ${name}`,'⚠️ Suppression définitive irréversible.',async()=>{await deleteDoc(doc(db,'users',uid));showToast('🗑️ Compte supprimé.');});
+window.toggleProd=async(pid,s)=>{await updateDoc(doc(db,'products',pid),{status:s});allProds=[];showToast(s==='active'?'✅ Produit activé.':s==='hidden'?'🙈 Produit masqué.':'⏸️ Désactivé.');loadAdminProducts();};
+window.aProdDel=(pid,name)=>openConfirm(`Supprimer "${name}" ?`,'Suppression irréversible.',async()=>{await deleteDoc(doc(db,'products',pid));allProds=[];showToast('🗑️ Supprimé.');loadAdminProducts();});
+window.updOrder=async(oid,s)=>{await updateDoc(doc(db,'orders',oid),{status:s});showToast('✅ Statut mis à jour.');};
+window.approveWD=(wdId,name,amount,uid)=>openConfirm(`Approuver retrait de ${name}`,`Confirmer le paiement de ${Number(amount).toLocaleString()} FCFA ?`,async()=>{
+  try{await debitWallet(uid,amount,`Retrait approuvé – ${selectedMomo||''}`,wdId);await updateDoc(doc(db,'withdrawal_requests',wdId),{status:'approved',updatedAt:new Date().toISOString()});showToast('✅ Retrait approuvé ! Wallet débité.');loadAdminWithdrawals();}
+  catch(e){showToast('❌ '+e.message);}
+});
+window.rejectWD=(wdId,name)=>{
+  const r=prompt(`Motif du rejet pour ${name} (optionnel) :`);
+  if(r===null)return;
+  openConfirm(`Rejeter demande de ${name}`,'Demande marquée comme rejetée.',async()=>{await updateDoc(doc(db,'withdrawal_requests',wdId),{status:'rejected',reason:r||'',updatedAt:new Date().toISOString()});showToast('❌ Retrait rejeté.');loadAdminWithdrawals();});
+};
+
+// ══════════════════════════════════════════════════════
+// CONFIRM MODAL
+// ══════════════════════════════════════════════════════
+window.openConfirm=(title,msg,cb)=>{document.getElementById('cfTitle').textContent=title;document.getElementById('cfMsg').textContent=msg;document.getElementById('confirmModal').classList.remove('hidden');cfCb=cb;};
+window.closeConfirm=()=>{document.getElementById('confirmModal').classList.add('hidden');cfCb=null;};
+document.getElementById('cfYes').addEventListener('click',async()=>{if(cfCb){await cfCb();cfCb=null;}closeConfirm();});
+
+// ══════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════
+window.showToast=msg=>{const t=document.getElementById('toast');t.textContent=msg;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),3500);};
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+// Bind register uploads
+document.getElementById('reAvatarFile').addEventListener('change', async e=>{
+  const file=e.target.files[0]; if(!file)return;
+  if(!file.type.startsWith('image/')){showToast('⚠️ Image uniquement');return;}
+  const reader=new FileReader();
+  reader.onload=ev=>{const p=document.getElementById('reAvatarPrev');p.innerHTML=`<img src="${ev.target.result}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--primary)"/>`;};
+  reader.readAsDataURL(file);
+  try{const url=await uploadImg(file,'avatars');document.getElementById('reAvatar').value=url;}catch(e){showToast('❌ Erreur upload avatar');}
+});
+document.getElementById('reLogoFile').addEventListener('change', async e=>{
+  const file=e.target.files[0]; if(!file)return;
+  if(!file.type.startsWith('image/')){showToast('⚠️ Image uniquement');return;}
+  const reader=new FileReader();
+  reader.onload=ev=>{const p=document.getElementById('reLogoPrev');p.innerHTML=`<img src="${ev.target.result}" style="width:70px;height:70px;border-radius:var(--r);object-fit:cover;border:2px solid var(--primary)"/>`;};
+  reader.readAsDataURL(file);
+  try{const url=await uploadImg(file,'logos');document.getElementById('reLogo').value=url;}catch(e){showToast('❌ Erreur upload logo');}
+});
+
+updateCartBadge();
+go('home');
+</script>
+</body>
+</html>
