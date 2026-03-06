@@ -1606,3 +1606,992 @@ function openTerms(type) {
   document.getElementById("termsModal").classList.remove("hidden");
 }
 window.openTerms = openTerms;
+// ════════════════════════════════════════════
+// CARTE PRODUIT
+// ════════════════════════════════════════════
+function prodCard(id, p) {
+  var isFav = getFavs().indexOf(id) >= 0;
+  var rHtml = p.avgRating
+    ? '<div style="margin-bottom:.38rem">'
+      + starsHtml(p.avgRating, "0.8rem")
+      + '<span style="font-size:.7rem;color:var(--mt);margin-left:.2rem">'
+      + p.avgRating.toFixed(1) + ' (' + p.reviewCount + ')</span></div>'
+    : "";
+  var fBdg = p.featured
+    ? '<div class="fbdg">&#11088; Vedette</div>' : "";
+  var sWarn = "";
+  if (p.type === "physical" && typeof p.stock !== "undefined") {
+    if (p.stock === 0)
+      sWarn = '<div class="stk-out">&#10060; Epuise</div>';
+    else if (p.stock <= STOK_ALERT)
+      sWarn = '<div class="stk-lo">&#9888; Plus que ' + p.stock + '</div>';
+  }
+  var imgH = p.imageUrl
+    ? '<img src="' + esc(p.imageUrl) + '" alt="' + esc(p.name) + '" loading="lazy"/>'
+    : '<div class="pph">' + (p.type === "digital" ? "&#128187;" : "&#128230;") + '</div>';
+
+  return '<div class="pcard" onclick="go(\'product-detail\',{id:\'' + id + '\'})">'
+    + '<div class="pimg">' + imgH
+    + '<span class="tbdg ' + (p.type === "digital" ? "d" : "p") + '">'
+    + (p.type === "digital" ? "Num." : "Phys.") + '</span>' + fBdg + '</div>'
+    + '<div class="pinfo">'
+    + '<h3>' + esc(p.name) + '</h3>'
+    + '<p class="pdesc">' + esc((p.description || "").substring(0, 65))
+    + (p.description && p.description.length > 65 ? "..." : "") + '</p>'
+    + '<p class="psel">&#127978; ' + esc(p.sellerName || "F2K MARKET") + '</p>'
+    + rHtml + sWarn
+    + '<div class="pfoot">'
+    + '<span class="pprice">' + fmt(p.price) + ' FCFA</span>'
+    + '<div class="pacts">'
+    + '<button class="btn-fav' + (isFav ? " on" : "")
+    + '" onclick="event.stopPropagation();toggleFav(\'' + id + '\',this)">&#10084;</button>'
+    + '<button class="btn-cart" '
+    + 'onclick="event.stopPropagation();addCart(\''
+    + id + '\',\'' + esc(p.name) + '\',' + p.price + ',\''
+    + esc(p.imageUrl || "") + '\',\'' + esc(p.type || "physical") + '\',\''
+    + esc(p.sellerId || "admin") + '\')"'
+    + (p.stock === 0 ? ' disabled' : '') + '>'
+    + (p.stock === 0 ? "&#10060;" : "&#128722;") + '</button>'
+    + '</div></div></div></div>';
+}
+
+// ════════════════════════════════════════════
+// PAGE: HOME
+// ════════════════════════════════════════════
+function loadHome() {
+  db.collection("products").where("status","==","active").get()
+    .then(function(ps) {
+      allP = [];
+      ps.forEach(function(d) { allP.push(Object.assign({id:d.id}, d.data())); });
+      document.getElementById("hP").textContent = allP.length;
+      var feat = allP.filter(function(p) { return p.featured; }).slice(0, 8);
+      var fp = document.getElementById("featProds");
+      fp.innerHTML = feat.length
+        ? feat.map(function(p) { return prodCard(p.id, p); }).join("")
+        : '<p class="no-res">Pas encore de produits en vedette.</p>';
+    });
+  db.collection("users")
+    .where("role","==","seller")
+    .where("status","==","approved")
+    .get().then(function(s) {
+      document.getElementById("hS").textContent = s.size;
+    });
+  db.collection("orders").get().then(function(s) {
+    document.getElementById("hO").textContent = s.size;
+  });
+}
+
+// ════════════════════════════════════════════
+// PAGE: PRODUCTS
+// ════════════════════════════════════════════
+function loadProducts(params) {
+  allP = [];
+  var el = document.getElementById("prodsGrid");
+  el.innerHTML = '<div class="loading">Chargement...</div>';
+  if (params && params.cat)
+    document.getElementById("fCat").value = params.cat;
+  if (params && params.s)
+    document.getElementById("fSch").value = params.s;
+  db.collection("products").where("status","==","active").get()
+    .then(function(s) {
+      s.forEach(function(d) {
+        allP.push(Object.assign({id:d.id}, d.data()));
+      });
+      filterP();
+    });
+}
+
+function filterP() {
+  var type = document.getElementById("fTyp").value;
+  var cat  = document.getElementById("fCat").value;
+  var pmax = +document.getElementById("fPmx").value || Infinity;
+  var sort = document.getElementById("fSrt").value;
+  var sr   = document.getElementById("fSch").value.toLowerCase();
+  var rat  = +document.getElementById("fRat").value || 0;
+
+  var r = allP.filter(function(p) {
+    if (type && p.type !== type) return false;
+    if (cat  && p.category !== cat) return false;
+    if (p.price > pmax) return false;
+    if (rat && (p.avgRating || 0) < rat) return false;
+    if (sr && (p.name || "").toLowerCase().indexOf(sr) < 0
+           && (p.description || "").toLowerCase().indexOf(sr) < 0) return false;
+    return true;
+  });
+
+  if (sort === "pa") r.sort(function(a,b){ return a.price - b.price; });
+  else if (sort === "pd") r.sort(function(a,b){ return b.price - a.price; });
+  else if (sort === "rate") r.sort(function(a,b){ return (b.avgRating||0)-(a.avgRating||0); });
+  else if (sort === "feat") r.sort(function(a,b){ return (b.featured?1:0)-(a.featured?1:0); });
+  else r.sort(function(a,b){ return (b.createdAt||"").localeCompare(a.createdAt||""); });
+
+  document.getElementById("pCount").textContent = r.length + " produit(s) trouve(s)";
+  document.getElementById("prodsGrid").innerHTML = r.length
+    ? r.map(function(p) { return prodCard(p.id, p); }).join("")
+    : '<div class="no-res">'
+      + '<p style="font-size:1.5rem;margin-bottom:.7rem">&#128269;</p>'
+      + '<p>Aucun produit trouve.</p>'
+      + '<button class="btn-p" onclick="resetF()" style="margin-top:.9rem">Reset filtres</button>'
+      + '</div>';
+}
+
+function resetF() {
+  document.getElementById("fTyp").value = "";
+  document.getElementById("fCat").value = "";
+  document.getElementById("fSrt").value = "recent";
+  document.getElementById("fRat").value = "0";
+  document.getElementById("fPmx").value = "";
+  document.getElementById("fSch").value = "";
+  filterP();
+}
+window.filterP = filterP;
+window.resetF  = resetF;
+
+// ════════════════════════════════════════════
+// PAGE: WISHLIST
+// ════════════════════════════════════════════
+function loadWishlist() {
+  var el   = document.getElementById("wishGrid");
+  var favs = getFavs();
+  var ct   = document.getElementById("wishCt");
+  if (!favs.length) {
+    if (ct) ct.textContent = "0 favori";
+    el.innerHTML = '<div class="no-res">'
+      + '<div style="font-size:3rem;margin-bottom:.7rem">&#128148;</div>'
+      + '<h3 style="color:#fff;margin-bottom:.4rem">Aucun favori</h3>'
+      + '<p style="margin-bottom:1.2rem;color:var(--mt)">Ajoutez des produits depuis la boutique</p>'
+      + '<button class="btn-p" onclick="go(\'products\')">Explorer</button></div>';
+    return;
+  }
+  el.innerHTML = '<div class="loading">Chargement...</div>';
+  var promises = favs.map(function(id) {
+    return db.collection("products").doc(id).get();
+  });
+  Promise.all(promises).then(function(snaps) {
+    var valid = snaps
+      .filter(function(s) { return s.exists; })
+      .map(function(s) { return Object.assign({id:s.id}, s.data()); });
+    if (ct) ct.textContent = valid.length + " favori(s)";
+    el.innerHTML = valid.length
+      ? valid.map(function(p) { return prodCard(p.id, p); }).join("")
+      : '<p class="no-res">Certains favoris ne sont plus disponibles.</p>';
+  });
+}
+
+// ════════════════════════════════════════════
+// PAGE: SELLERS
+// ════════════════════════════════════════════
+function loadSellers() {
+  var el = document.getElementById("sellGrid");
+  el.innerHTML = '<div class="loading">Chargement...</div>';
+  db.collection("users")
+    .where("role","==","seller")
+    .where("status","==","approved")
+    .get().then(function(s) {
+      if (s.empty) {
+        el.innerHTML = '<p class="no-res">Aucun vendeur actif pour le moment.</p>';
+        return;
+      }
+      el.innerHTML = s.docs.map(function(d) {
+        var v = d.data();
+        var logo = v.shopLogo
+          ? '<img src="' + esc(v.shopLogo) +
+            '" style="width:52px;height:52px;border-radius:var(--r);object-fit:cover;border:2px solid var(--p)"/>'
+          : v.avatar
+            ? '<img src="' + esc(v.avatar) +
+              '" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--p)"/>'
+            : '<div style="width:52px;height:52px;border-radius:50%;background:rgba(255,107,0,.12);'
+              + 'display:flex;align-items:center;justify-content:center;font-size:1.4rem">&#127978;</div>';
+        return '<div class="card" style="cursor:pointer;margin-bottom:0;transition:var(--tr)" '
+          + 'onmouseover="this.style.borderColor=\'var(--p)\'" '
+          + 'onmouseout="this.style.borderColor=\'\'" '
+          + 'onclick="go(\'products\',{seller:\'' + d.id + '\'})">'
+          + '<div style="display:flex;align-items:center;gap:.9rem;margin-bottom:.7rem">'
+          + logo
+          + '<div>'
+          + '<div style="font-weight:800;color:#fff">' + esc(v.shopName) + '</div>'
+          + '<div style="font-size:.74rem;color:var(--mt)">&#127757; ' + esc(v.country || "") + '</div>'
+          + '</div></div>'
+          + (v.shopDesc
+            ? '<p style="font-size:.8rem;color:var(--mt);line-height:1.55;margin-bottom:.7rem">'
+              + esc(v.shopDesc.substring(0,90)) + (v.shopDesc.length > 90 ? "..." : "") + '</p>'
+            : "")
+          + '<div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem">'
+          + '<span class="badge bs">&#9989; Verifie</span>'
+          + (v.sellerType === "digital"
+            ? '<span class="badge bi">&#128187; Numerique</span>'
+            : v.sellerType === "physical"
+              ? '<span class="badge bp">&#128230; Physique</span>'
+              : '<span class="badge bw">&#128260; Mixte</span>')
+          + '</div>'
+          + '<button class="bsm b-dl" '
+          + 'onclick="event.stopPropagation();openReport(\'seller\',\'' + d.id + '\',\''
+          + esc(v.shopName || v.fullname) + '\')" '
+          + 'style="font-size:.72rem">&#128737;&#65039; Signaler</button>'
+          + '</div>';
+      }).join("");
+    });
+}
+
+// ════════════════════════════════════════════
+// PAGE: PRODUCT DETAIL
+// ════════════════════════════════════════════
+function loadDetail(id) {
+  if (!id) { go("products"); return; }
+  var el = document.getElementById("pdCt");
+  el.innerHTML = '<div style="text-align:center;padding:5rem;color:var(--mt)">Chargement...</div>';
+  db.collection("products").doc(id).get().then(function(s) {
+    if (!s.exists) {
+      el.innerHTML = '<p style="text-align:center;padding:4rem;color:var(--er)">Produit introuvable.</p>';
+      return;
+    }
+    var p = s.data();
+    var isFav = getFavs().indexOf(id) >= 0;
+    var sInfo = "";
+    if (p.type === "physical") {
+      sInfo = '<div style="padding:.6rem .9rem;border-radius:var(--r);'
+        + 'background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.22);'
+        + 'color:var(--ok);font-weight:700;font-size:.83rem;margin-bottom:.7rem">'
+        + (p.stock > 0
+          ? "&#128230; Stock: " + p.stock + " disponible(s)"
+            + (p.deliveryTime ? " &nbsp;|&nbsp; &#128666; " + esc(p.deliveryTime) : "")
+          : "&#10060; Rupture de stock")
+        + '</div>'
+        + '<div style="padding:.5rem .9rem;border-radius:var(--r);'
+        + 'background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);'
+        + 'color:var(--wn);font-size:.78rem;margin-bottom:.85rem">'
+        + '&#9888;&#65039; Frais de livraison a la charge du client.</div>';
+    }
+    db.collection("reviews")
+      .where("productId","==",id)
+      .orderBy("createdAt","desc")
+      .get().then(function(rs) {
+        var reviews = rs.docs.map(function(d) {
+          return Object.assign({id:d.id}, d.data());
+        });
+        var revHtml = reviews.length
+          ? reviews.map(function(r) {
+              return '<div style="padding:.8rem;border-bottom:1px solid var(--bd)">'
+                + '<div style="display:flex;justify-content:space-between;'
+                + 'flex-wrap:wrap;gap:.3rem;margin-bottom:.28rem">'
+                + '<span style="font-weight:700;font-size:.86rem">'
+                + esc(r.authorName || "Anonyme") + ' ' + starsHtml(r.stars,"0.82rem") + '</span>'
+                + '<span style="font-size:.7rem;color:var(--mt)">'
+                + (r.createdAt || "").substring(0,10) + '</span></div>'
+                + '<p style="color:var(--mt);font-size:.83rem;line-height:1.5">'
+                + esc(r.text || "") + '</p></div>';
+            }).join("")
+          : '<div style="text-align:center;padding:2rem;color:var(--mt)">'
+            + '&#11088; Aucun avis. Soyez le premier !</div>';
+
+        el.innerHTML =
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:2.2rem;align-items:start">'
+          + '<div style="border-radius:var(--rl);overflow:hidden;background:var(--dk3);'
+          + 'border:1px solid var(--bd);aspect-ratio:1;display:flex;align-items:center;'
+          + 'justify-content:center;min-height:250px">'
+          + (p.imageUrl
+            ? '<img src="' + esc(p.imageUrl) + '" style="width:100%;height:100%;object-fit:cover"/>'
+            : '<div style="font-size:5rem">'
+              + (p.type === "digital" ? "&#128187;" : "&#128230;") + '</div>')
+          + '</div>'
+          + '<div>'
+          + '<div style="display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.75rem">'
+          + '<span class="tbdg ' + (p.type === "digital" ? "d" : "p")
+          + '" style="position:static">'
+          + (p.type === "digital" ? "&#128187; Numerique" : "&#128230; Physique") + '</span>'
+          + (p.featured ? '<span class="badge bp">&#11088; En vedette</span>' : "")
+          + '</div>'
+          + '<h1 style="font-family:\'Bebas Neue\',sans-serif;'
+          + 'font-size:clamp(1.7rem,4vw,2.4rem);letter-spacing:3px;color:#fff;'
+          + 'line-height:1.05;margin-bottom:.55rem">' + esc(p.name) + '</h1>'
+          + '<div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.7rem;flex-wrap:wrap">'
+          + '<span style="color:var(--mt);font-size:.86rem">&#127978; '
+          + '<strong style="color:var(--p)">' + esc(p.sellerName || "F2K MARKET") + '</strong></span>'
+          + (p.avgRating
+            ? starsHtml(p.avgRating,"0.95rem")
+              + '<span style="color:var(--mt);font-size:.78rem">'
+              + p.avgRating.toFixed(1) + ' (' + p.reviewCount + ' avis)</span>'
+            : "")
+          + '</div>'
+          + '<div style="font-size:2.1rem;font-weight:900;color:var(--p);margin:.75rem 0 .9rem">'
+          + fmt(p.price) + ' FCFA</div>'
+          + '<p style="color:var(--mt);line-height:1.7;font-size:.9rem;margin-bottom:1rem">'
+          + esc(p.description || "Aucune description.") + '</p>'
+          + sInfo
+          + '<div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:.8rem">'
+          + '<button class="btn-p" onclick="addCart(\''
+          + id + '\',\'' + esc(p.name) + '\',' + p.price + ',\''
+          + esc(p.imageUrl || "") + '\',\'' + esc(p.type || "physical") + '\',\''
+          + esc(p.sellerId || "admin") + '\');go(\'cart\')"'
+          + (p.stock === 0 ? ' disabled' : '') + '>'
+          + (p.stock === 0 ? "&#10060; Epuise" : "&#128722; Ajouter au panier") + '</button>'
+          + '<button class="btn-fav' + (isFav ? " on" : "")
+          + '" onclick="toggleFav(\'' + id + '\',this)">&#10084; Favoris</button>'
+          + '<button onclick="openReport(\'product\',\'' + id + '\',\'' + esc(p.name) + '\')" '
+          + 'style="padding:.55rem .85rem;border-radius:var(--r);background:rgba(239,68,68,.07);'
+          + 'border:1px solid rgba(239,68,68,.2);color:var(--er);cursor:pointer;'
+          + 'font-size:.79rem;font-weight:700">&#128737;&#65039; Signaler</button>'
+          + '</div>'
+          + '<a href="https://wa.me/' + ADMIN_PH
+          + '?text=' + encodeURIComponent("Bonjour, je suis interesse par: "
+            + p.name + " (" + fmt(p.price) + " FCFA)")
+          + '" target="_blank" class="btn-wa">&#128172; Contacter via WhatsApp</a>'
+          + '</div></div>'
+          + '<div class="card" style="margin-top:1.8rem">'
+          + '<div style="display:flex;justify-content:space-between;align-items:center;'
+          + 'flex-wrap:wrap;gap:.7rem;margin-bottom:1rem">'
+          + '<div class="ctitle" style="margin-bottom:0">&#11088; Avis clients (' + reviews.length + ')</div>'
+          + '<button class="bsm b-ok" onclick="openReview(\'' + id + '\',\'' + esc(p.name) + '\')" '
+          + 'style="padding:.42rem .85rem">Laisser un avis</button>'
+          + '</div>' + revHtml + '</div>'
+          + '<style>@media(max-width:650px){'
+          + '#pdCt>div:first-child{grid-template-columns:1fr!important}}</style>';
+      });
+  });
+}
+window.loadDetail = loadDetail;
+
+// ════════════════════════════════════════════
+// PAGE: NOTIFICATIONS
+// ════════════════════════════════════════════
+function loadNotifs() {
+  if (!CU) { go("login"); return; }
+  var el = document.getElementById("notifLst");
+  el.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--mt)">Chargement...</div>';
+  db.collection("notifications")
+    .where("uid","==",CU.uid)
+    .orderBy("createdAt","desc")
+    .limit(60)
+    .get().then(function(s) {
+      if (s.empty) {
+        el.innerHTML = '<div style="padding:3rem;text-align:center;color:var(--mt)">Aucune notification.</div>';
+        return;
+      }
+      el.innerHTML = s.docs.map(function(d) {
+        var n = d.data();
+        var ico = n.type === "success" ? "&#9989;"
+          : n.type === "warning" ? "&#9888;&#65039;"
+          : n.type === "error"   ? "&#10060;" : "&#128276;";
+        return '<div class="nitem ' + (n.read ? "" : "unread")
+          + '" onclick="markNotifRead(\'' + d.id + '\')">'
+          + '<div class="nico">' + ico + '</div>'
+          + '<div style="flex:1">'
+          + '<div style="font-size:.86rem;font-weight:700;color:#fff;line-height:1.4">'
+          + esc(n.message) + '</div>'
+          + '<div style="font-size:.7rem;color:var(--mt)">'
+          + (n.createdAt || "").substring(0,16).replace("T"," ") + '</div>'
+          + '</div>'
+          + (!n.read ? '<div class="ndot"></div>' : '')
+          + '</div>';
+      }).join("");
+    });
+}
+
+function markNotifRead(id) {
+  db.collection("notifications").doc(id).update({read:true});
+  checkUnreadNotif();
+  loadNotifs();
+}
+function markAllRead() {
+  if (!CU) return;
+  db.collection("notifications")
+    .where("uid","==",CU.uid)
+    .where("read","==",false)
+    .get().then(function(s) {
+      var batch = db.batch();
+      s.docs.forEach(function(d) { batch.update(d.ref,{read:true}); });
+      return batch.commit();
+    }).then(function() {
+      checkUnreadNotif();
+      loadNotifs();
+      toast("Toutes les notifications lues.");
+    });
+}
+window.markNotifRead = markNotifRead;
+window.markAllRead   = markAllRead;// ════════════════════════════════════════════
+// PANIER (localStorage)
+// ════════════════════════════════════════════
+function getCart() {
+  try { return JSON.parse(localStorage.getItem("f2k_cart") || "[]"); }
+  catch(e) { return []; }
+}
+function saveCart(c) {
+  localStorage.setItem("f2k_cart", JSON.stringify(c));
+}
+function updateCartBadge() {
+  document.getElementById("cBdg").textContent =
+    getCart().reduce(function(s,i){ return s + i.qty; }, 0);
+}
+function addCart(id, name, price, img, type, sellerId) {
+  var c = getCart();
+  var i = c.findIndex(function(x){ return x.id === id; });
+  if (i >= 0) c[i].qty++;
+  else c.push({
+    id:id, name:name, price:Number(price),
+    img:img, type:type, sellerId:sellerId, qty:1
+  });
+  saveCart(c);
+  updateCartBadge();
+  toast("Ajoute au panier !");
+}
+window.addCart = addCart;
+
+function cqty(i, d) {
+  var c = getCart();
+  c[i].qty = Math.max(1, c[i].qty + d);
+  saveCart(c); renderCart(); updateCartBadge();
+}
+function crem(i) {
+  var c = getCart();
+  c.splice(i, 1);
+  saveCart(c); renderCart(); updateCartBadge();
+}
+window.cqty = cqty;
+window.crem = crem;
+
+function calcTots() {
+  var c    = getCart();
+  var sub  = c.reduce(function(s,i){ return s + i.price * i.qty; }, 0);
+  var disc = 0;
+  if (appliedPromo)
+    disc = Math.min(Math.round(sub * appliedPromo.discount / 100), sub);
+  var net   = sub - disc;
+  var comm  = Math.round(net * COMM_RATE);
+  var total = net + comm;
+  return { c:c, sub:sub, disc:disc, net:net, comm:comm, total:total };
+}
+
+function renderCart() {
+  var tt = calcTots();
+  var c  = tt.c;
+  var isEmpty = c.length === 0;
+  document.getElementById("cartLay").style.display = isEmpty ? "none" : "grid";
+  document.getElementById("cartEmp").classList.toggle("hidden", !isEmpty);
+  if (isEmpty) return;
+
+  document.getElementById("cartItems").innerHTML =
+    '<div class="card">'
+    + c.map(function(item, i) {
+        return '<div style="display:flex;align-items:center;gap:.8rem;padding:.75rem 0;'
+          + 'border-bottom:1px solid var(--bd)">'
+          + (item.img
+            ? '<img src="' + esc(item.img) + '" style="width:55px;height:55px;'
+              + 'border-radius:var(--r);object-fit:cover"/>'
+            : '<div style="width:55px;height:55px;border-radius:var(--r);background:var(--dk3);'
+              + 'display:flex;align-items:center;justify-content:center;font-size:1.3rem">'
+              + (item.type === "digital" ? "&#128187;" : "&#128230;") + '</div>')
+          + '<div style="flex:1;min-width:0">'
+          + '<div style="font-weight:800;font-size:.85rem;white-space:nowrap;'
+          + 'overflow:hidden;text-overflow:ellipsis">' + esc(item.name) + '</div>'
+          + '<div style="font-size:.76rem;color:var(--mt)">'
+          + (item.type === "digital" ? "Numerique" : "Physique") + '</div>'
+          + '<div style="font-weight:900;color:var(--p)">' + fmt(item.price) + ' FCFA</div>'
+          + '</div>'
+          + '<div style="display:flex;align-items:center;gap:.4rem">'
+          + '<button class="bsm b-if" onclick="cqty(' + i + ',-1)" '
+          + 'style="padding:.22rem .55rem">&#8722;</button>'
+          + '<span style="font-weight:800;min-width:20px;text-align:center">' + item.qty + '</span>'
+          + '<button class="bsm b-if" onclick="cqty(' + i + ',1)" '
+          + 'style="padding:.22rem .55rem">+</button>'
+          + '<button class="bsm b-dl" onclick="crem(' + i + ')" '
+          + 'style="padding:.22rem .55rem;margin-left:.3rem">&#128465;</button>'
+          + '</div></div>';
+      }).join("")
+    + '</div>';
+
+  var hasPhys = c.some(function(i){ return i.type === "physical"; });
+  document.getElementById("delivCard").classList.toggle("hidden", !hasPhys);
+
+  var totHtml = "";
+  c.forEach(function(item) {
+    totHtml += '<div class="fee"><span class="lb">'
+      + esc(item.name) + ' x' + item.qty + '</span>'
+      + '<span>' + fmt(item.price * item.qty) + ' FCFA</span></div>';
+  });
+  totHtml += '<div class="fee"><span class="lb">Sous-total</span>'
+    + '<span>' + fmt(tt.sub) + ' FCFA</span></div>';
+  if (tt.disc > 0)
+    totHtml += '<div class="fee disc"><span class="lb">&#127903;&#65039; Promo ('
+      + appliedPromo.discount + '%)</span>'
+      + '<span>&#8722;' + fmt(tt.disc) + ' FCFA</span></div>';
+  totHtml += '<div class="fee"><span class="lb">Commission (5%)</span>'
+    + '<span>' + fmt(tt.comm) + ' FCFA</span></div>';
+  totHtml += '<div class="fee tot"><span class="lb">TOTAL</span>'
+    + '<span>' + fmt(tt.total) + ' FCFA</span></div>';
+  document.getElementById("cartTots").innerHTML = totHtml;
+}
+
+function selPay(m) {
+  cartPay = m;
+  document.getElementById("pmFd").classList.toggle("on", m === "fedapay");
+  document.getElementById("pmWa").classList.toggle("on", m === "whatsapp");
+  document.getElementById("fdSec").classList.toggle("hidden", m !== "fedapay");
+  document.getElementById("waSec").classList.toggle("hidden", m !== "whatsapp");
+}
+function selDel(m) {
+  delivT = m;
+  document.getElementById("delA").classList.toggle("on", m === "addr");
+  document.getElementById("delP").classList.toggle("on", m === "pickup");
+  document.getElementById("addrFlds").classList.toggle("hidden", m === "pickup");
+  document.getElementById("pickupNfo").classList.toggle("hidden", m !== "pickup");
+}
+window.selPay = selPay;
+window.selDel = selDel;
+
+function applyPromo() {
+  var code = document.getElementById("promoIn").value.trim().toUpperCase();
+  var st   = document.getElementById("promoSt");
+  if (!code) {
+    st.style.color = "var(--er)";
+    st.textContent = "Entrez un code promo.";
+    return;
+  }
+  var sub = calcTots().sub;
+  db.collection("promo_codes").where("code","==",code).get()
+    .then(function(s) {
+      if (s.empty) {
+        st.style.color = "var(--er)"; st.textContent = "Code introuvable."; return;
+      }
+      var pd = s.docs[0], promo = pd.data();
+      if (!promo.active) {
+        st.style.color = "var(--er)"; st.textContent = "Code desactive."; return;
+      }
+      if (promo.expires && new Date(promo.expires) < new Date()) {
+        st.style.color = "var(--er)"; st.textContent = "Code expire."; return;
+      }
+      if (promo.maxUses && (promo.usedCount||0) >= promo.maxUses) {
+        st.style.color = "var(--er)"; st.textContent = "Code epuise."; return;
+      }
+      if (promo.minAmount && sub < promo.minAmount) {
+        st.style.color = "var(--er)";
+        st.textContent = "Minimum " + fmt(promo.minAmount) + " FCFA requis."; return;
+      }
+      appliedPromo = {
+        code: code, discount: promo.discount,
+        promoId: pd.id, sellerId: promo.sellerId || null
+      };
+      var da = Math.round(sub * promo.discount / 100);
+      st.style.color = "var(--ok)";
+      st.textContent = "Code applique ! -" + fmt(da) + " FCFA (" + promo.discount + "%)";
+      renderCart();
+    });
+}
+window.applyPromo = applyPromo;
+
+function validateCart() {
+  var err = document.getElementById("cartErr");
+  err.classList.add("hidden");
+  var nm = document.getElementById("coN").value.trim();
+  var em = document.getElementById("coE").value.trim();
+  var ph = document.getElementById("coPh").value.trim();
+  if (!nm || !em || !ph) {
+    err.textContent = "Nom, email et telephone requis.";
+    err.classList.remove("hidden"); return false;
+  }
+  var c = getCart();
+  var hasPhys = c.some(function(i){ return i.type === "physical"; });
+  if (hasPhys && delivT === "addr") {
+    var ad = document.getElementById("coAd").value.trim();
+    if (!ad) {
+      err.textContent = "Adresse de livraison requise.";
+      err.classList.remove("hidden"); return false;
+    }
+  }
+  return true;
+}
+
+// ════════════════════════════════════════════
+// FEDAPAY
+// ════════════════════════════════════════════
+function initFeda() {
+  if (!validateCart()) return;
+  var tt = calcTots();
+  var nm = document.getElementById("coN").value.trim();
+  var em = document.getElementById("coE").value.trim();
+  var ph = document.getElementById("coPh").value.trim();
+  FedaPay.init({
+    public_key: FEDA_KEY,
+    transaction: {
+      amount: tt.total,
+      description: "Commande F2K MARKET"
+    },
+    customer: {
+      email: em, fullname: nm,
+      phone_number: { country:"BJ", number: ph }
+    },
+    onComplete: function(t) {
+      if (t.reason === "APPROVED") {
+        var fb = document.getElementById("payFb");
+        fb.style.cssText = "display:block;background:rgba(34,197,94,.09);"
+          + "border:1px solid rgba(34,197,94,.28);color:var(--ok);"
+          + "padding:.65rem;border-radius:var(--r);font-weight:700;font-size:.83rem;margin-bottom:.7rem";
+        fb.textContent = "Paiement confirme ! Traitement en cours...";
+        fb.classList.remove("hidden");
+        saveOrder("paid", t.transaction && t.transaction.reference || "")
+          .then(function(oid) { showOrderModal({oid:oid, isPaid:true}); })
+          .catch(function(e) {
+            fb.style.cssText = "display:block;background:rgba(239,68,68,.09);"
+              + "border:1px solid rgba(239,68,68,.28);color:var(--er);"
+              + "padding:.65rem;border-radius:var(--r);font-weight:700;font-size:.83rem;margin-bottom:.7rem";
+            fb.textContent = "Erreur: " + e.message;
+          });
+      } else {
+        toast("Paiement annule ou echoue.");
+      }
+    }
+  });
+}
+window.initFeda = initFeda;
+
+// ════════════════════════════════════════════
+// COMMANDE WHATSAPP
+// ════════════════════════════════════════════
+function placeWAOrd() {
+  if (!validateCart()) return;
+  saveOrder("pending","").then(function(oid) {
+    var tt = calcTots(), c = getCart();
+    var items = c.map(function(i){ return i.name + " x" + i.qty; }).join(", ");
+    var msg = "Commande F2K MARKET\n"
+      + "Ref: #" + oid.substring(0,8).toUpperCase() + "\n"
+      + "Produits: " + items + "\n"
+      + "Total: " + fmt(tt.total) + " FCFA\n"
+      + "Nom: " + document.getElementById("coN").value + "\n"
+      + "Tel: " + document.getElementById("coPh").value;
+    showOrderModal({oid:oid, isPaid:false, waMsg:msg});
+  });
+}
+window.placeWAOrd = placeWAOrd;
+
+// ════════════════════════════════════════════
+// SAUVEGARDER COMMANDE
+// ════════════════════════════════════════════
+function saveOrder(payStatus, ref) {
+  var tt = calcTots(), c = tt.c;
+  var nm = document.getElementById("coN").value.trim();
+  var em = document.getElementById("coE").value.trim();
+  var ph = document.getElementById("coPh").value.trim();
+  var hasPhys = c.some(function(i){ return i.type === "physical"; });
+  var addrInfo = (hasPhys && delivT === "addr")
+    ? {
+        address : document.getElementById("coAd").value,
+        city    : document.getElementById("coCi").value,
+        country : document.getElementById("coCtry").value,
+        notes   : document.getElementById("coNt").value
+      }
+    : { method: delivT };
+
+  var sellerIds = c.map(function(i){ return i.sellerId; })
+    .filter(function(x,i,a){ return x && a.indexOf(x)===i; });
+  var primarySeller = (sellerIds.length === 1 && sellerIds[0] !== "admin")
+    ? sellerIds[0] : null;
+
+  var oData = {
+    items         : c,
+    buyerName     : nm,
+    buyerEmail    : em,
+    buyerPhone    : ph,
+    subtotal      : tt.sub,
+    discount      : tt.disc,
+    commission    : tt.comm,
+    total         : tt.total,
+    paymentStatus : payStatus,
+    paymentRef    : ref || "",
+    delivery      : addrInfo,
+    sellerId      : primarySeller,
+    promoCode     : appliedPromo ? appliedPromo.code : null,
+    createdAt     : new Date().toISOString()
+  };
+
+  return db.collection("orders").add(oData).then(function(oRef) {
+    var oid = oRef.id;
+    if (payStatus === "paid") {
+      var promises = [];
+      c.forEach(function(item) {
+        if (item.sellerId && item.sellerId !== "admin") {
+          var earn = Math.round(item.price * item.qty * (1 - COMM_RATE));
+          promises.push(creditWallet(item.sellerId, earn, "Vente: " + item.name, oid));
+        }
+        if (item.type === "digital" && CU) {
+          promises.push(
+            db.collection("products").doc(item.id).get().then(function(ps) {
+              if (ps.exists && ps.data().fileUrl) {
+                return db.collection("downloads").add({
+                  uid         : CU.uid,
+                  productId   : item.id,
+                  productName : item.name,
+                  fileUrl     : ps.data().fileUrl,
+                  orderId     : oid,
+                  createdAt   : new Date().toISOString()
+                });
+              }
+            })
+          );
+        }
+        if (item.type === "physical" && typeof item.stock !== "undefined") {
+          promises.push(
+            db.collection("products").doc(item.id).update({
+              stock: firebase.firestore.FieldValue.increment(-item.qty)
+            })
+          );
+        }
+      });
+      if (appliedPromo) promises.push(redeemPromo(tt.sub, oid));
+      if (CU) promises.push(
+        pushNotif(CU.uid,
+          "Commande #" + oid.substring(0,8).toUpperCase()
+          + " payee - " + fmt(tt.total) + " FCFA", "success")
+        || Promise.resolve()
+      );
+      if (primarySeller) promises.push(
+        pushNotif(primarySeller,
+          "Nouvelle commande #" + oid.substring(0,8).toUpperCase()
+          + " - " + fmt(tt.total) + " FCFA", "success")
+        || Promise.resolve()
+      );
+      return Promise.all(promises).then(function(){ return oid; });
+    }
+    return oid;
+  }).then(function(oid) {
+    saveCart([]); appliedPromo = null; updateCartBadge();
+    return oid;
+  });
+}
+
+function redeemPromo(sub, oid) {
+  if (!appliedPromo) return Promise.resolve();
+  var da = Math.round(sub * appliedPromo.discount / 100);
+  return db.collection("promo_codes").doc(appliedPromo.promoId)
+    .update({ usedCount: firebase.firestore.FieldValue.increment(1) })
+    .then(function() {
+      if (appliedPromo && appliedPromo.sellerId && appliedPromo.sellerId !== "admin") {
+        return getOrCreateWallet(appliedPromo.sellerId).then(function(w) {
+          if ((w.balance||0) >= da)
+            return debitWallet(appliedPromo.sellerId, da,
+              "Remise code " + appliedPromo.code, oid);
+        });
+      }
+    });
+}
+
+// ════════════════════════════════════════════
+// MODALE CONFIRMATION COMMANDE
+// ════════════════════════════════════════════
+function showOrderModal(opts) {
+  var oid   = opts.oid;
+  var isPaid = opts.isPaid;
+  var waMsg  = opts.waMsg;
+
+  document.getElementById("omIco").textContent  = isPaid ? "&#127881;" : "&#128172;";
+  document.getElementById("omTtl").innerHTML    = isPaid
+    ? "Commande confirm&#233;e !" : "Commande cr&#233;&#233;e !";
+  document.getElementById("omMsg").textContent  = isPaid
+    ? "Votre paiement a bien ete recu et confirme."
+    : "Finalisez le paiement via WhatsApp.";
+  document.getElementById("omInfo").innerHTML   = isPaid
+    ? "&#9989; Paiement FedaPay valide."
+    : "&#9203; En attente de paiement.";
+  document.getElementById("omRef").textContent  =
+    "Ref. #" + (oid || "").substring(0,8).toUpperCase();
+
+  var waDig  = document.getElementById("omWaDig");
+  var dls    = document.getElementById("omDls");
+  var dlBtn  = document.getElementById("omDlBtn");
+
+  if (isPaid && CU) {
+    db.collection("downloads").where("orderId","==",oid).get()
+      .then(function(dlSnap) {
+        if (!dlSnap.empty) {
+          dls.classList.remove("hidden");
+          dlBtn.classList.remove("hidden");
+          document.getElementById("omDlLks").innerHTML = dlSnap.docs.map(function(d) {
+            var dl = d.data();
+            return '<a href="' + esc(dl.fileUrl) + '" target="_blank" '
+              + 'class="btn-wa" style="display:inline-flex;width:auto">'
+              + '&#128229; ' + esc(dl.productName) + '</a>';
+          }).join("");
+        } else {
+          dls.classList.add("hidden");
+        }
+      });
+    waDig.classList.add("hidden");
+  } else {
+    dls.classList.add("hidden");
+    var cartItems = getCart();
+    if (!isPaid && cartItems.some(function(i){ return i.type === "digital"; }))
+      waDig.classList.remove("hidden");
+    else
+      waDig.classList.add("hidden");
+  }
+
+  var waLink = document.getElementById("omWaLk");
+  waLink.href = waMsg
+    ? "https://wa.me/" + ADMIN_PH + "?text=" + encodeURIComponent(waMsg)
+    : "https://wa.me/" + ADMIN_PH;
+
+  document.getElementById("ordModal").classList.remove("hidden");
+}
+
+function closeOrdModal() {
+  document.getElementById("ordModal").classList.add("hidden");
+  go("home");
+}
+window.closeOrdModal = closeOrdModal;
+
+// ════════════════════════════════════════════
+// WALLET
+// ════════════════════════════════════════════
+function getOrCreateWallet(uid) {
+  return db.collection("wallets").doc(uid).get().then(function(r) {
+    if (r.exists) return r.data();
+    var w = {
+      balance:0, totalEarned:0, totalWithdrawn:0,
+      createdAt: new Date().toISOString()
+    };
+    return db.collection("wallets").doc(uid).set(w).then(function(){ return w; });
+  });
+}
+function creditWallet(uid, amt, desc, ref) {
+  return getOrCreateWallet(uid).then(function(w) {
+    return db.collection("wallets").doc(uid).update({
+      balance      : (w.balance||0) + amt,
+      totalEarned  : (w.totalEarned||0) + amt
+    });
+  }).then(function() {
+    return db.collection("transactions").add({
+      uid:uid, type:"credit", amount:amt,
+      description:desc, ref:ref||"",
+      date: new Date().toISOString()
+    });
+  });
+}
+function debitWallet(uid, amt, desc, ref) {
+  return getOrCreateWallet(uid).then(function(w) {
+    if ((w.balance||0) < amt)
+      throw new Error("Solde insuffisant (" + fmt(w.balance) + " FCFA disponible)");
+    return db.collection("wallets").doc(uid).update({
+      balance         : (w.balance||0) - amt,
+      totalWithdrawn  : (w.totalWithdrawn||0) + amt
+    });
+  }).then(function() {
+    return db.collection("transactions").add({
+      uid:uid, type:"debit", amount:amt,
+      description:desc, ref:ref||"",
+      date: new Date().toISOString()
+    });
+  });
+}
+
+function loadWallet() {
+  if (!CU) { go("login"); return; }
+  getOrCreateWallet(CU.uid).then(function(w) {
+    document.getElementById("wBal").textContent = fmt(w.balance || 0);
+    document.getElementById("wEa").textContent  = fmt(w.totalEarned || 0) + " FCFA";
+    document.getElementById("wWi").textContent  = fmt(w.totalWithdrawn || 0) + " FCFA";
+  });
+  db.collection("withdrawals")
+    .where("uid","==",CU.uid)
+    .where("status","==","pending")
+    .get().then(function(s) {
+      document.getElementById("wPe").textContent = s.size + " en attente";
+    });
+  db.collection("transactions")
+    .where("uid","==",CU.uid)
+    .orderBy("date","desc").limit(20)
+    .get().then(function(txs) {
+      var txEl = document.getElementById("txList");
+      txEl.innerHTML = txs.empty
+        ? '<p style="color:var(--mt);padding:.9rem;font-size:.83rem">Aucune transaction.</p>'
+        : txs.docs.map(function(d) {
+            var t = d.data();
+            return '<div class="txi">'
+              + '<div class="txi-ico ' + (t.type==="credit"?"cr":"db") + '">'
+              + (t.type === "credit" ? "&#11014;" : "&#11015;") + '</div>'
+              + '<div style="flex:1">'
+              + '<div style="font-size:.83rem;font-weight:700">' + esc(t.description) + '</div>'
+              + '<div style="font-size:.7rem;color:var(--mt)">'
+              + (t.date||"").substring(0,10) + '</div></div>'
+              + '<div class="txi-amt ' + (t.type==="credit"?"cr":"db") + '">'
+              + (t.type==="credit" ? "+" : "-") + fmt(t.amount) + ' FCFA</div></div>';
+          }).join("");
+    });
+  db.collection("withdrawals")
+    .where("uid","==",CU.uid)
+    .orderBy("createdAt","desc").limit(10)
+    .get().then(function(wds) {
+      var wdEl = document.getElementById("wdList");
+      wdEl.innerHTML = wds.empty
+        ? '<p style="color:var(--mt);font-size:.83rem">Aucune demande.</p>'
+        : wds.docs.map(function(d) {
+            var w = d.data();
+            var cls = w.status==="completed" ? "bs"
+              : w.status==="pending" ? "bw" : "bd";
+            return '<div style="display:flex;justify-content:space-between;align-items:center;'
+              + 'padding:.55rem 0;border-bottom:1px solid var(--bd);font-size:.82rem">'
+              + '<div><div style="font-weight:700">' + fmt(w.amount) + ' FCFA</div>'
+              + '<div style="font-size:.7rem;color:var(--mt)">'
+              + esc(w.operator) + " - " + esc(w.phone) + '</div></div>'
+              + '<span class="badge ' + cls + '">' + w.status + '</span></div>';
+          }).join("");
+    });
+}
+
+function selMomo(name, id) {
+  selectedMomo = name;
+  ["mtn","moov","celt"].forEach(function(k) {
+    document.getElementById("mm-" + k).classList.toggle("on", k === id);
+  });
+}
+function submitWD() {
+  var amt = +document.getElementById("wdAmt").value;
+  var ph  = document.getElementById("wdPh").value.trim();
+  var hd  = document.getElementById("wdHl").value.trim();
+  var err = document.getElementById("wdErr");
+  err.classList.add("hidden");
+  if (!amt || amt < 500) {
+    err.textContent = "Montant minimum 500 FCFA.";
+    err.classList.remove("hidden"); return;
+  }
+  if (!selectedMomo) {
+    err.textContent = "Choisissez un operateur Mobile Money.";
+    err.classList.remove("hidden"); return;
+  }
+  if (!ph) {
+    err.textContent = "Numero de telephone requis.";
+    err.classList.remove("hidden"); return;
+  }
+  getOrCreateWallet(CU.uid).then(function(w) {
+    if ((w.balance||0) < amt) {
+      err.textContent = "Solde insuffisant (" + fmt(w.balance) + " FCFA).";
+      err.classList.remove("hidden"); return;
+    }
+    pendingWD = {
+      uid:CU.uid, amount:amt, operator:selectedMomo,
+      phone:ph, holder:hd, status:"pending",
+      createdAt: new Date().toISOString()
+    };
+    document.getElementById("wdDtl").innerHTML =
+      '<div class="fee"><span class="lb">Montant</span><span>' + fmt(amt) + ' FCFA</span></div>'
+      + '<div class="fee"><span class="lb">Operateur</span><span>' + esc(selectedMomo) + '</span></div>'
+      + '<div class="fee"><span class="lb">Numero</span><span>' + esc(ph) + '</span></div>'
+      + (hd ? '<div class="fee"><span class="lb">Titulaire</span><span>' + esc(hd) + '</span></div>' : "");
+    document.getElementById("wdModal").classList.remove("hidden");
+  });
+}
+function confirmWD() {
+  if (!pendingWD) return;
+  debitWallet(pendingWD.uid, pendingWD.amount,
+    "Retrait " + pendingWD.operator, "")
+    .then(function() {
+      return db.collection("withdrawals").add(pendingWD);
+    }).then(function() {
+      document.getElementById("wdModal").classList.add("hidden");
+      toast("Demande de retrait envoyee ! Traitement sous 24-48h.");
+      loadWallet();
+    }).catch(function(e) {
+      toast("Erreur: " + e.message);
+      document.getElementById("wdModal").classList.add("hidden");
+    });
+}
+window.selMomo    = selMomo;
+window.submitWD   = submitWD;
+window.confirmWD  = confirmWD;
