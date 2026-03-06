@@ -978,3 +978,631 @@ select.fi{cursor:pointer}select.fi option{background:var(--dk2)}textarea.fi{resi
 
 <!-- TOAST NOTIFICATION -->
 <div id="toast" class="toast hidden"></div>
+<script>
+// ════════════════════════════════════════════
+// FIREBASE INIT (compat SDK)
+// ════════════════════════════════════════════
+firebase.initializeApp({
+  apiKey:"AIzaSyBp_oCpxYHmd3YMke04XirHpCKn0wskiiM",
+  authDomain:"f2k-market.firebaseapp.com",
+  databaseURL:"https://f2k-market-default-rtdb.firebaseio.com",
+  projectId:"f2k-market",
+  storageBucket:"f2k-market.firebasestorage.app",
+  messagingSenderId:"446238473421",
+  appId:"1:446238473421:web:f07082ace8fb1aa5e2fd84",
+  measurementId:"G-X9HRELH9TF"
+});
+var auth = firebase.auth();
+var db   = firebase.firestore();
+
+// ════════════════════════════════════════════
+// CONSTANTES
+// ════════════════════════════════════════════
+var ADMIN_EM   = "f2kmultiservice" + "@" + "gmail.com";
+var ADMIN_PH   = "22901998787" + "42";
+var FEDA_KEY   = "pk_live_ORVqn9pz6gYeLDzjeR9FEple";
+var CLD_CLOUD  = "f2k-market";
+var CLD_PRESET = "f2kmarket_upload";
+var COMM_RATE  = 0.05;
+var FEAT_COST  = 2000;
+var STOK_ALERT = 5;
+
+// ════════════════════════════════════════════
+// STATE GLOBAL
+// ════════════════════════════════════════════
+var CU = null;
+var UD = null;
+var allP = [];
+var cartPay = "fedapay";
+var delivT  = "addr";
+var cfCb    = null;
+var activeChatUid = null;
+var msgUnsub      = null;
+var appliedPromo  = null;
+var revStars      = 0;
+var repRsn        = "";
+var pendingWD     = null;
+var selectedMomo  = "";
+
+// ════════════════════════════════════════════
+// UTILITAIRES
+// ════════════════════════════════════════════
+function toast(msg, d) {
+  d = d || 3200;
+  var t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.remove("hidden");
+  setTimeout(function(){ t.classList.add("hidden"); }, d);
+}
+
+function esc(s) {
+  return (s || "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#39;");
+}
+
+function fmt(n) {
+  return Number(n || 0).toLocaleString();
+}
+
+function starsHtml(n, sz) {
+  var s = Math.round(n || 0);
+  var style = sz ? ' style="font-size:' + sz + '"' : '';
+  return '<span class="stars"' + style + '>'
+    + '&#9733;'.repeat(s)
+    + '&#9734;'.repeat(5 - s)
+    + '</span>';
+}
+
+// ════════════════════════════════════════════
+// ROUTER
+// ════════════════════════════════════════════
+function go(page, params) {
+  params = params || {};
+  var pages = document.querySelectorAll(".page");
+  for (var i = 0; i < pages.length; i++) {
+    pages[i].style.display = "none";
+  }
+  var el = document.getElementById("pg-" + page);
+  if (!el) { go("home", {}); return; }
+  el.style.display = "block";
+  window.scrollTo(0, 0);
+  document.getElementById("mobMenu").classList.add("hidden");
+  hideSugg();
+  if (page === "home")           loadHome();
+  if (page === "products")       loadProducts(params);
+  if (page === "product-detail") loadDetail(params.id);
+  if (page === "cart")           renderCart();
+  if (page === "sellers")        loadSellers();
+  if (page === "dashboard")      loadDash();
+  if (page === "wallet")         loadWallet();
+  if (page === "messages")       loadMessages();
+  if (page === "wishlist")       loadWishlist();
+  if (page === "notifications")  loadNotifs();
+}
+window.go = go;
+
+function toggleMob() {
+  document.getElementById("mobMenu").classList.toggle("hidden");
+}
+window.toggleMob = toggleMob;
+
+// ════════════════════════════════════════════
+// AUTH STATE
+// ════════════════════════════════════════════
+auth.onAuthStateChanged(function(user) {
+  CU = user;
+  var ng    = document.getElementById("navG");
+  var nu    = document.getElementById("navU");
+  var mobLi = document.getElementById("mobLi");
+  var mobRe = document.getElementById("mobRe");
+  var mobDb = document.getElementById("mobDb");
+  var mobWl = document.getElementById("mobWl");
+  var mobNt = document.getElementById("mobNt");
+  var mobMs = document.getElementById("mobMs");
+  var mobLo = document.getElementById("mobLo");
+
+  if (user) {
+    ng.style.display = "none";
+    nu.classList.remove("hidden");
+    nu.style.display = "flex";
+    if (mobLi) mobLi.classList.add("hidden");
+    if (mobRe) mobRe.classList.add("hidden");
+    if (mobDb) mobDb.classList.remove("hidden");
+    if (mobWl) mobWl.classList.remove("hidden");
+    if (mobNt) mobNt.classList.remove("hidden");
+    if (mobMs) mobMs.classList.remove("hidden");
+    if (mobLo) mobLo.classList.remove("hidden");
+
+    if (user.email === ADMIN_EM) {
+      UD = { role:"admin", fullname:"F2K ADMIN", status:"approved" };
+      document.getElementById("navD").textContent = "Admin";
+    } else {
+      db.collection("users").doc(user.uid).get().then(function(s) {
+        UD = s.exists ? s.data() : {};
+        document.getElementById("navD").textContent =
+          UD.role === "seller" ? "Ma Boutique" : "Mon Compte";
+        checkUnreadMsg();
+        checkUnreadNotif();
+        var coN = document.getElementById("coN");
+        if (coN && UD.fullname) coN.value = UD.fullname;
+        var coPh = document.getElementById("coPh");
+        if (coPh && UD.phone) coPh.value = UD.phone;
+        var wdPh = document.getElementById("wdPh");
+        if (wdPh && UD.phone) wdPh.value = UD.phone;
+        var wdHl = document.getElementById("wdHl");
+        if (wdHl && UD.fullname) wdHl.value = UD.fullname;
+      });
+    }
+    var coE = document.getElementById("coE");
+    if (coE) coE.value = user.email;
+
+  } else {
+    ng.style.display = "flex";
+    nu.classList.add("hidden");
+    if (mobLi) mobLi.classList.remove("hidden");
+    if (mobRe) mobRe.classList.remove("hidden");
+    if (mobDb) mobDb.classList.add("hidden");
+    if (mobWl) mobWl.classList.add("hidden");
+    if (mobNt) mobNt.classList.add("hidden");
+    if (mobMs) mobMs.classList.add("hidden");
+    if (mobLo) mobLo.classList.add("hidden");
+    UD = null;
+  }
+  updateCartBadge();
+  updateWishBadge();
+});
+
+document.getElementById("btnOut").addEventListener("click", doLogout);
+
+// ════════════════════════════════════════════
+// LOGIN
+// ════════════════════════════════════════════
+function doLogin() {
+  var em    = document.getElementById("liE").value.trim();
+  var pw    = document.getElementById("liP").value;
+  var errEl = document.getElementById("liErr");
+  errEl.classList.add("hidden");
+  if (!em || !pw) {
+    errEl.textContent = "Email et mot de passe requis.";
+    errEl.classList.remove("hidden");
+    return;
+  }
+  auth.signInWithEmailAndPassword(em, pw)
+    .then(function() { toast("Connexion reussie !"); go("home"); })
+    .catch(function(e) {
+      errEl.textContent =
+        (e.code === "auth/invalid-credential" ||
+         e.code === "auth/wrong-password" ||
+         e.code === "auth/user-not-found")
+          ? "Email ou mot de passe incorrect."
+          : e.message;
+      errEl.classList.remove("hidden");
+    });
+}
+window.doLogin = doLogin;
+
+// ════════════════════════════════════════════
+// REGISTER
+// ════════════════════════════════════════════
+function selRole(r) {
+  document.getElementById("rcCli").classList.toggle("on", r === "client");
+  document.getElementById("rcSel").classList.toggle("on", r === "seller");
+  document.getElementById("selFlds").classList.toggle("hidden", r !== "seller");
+  document.getElementById("cliFlds").classList.toggle("hidden", r === "seller");
+}
+window.selRole = selRole;
+
+function doRegister() {
+  var name  = document.getElementById("reN").value.trim();
+  var em    = document.getElementById("reE").value.trim();
+  var ph    = document.getElementById("rePh").value.trim();
+  var co    = document.getElementById("reCo").value.trim();
+  var pw    = document.getElementById("rePw").value;
+  var av    = document.getElementById("reAv").value;
+  var errEl = document.getElementById("reErr");
+  errEl.classList.add("hidden");
+
+  var isSeller = document.getElementById("rcSel").classList.contains("on");
+
+  if (!name || !em || !ph || !co || !pw) {
+    errEl.textContent = "Tous les champs obligatoires sont requis.";
+    errEl.classList.remove("hidden"); return;
+  }
+  if (pw.length < 6) {
+    errEl.textContent = "Mot de passe minimum 6 caracteres.";
+    errEl.classList.remove("hidden"); return;
+  }
+
+  var tcb = document.getElementById(isSeller ? "reTsS" : "reTsC");
+  if (tcb && !tcb.checked) {
+    errEl.textContent = "Vous devez accepter les conditions d&#39;utilisation.";
+    errEl.classList.remove("hidden"); return;
+  }
+
+  if (isSeller) {
+    var sh = document.getElementById("reSh").value.trim();
+    var st = document.getElementById("reSt").value;
+    if (!sh || !st) {
+      errEl.textContent = "Nom de boutique et type requis.";
+      errEl.classList.remove("hidden"); return;
+    }
+  }
+
+  auth.createUserWithEmailAndPassword(em, pw)
+    .then(function(cred) {
+      var uid = cred.user.uid;
+      var data = {
+        fullname  : name,
+        email     : em,
+        phone     : ph,
+        country   : co,
+        role      : isSeller ? "seller" : "client",
+        status    : isSeller ? "pending" : "approved",
+        avatar    : av || "",
+        createdAt : new Date().toISOString()
+      };
+      if (isSeller) {
+        data.shopName   = document.getElementById("reSh").value.trim();
+        data.sellerType = document.getElementById("reSt").value;
+        data.shopDesc   = document.getElementById("reSD").value.trim();
+        data.shopLogo   = document.getElementById("reLog").value || "";
+      }
+      return db.collection("users").doc(uid).set(data);
+    })
+    .then(function() {
+      if (isSeller) {
+        db.collection("users").where("email","==",ADMIN_EM).get()
+          .then(function(s) {
+            if (!s.empty) {
+              pushNotif(s.docs[0].id,
+                "Nouveau vendeur en attente: " +
+                document.getElementById("reN").value.trim(),
+                "warning");
+            }
+          });
+        toast("Compte vendeur cree ! En attente de validation.");
+      } else {
+        toast("Compte cree avec succes !");
+      }
+      go("home");
+    })
+    .catch(function(e) {
+      var errEl2 = document.getElementById("reErr");
+      errEl2.textContent =
+        e.code === "auth/email-already-in-use"
+          ? "Cet email est deja utilise."
+          : e.message;
+      errEl2.classList.remove("hidden");
+    });
+}
+window.doRegister = doRegister;
+
+// ════════════════════════════════════════════
+// LOGOUT
+// ════════════════════════════════════════════
+function doLogout() {
+  auth.signOut().then(function() {
+    go("home");
+    toast("Deconnecte avec succes.");
+  });
+}
+window.doLogout = doLogout;
+
+// ════════════════════════════════════════════
+// LANGUE
+// ════════════════════════════════════════════
+function setLang(l) {
+  document.getElementById("lbFr").classList.toggle("on", l === "fr");
+  document.getElementById("lbEn").classList.toggle("on", l === "en");
+  toast(l === "fr" ? "Francais active" : "English activated");
+}
+window.setLang = setLang;
+
+// ════════════════════════════════════════════
+// CLOUDINARY UPLOAD (images + fichiers)
+// ════════════════════════════════════════════
+function uploadImg(file, folder, onProgress) {
+  folder = folder || "products";
+  return new Promise(function(resolve, reject) {
+    var fd = new FormData();
+    fd.append("file", file);
+    fd.append("upload_preset", CLD_PRESET);
+    fd.append("folder", "f2k-market/" + folder);
+    var resType = file.type.startsWith("image/") ? "image" : "raw";
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST",
+      "https://api.cloudinary.com/v1_1/" + CLD_CLOUD + "/" + resType + "/upload");
+    if (onProgress) {
+      xhr.upload.addEventListener("progress", function(e) {
+        if (e.lengthComputable)
+          onProgress(Math.round(e.loaded / e.total * 100));
+      });
+    }
+    xhr.onload = function() {
+      try {
+        var d = JSON.parse(xhr.responseText);
+        if (d.secure_url) resolve(d.secure_url);
+        else reject(new Error(d.error && d.error.message || "Upload echoue"));
+      } catch(e) { reject(e); }
+    };
+    xhr.onerror = function() { reject(new Error("Erreur reseau")); };
+    xhr.send(fd);
+  });
+}
+
+// ── Avatar inscription ──
+document.getElementById("reAvF").addEventListener("change", function(e) {
+  var f = e.target.files[0]; if (!f) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    document.getElementById("reAvPv").innerHTML =
+      '<img src="' + ev.target.result +
+      '" style="width:76px;height:76px;border-radius:50%;object-fit:cover;border:3px solid var(--p)"/>';
+  };
+  reader.readAsDataURL(f);
+  uploadImg(f, "avatars")
+    .then(function(url) { document.getElementById("reAv").value = url; toast("Photo uploadee !"); })
+    .catch(function() { toast("Erreur upload photo"); });
+});
+
+// ── Logo boutique ──
+document.getElementById("reLogF").addEventListener("change", function(e) {
+  var f = e.target.files[0]; if (!f) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    document.getElementById("reLogPv").innerHTML =
+      '<img src="' + ev.target.result +
+      '" style="width:62px;height:62px;border-radius:var(--r);object-fit:cover;border:2px solid var(--p)"/>';
+  };
+  reader.readAsDataURL(f);
+  uploadImg(f, "logos")
+    .then(function(url) { document.getElementById("reLog").value = url; toast("Logo uploade !"); })
+    .catch(function() { toast("Erreur upload logo"); });
+});
+
+// ── Image produit ──
+document.getElementById("apImgF").addEventListener("change", function(e) {
+  var f = e.target.files[0]; if (!f) return;
+  if (f.size > 5 * 1024 * 1024) { toast("Taille max 5 Mo pour l&#39;image"); return; }
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    document.getElementById("apImgPv").innerHTML =
+      '<img src="' + ev.target.result +
+      '" style="width:100%;height:115px;object-fit:cover"/>';
+  };
+  reader.readAsDataURL(f);
+  var pr = document.getElementById("apImgPr");
+  pr.classList.remove("hidden"); pr.textContent = "Upload en cours...";
+  uploadImg(f, "products", function(pct) {
+    pr.textContent = "Upload " + pct + "%";
+  }).then(function(url) {
+    document.getElementById("apImg").value = url;
+    pr.textContent = "Image uploadee !";
+    pr.style.color = "var(--ok)";
+  }).catch(function(err) {
+    pr.textContent = "Erreur: " + err.message;
+    pr.style.color = "var(--er)";
+  });
+});
+
+// ── Fichier numerique ──
+document.getElementById("apFileIn").addEventListener("change", function(e) {
+  var f = e.target.files[0]; if (!f) return;
+  if (f.size > 100 * 1024 * 1024) { toast("Fichier max 100 Mo"); return; }
+  var pv  = document.getElementById("apFilePv");
+  var lb  = document.getElementById("apFileLb");
+  var pb  = document.getElementById("apFilePb");
+  var pf  = document.getElementById("apFilePf");
+  var pr  = document.getElementById("apFilePr");
+  pv.textContent = f.name + " (" + Math.round(f.size / 1024) + " Ko)";
+  pb.classList.remove("hidden");
+  pr.classList.remove("hidden"); pr.textContent = "Upload 0%";
+  pr.style.color = "var(--if)";
+  lb.textContent = "En cours...";
+  uploadImg(f, "digital", function(pct) {
+    pf.style.width = pct + "%";
+    pr.textContent = "Upload " + pct + "%";
+  }).then(function(url) {
+    document.getElementById("apFile").value = url;
+    pr.textContent = "Fichier uploade avec succes !";
+    pr.style.color = "var(--ok)";
+    lb.textContent = "Fichier pret !";
+    toast("Fichier uploade !");
+  }).catch(function(err) {
+    pr.textContent = "Erreur: " + err.message;
+    pr.style.color = "var(--er)";
+    lb.textContent = "Reessayer";
+  });
+});
+
+// ════════════════════════════════════════════
+// SEARCH SUGGESTIONS
+// ════════════════════════════════════════════
+function showSugg(q) {
+  var box = document.getElementById("suggBox");
+  if (!q || q.length < 2) { box.style.display = "none"; return; }
+  var low = q.toLowerCase();
+  var res = allP.filter(function(p) {
+    return (p.name || "").toLowerCase().indexOf(low) >= 0
+        || (p.description || "").toLowerCase().indexOf(low) >= 0;
+  }).slice(0, 7);
+  if (!res.length) { box.style.display = "none"; return; }
+  var html = res.map(function(p) {
+    return '<div class="sugg-item" onclick="go(\'product-detail\',{id:\'' + p.id +
+      '\'});document.getElementById(\'ns\').value=\'\';hideSugg()">'
+      + (p.imageUrl
+          ? '<img src="' + esc(p.imageUrl) +
+            '" style="width:28px;height:28px;border-radius:5px;object-fit:cover;flex-shrink:0"/>'
+          : '<span style="font-size:1rem;flex-shrink:0">'
+            + (p.type === "digital" ? "&#128187;" : "&#128230;") + '</span>')
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="font-weight:800;font-size:.83rem">' + esc(p.name) + '</div>'
+      + '<div style="font-size:.7rem;color:var(--mt)">' + fmt(p.price) + ' FCFA</div>'
+      + '</div></div>';
+  }).join("");
+  html += '<div class="sugg-item" style="font-size:.79rem;color:var(--p);font-weight:700;'
+    + 'text-align:center;justify-content:center" '
+    + 'onclick="go(\'products\',{s:\'' + esc(q) + '\'});hideSugg()">'
+    + 'Voir tous les resultats &#8594;</div>';
+  box.innerHTML = html;
+  box.style.display = "block";
+}
+function hideSugg() {
+  var b = document.getElementById("suggBox");
+  if (b) b.style.display = "none";
+}
+window.showSugg = showSugg;
+window.hideSugg = hideSugg;
+
+// ════════════════════════════════════════════
+// WISHLIST (localStorage)
+// ════════════════════════════════════════════
+function getFavs() {
+  try { return JSON.parse(localStorage.getItem("f2k_favs") || "[]"); }
+  catch(e) { return []; }
+}
+function saveFavs(a) {
+  localStorage.setItem("f2k_favs", JSON.stringify(a));
+}
+function updateWishBadge() {
+  var n = getFavs().length;
+  var b = document.getElementById("wBdg");
+  if (b) { b.textContent = n; b.style.display = n > 0 ? "block" : "none"; }
+}
+function toggleFav(id, btn) {
+  var f = getFavs(), i = f.indexOf(id);
+  if (i >= 0) {
+    f.splice(i, 1);
+    if (btn) btn.classList.remove("on");
+    toast("Retire des favoris");
+  } else {
+    f.push(id);
+    if (btn) btn.classList.add("on");
+    toast("Ajoute aux favoris !");
+  }
+  saveFavs(f);
+  updateWishBadge();
+}
+window.toggleFav = toggleFav;
+
+// ════════════════════════════════════════════
+// NOTIFICATIONS
+// ════════════════════════════════════════════
+function pushNotif(uid, message, type) {
+  type = type || "info";
+  db.collection("notifications").add({
+    uid: uid, message: message, type: type,
+    read: false, createdAt: new Date().toISOString()
+  });
+}
+function checkUnreadNotif() {
+  if (!CU || CU.email === ADMIN_EM) return;
+  db.collection("notifications")
+    .where("uid","==",CU.uid)
+    .where("read","==",false)
+    .get().then(function(s) {
+      var b = document.getElementById("nBdg");
+      if (b) {
+        b.textContent = s.size > 9 ? "9+" : s.size;
+        b.style.display = s.size > 0 ? "block" : "none";
+      }
+    });
+}
+function checkUnreadMsg() {
+  if (!CU || CU.email === ADMIN_EM) return;
+  db.collection("conv_meta").doc(CU.uid).get().then(function(m) {
+    var n = m.exists ? (m.data().unreadUser || 0) : 0;
+    var b = document.getElementById("mBdg");
+    if (b) {
+      b.textContent = n > 9 ? "9+" : n;
+      b.style.display = n > 0 ? "block" : "none";
+    }
+  });
+}
+
+// ════════════════════════════════════════════
+// CONFIRM DIALOG
+// ════════════════════════════════════════════
+function openConfirm(title, msg, cb) {
+  document.getElementById("cfTtl").textContent = title;
+  document.getElementById("cfMsg").textContent = msg;
+  cfCb = cb;
+  document.getElementById("cfModal").classList.remove("hidden");
+  document.getElementById("cfYes").onclick = function() {
+    document.getElementById("cfModal").classList.add("hidden");
+    if (cfCb) cfCb();
+  };
+}
+window.openConfirm = openConfirm;
+
+// ════════════════════════════════════════════
+// CONDITIONS D'UTILISATION
+// ════════════════════════════════════════════
+var TERMS_DATA = {
+  client: "<h4>Bienvenue sur F2K MARKET</h4>"
+    + "<p>En creant un compte, vous acceptez les presentes conditions.</p>"
+    + "<h4>1. Utilisation</h4>"
+    + "<ul><li>Minimum 18 ans</li>"
+    + "<li>Un seul compte par personne</li>"
+    + "<li>Informations exactes et a jour</li></ul>"
+ + "<h4>2. Achats et paiements</h4>"
+    + "<ul><li>Paiement securise via FedaPay</li>"
+    + "<li>Produits numeriques livres instantanement apres paiement</li>"
+    + "<li>Frais de livraison physique a votre charge</li></ul>"
+    + "<h4>3. Remboursements</h4>"
+    + "<ul><li>Produits numeriques non remboursables sauf defaut technique</li>"
+    + "<li>Litiges a signaler sous 48h via WhatsApp</li></ul>"
+    + "<h4>4. Comportement</h4>"
+    + "<ul><li>Aucun signalement abusif ou frauduleux</li>"
+    + "<li>Pas de tentative de contournement du systeme de paiement</li></ul>"
+    + "<h4>5. Contact</h4>"
+    + "<p>+229 01 99 87 87 42 &nbsp;|&nbsp; f2kmultiservice&#64;gmail.com</p>",
+
+  seller: "<h4>Conditions Vendeur F2K MARKET</h4>"
+    + "<h4>1. Inscription et validation</h4>"
+    + "<ul><li>Votre compte doit etre valide par l&#39;administrateur avant toute vente</li>"
+    + "<li>Informations de boutique exactes et a jour</li></ul>"
+    + "<h4>2. Produits autorises</h4>"
+    + "<ul><li>Produits legaux et conformes a la reglementation</li>"
+    + "<li>Pas de contenu illicite, frauduleux ou pour adultes</li>"
+    + "<li>Photos et descriptions fideles au produit reel</li></ul>"
+    + "<h4>3. Commission et paiements</h4>"
+    + "<ul><li><strong>Commission F2K MARKET : 5% sur chaque vente</strong></li>"
+    + "<li>Gains credites automatiquement sur votre wallet apres paiement</li>"
+    + "<li>Retrait minimum 500 FCFA - traitement sous 24-48h</li></ul>"
+    + "<h4>4. Produits en vedette</h4>"
+    + "<ul><li>Cout : 2 000 FCFA / 30 jours</li>"
+    + "<li>Debite immediatement de votre wallet a la publication</li>"
+    + "<li>Non remboursable</li></ul>"
+    + "<h4>5. Fichiers numeriques</h4>"
+    + "<ul><li>Upload direct via la plateforme Cloudinary (PDF, ZIP, MP4...)</li>"
+    + "<li>Taille maximum : 100 Mo par fichier</li>"
+    + "<li>Livraison automatique et instantanee apres paiement FedaPay</li>"
+    + "<li>Fichier doit correspondre exactement a la description</li>"
+    + "<li>Aucun logiciel malveillant ou virus autorise</li></ul>"
+    + "<h4>6. Vendeur physique</h4>"
+    + "<ul><li>Stock reel et precis obligatoire dans le systeme</li>"
+    + "<li>Photos authentiques du produit reel</li>"
+    + "<li>Delai de livraison annonce doit etre respecte</li>"
+    + "<li>Frais de livraison a charge de l&#39;acheteur</li></ul>"
+    + "<h4>7. Codes promo</h4>"
+    + "<ul><li>Les reductions sont debitees de votre wallet</li>"
+    + "<li>Vous etes responsable du solde suffisant</li></ul>"
+    + "<h4>8. Sanctions</h4>"
+    + "<ul><li>Tout manquement peut entrainer la suspension du compte</li>"
+    + "<li>Les fonds en wallet peuvent etre bloques en cas de fraude</li></ul>"
+    + "<h4>9. Contact admin</h4>"
+    + "<p>+229 01 99 87 87 42 &nbsp;|&nbsp; f2kmultiservice&#64;gmail.com</p>"
+};
+
+function openTerms(type) {
+  var titles = { client:"CGU Client", seller:"CGU Vendeur" };
+  document.getElementById("termsTtl").textContent = titles[type] || "Conditions";
+  document.getElementById("termsCt").innerHTML = TERMS_DATA[type] || "";
+  document.getElementById("termsModal").classList.remove("hidden");
+}
+window.openTerms = openTerms;
