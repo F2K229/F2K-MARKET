@@ -982,12 +982,14 @@ select.fi{cursor:pointer}select.fi option{background:var(--dk2)}textarea.fi{resi
 // FIREBASE INIT (compat SDK)
 // ════════════════════════════════════════════
 firebase.initializeApp({
-  apiKey:"AIzaSyD8_hBqrPpxWCjmC2Bb0f5MU8s5qdDrWnA",
-  authDomain:"f2k-market-cb292.firebaseapp.com",
-  projectId:"f2k-market-cb292",
-  storageBucket:"f2k-market-cb292.appspot.com",
-  messagingSenderId:"1047598020461",
-  appId:"1:1047598020461:web:6e8a21dc94fdda88b86e37"
+  apiKey:"AIzaSyBp_oCpxYHmd3YMke04XirHpCKn0wskiiM",
+  authDomain:"f2k-market.firebaseapp.com",
+  databaseURL:"https://f2k-market-default-rtdb.firebaseio.com",
+  projectId:"f2k-market",
+  storageBucket:"f2k-market.firebasestorage.app",
+  messagingSenderId:"446238473421",
+  appId:"1:446238473421:web:f07082ace8fb1aa5e2fd84",
+  measurementId:"G-X9HRELH9TF"
 });
 var auth = firebase.auth();
 var db   = firebase.firestore();
@@ -996,7 +998,7 @@ var db   = firebase.firestore();
 // CONSTANTES
 // ════════════════════════════════════════════
 var ADMIN_EM   = "f2kmultiservice" + "@" + "gmail.com";
-var ADMIN_PH   = "22999878742";
+var ADMIN_PH   = "2290199878742";
 var FEDA_KEY   = "pk_live_ORVqn9pz6gYeLDzjeR9FEple";
 var CLD_CLOUD  = "f2k-market";
 var CLD_PRESET = "f2kmarket_upload";
@@ -2375,7 +2377,7 @@ function redeemPromo(sub, oid) {
 function showOrderModal(opts) {
   var oid   = opts.oid;
   var isPaid = opts.isPaid;
-  var waMsg  = opts.waMsg;
+  var waMsg  = opts.;
 
   document.getElementById("omIco").textContent  = isPaid ? "&#127881;" : "&#128172;";
   document.getElementById("omTtl").innerHTML    = isPaid
