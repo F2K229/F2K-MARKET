@@ -269,7 +269,9 @@ select.fi{cursor:pointer}select.fi option{background:var(--dk2)}textarea.fi{resi
 @media(max-width:400px){.pg{grid-template-columns:1fr}.rcards{grid-template-columns:1fr}}
 </style>
 </head>
-<body><!-- NAVBAR -->
+<body>
+ 
+<!-- NAVBAR -->
 <nav class="navbar">
   <div class="nav-brand" onclick="go('home')">
     <span class="logo-icon">&#9889;</span>
@@ -746,7 +748,7 @@ select.fi{cursor:pointer}select.fi option{background:var(--dk2)}textarea.fi{resi
       </div>
     </div>
   </div>
-  </div><!-- MODALE: COMMANDE CONFIRMÉE -->
+        </div><!-- MODALE: COMMANDE CONFIRMÉE -->
 <div id="ordModal" class="modal-ov hidden">
   <div class="modal" style="text-align:center;max-width:540px">
     <div style="font-size:3.8rem;margin-bottom:.8rem" id="omIco">&#127881;</div>
@@ -998,7 +1000,7 @@ var db   = firebase.firestore();
 // CONSTANTES
 // ════════════════════════════════════════════
 var ADMIN_EM   = "f2kmultiservice" + "@" + "gmail.com";
-var ADMIN_PH   = "2290199878742";
+var ADMIN_PH   = "22901998787" + "42";
 var FEDA_KEY   = "pk_live_ORVqn9pz6gYeLDzjeR9FEple";
 var CLD_CLOUD  = "f2k-market";
 var CLD_PRESET = "f2kmarket_upload";
@@ -1161,8 +1163,8 @@ document.getElementById("btnOut").addEventListener("click", doLogout);
 // LOGIN
 // ════════════════════════════════════════════
 function doLogin() {
-  var em   = document.getElementById("liE").value.trim();
-  var pw   = document.getElementById("liP").value;
+  var em    = document.getElementById("liE").value.trim();
+  var pw    = document.getElementById("liP").value;
   var errEl = document.getElementById("liErr");
   errEl.classList.add("hidden");
   if (!em || !pw) {
@@ -1548,9 +1550,9 @@ var TERMS_DATA = {
     + "<ul><li>Minimum 18 ans</li>"
     + "<li>Un seul compte par personne</li>"
     + "<li>Informations exactes et a jour</li></ul>"
-    + "<h4>2. Achats et paiements</h4>"
+ + "<h4>2. Achats et paiements</h4>"
     + "<ul><li>Paiement securise via FedaPay</li>"
-   + "<li>Produits numeriques livres instantanement apres paiement</li>"
+    + "<li>Produits numeriques livres instantanement apres paiement</li>"
     + "<li>Frais de livraison physique a votre charge</li></ul>"
     + "<h4>3. Remboursements</h4>"
     + "<ul><li>Produits numeriques non remboursables sauf defaut technique</li>"
@@ -1559,7 +1561,7 @@ var TERMS_DATA = {
     + "<ul><li>Aucun signalement abusif ou frauduleux</li>"
     + "<li>Pas de tentative de contournement du systeme de paiement</li></ul>"
     + "<h4>5. Contact</h4>"
-    + "<p>+229 99878742 &nbsp;|&nbsp; f2kmultiservice&#64;gmail.com</p>",
+    + "<p>+229 01 99 87 87 42 &nbsp;|&nbsp; f2kmultiservice&#64;gmail.com</p>",
 
   seller: "<h4>Conditions Vendeur F2K MARKET</h4>"
     + "<h4>1. Inscription et validation</h4>"
@@ -1595,7 +1597,7 @@ var TERMS_DATA = {
     + "<ul><li>Tout manquement peut entrainer la suspension du compte</li>"
     + "<li>Les fonds en wallet peuvent etre bloques en cas de fraude</li></ul>"
     + "<h4>9. Contact admin</h4>"
-    + "<p>+229 99878742 &nbsp;|&nbsp; f2kmultiservice&#64;gmail.com</p>"
+    + "<p>+229 01 99 87 87 42 &nbsp;|&nbsp; f2kmultiservice&#64;gmail.com</p>"
 };
 
 function openTerms(type) {
@@ -2377,7 +2379,7 @@ function redeemPromo(sub, oid) {
 function showOrderModal(opts) {
   var oid   = opts.oid;
   var isPaid = opts.isPaid;
-  var waMsg  = opts.;
+  var waMsg  = opts.waMsg;
 
   document.getElementById("omIco").textContent  = isPaid ? "&#127881;" : "&#128172;";
   document.getElementById("omTtl").innerHTML    = isPaid
@@ -3576,7 +3578,7 @@ function renderBuyerDB() {
     }
   };
   window.renderBuyerSec("orders");
-}// ════════════════════════════════════════════
+  }// ════════════════════════════════════════════
 // DASHBOARD ADMIN
 // ════════════════════════════════════════════
 function renderAdminDB() {
