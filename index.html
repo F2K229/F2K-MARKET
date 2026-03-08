@@ -2066,6 +2066,1256 @@ function placeOrder(amount) {
   }).catch(function(e){ toast("Erreur: "+e.message,"err"); });
 }
 window.placeOrder = placeOrder;
+// ════ WALLET ════
+function getOrCreateWallet(uid) {
+  return db.collection("wallets").doc(uid).get().then(function(s){
+    if (s.exists) return s.data();
+    var w={balance:0,totalEarned:0,totalWithdrawn:0,points:0};
+    return db.collection("wallets").doc(uid).set(w).then(function(){ return w; });
+  });
+}
+function creditWallet(uid, amount, label, refId) {
+  return db.collection("wallets").doc(uid).get().then(function(s){
+    var bal=(s.exists?s.data().balance:0)+amount;
+    var earned=(s.exists?s.data().totalEarned:0)+amount;
+    return db.collection("wallets").doc(uid).set({
+      balance:bal, totalEarned:earned,
+      totalWithdrawn:s.exists?s.data().totalWithdrawn:0,
+      points:s.exists?s.data().points||0:0
+    }).then(function(){
+      return db.collection("wallet_tx").add({
+        uid:uid, type:"credit", amount:amount,
+        label:label, refId:refId||"",
+        createdAt:new Date().toISOString()
+      });
+    });
+  });
+}
+function debitWallet(uid, amount, label, refId) {
+  return db.collection("wallets").doc(uid).get().then(function(s){
+    if (!s.exists||(s.data().balance||0)<amount) throw new Error("Solde insuffisant");
+    var bal=s.data().balance-amount;
+    return db.collection("wallets").doc(uid).update({balance:bal})
+      .then(function(){
+        return db.collection("wallet_tx").add({
+          uid:uid, type:"debit", amount:amount,
+          label:label, refId:refId||"",
+          createdAt:new Date().toISOString()
+        });
+      });
+  });
+}
+function addLoyaltyPoints(uid, pts) {
+  db.collection("wallets").doc(uid).get().then(function(s){
+    var cur=s.exists?(s.data().points||0):0;
+    db.collection("wallets").doc(uid).set(
+      {points:cur+pts},
+      {merge:true}
+    );
+  });
+}
+
+function loadWallet() {
+  if (!CU) { go("login"); return; }
+  var el=document.getElementById("walletCt");
+  el.innerHTML='<div class="loading">Chargement...</div>';
+  getOrCreateWallet(CU.uid).then(function(w){
+    var bal=w.balance||0, pts=w.points||0;
+    el.innerHTML=
+      '<div class="ph"><h1>💰 Mon <span style="color:var(--p)">Wallet</span></h1></div>'
+      +'<div class="wallet-card">'
+      +'<div style="font-size:.82rem;color:rgba(255,255,255,.6);margin-bottom:.3rem">Solde disponible</div>'
+      +'<div class="wallet-bal">'+fmt(bal)+'<span>FCFA</span></div>'
+      +'<div class="wallet-pts-pill" onclick="go(\'loyalty\')">⭐ '+pts+' points de fidélité →</div>'
+      +'<div style="display:flex;gap:.7rem;margin-top:1.2rem;flex-wrap:wrap">'
+      +'<button class="btn-p" onclick="document.getElementById(\'wdModal\').classList.remove(\'hidden\')">💸 Retirer</button>'
+      +'</div></div>'
+      +'<div class="card">'
+      +'<div class="ctitle">Historique des transactions</div>'
+      +'<div id="txList"><div class="loading">Chargement...</div></div>'
+      +'</div>';
+    loadTxHistory();
+  });
+}
+function loadTxHistory() {
+  if (!CU) return;
+  var el=document.getElementById("txList");
+  if (!el) return;
+  db.collection("wallet_tx").where("uid","==",CU.uid)
+    .orderBy("createdAt","desc").limit(30).get()
+    .then(function(s){
+      if (s.empty) { el.innerHTML='<p style="color:var(--mt);font-size:.85rem">Aucune transaction.</p>'; return; }
+      el.innerHTML=s.docs.map(function(d){
+        var t=d.data();
+        var isIn=t.type==="credit";
+        return '<div class="tx-item">'
+          +'<div class="tx-icon '+(isIn?"in":"out")+'">'+(isIn?"📥":"📤")+'</div>'
+          +'<div style="flex:1">'
+          +'<div class="tx-label">'+esc(t.label||"")+'</div>'
+          +'<div class="tx-sub">'+timeAgo(t.createdAt)+'</div>'
+          +'</div>'
+          +'<div class="tx-amt '+(isIn?"in":"out")+'">'+(isIn?"+":"-")+fmt(t.amount)+' FCFA</div>'
+          +'</div>';
+      }).join("");
+    });
+}
+
+// ════ RETRAIT ════
+function confirmWD() {
+  if (!CU) return;
+  var amt   = +document.getElementById("wdAmt").value||0;
+  var op    = document.getElementById("wdOp").value;
+  var phone = document.getElementById("wdPhone").value.trim();
+  var holder= document.getElementById("wdHolder").value.trim();
+  var err   = document.getElementById("wdErr");
+  err.className="ferr";
+  if (amt<500) { err.textContent="Montant minimum : 500 FCFA."; err.className="ferr show"; return; }
+  if (!phone||!holder) { err.textContent="Remplissez tous les champs."; err.className="ferr show"; return; }
+  getOrCreateWallet(CU.uid).then(function(w){
+    if ((w.balance||0)<amt) {
+      err.textContent="Solde insuffisant ("+fmt(w.balance)+" FCFA).";
+      err.className="ferr show"; return;
+    }
+    db.collection("withdrawals").add({
+      uid:CU.uid, email:CU.email,
+      name:UD?UD.fullname||"":"",
+      amount:amt, operator:op,
+      phone:phone, holder:holder,
+      status:"pending",
+      createdAt:new Date().toISOString()
+    }).then(function(){
+      document.getElementById("wdModal").classList.add("hidden");
+      toast("Demande envoyée ! Traitement sous 24h.","ok");
+      pushNotif(CU.uid,"Votre demande de retrait de "+fmt(amt)+" FCFA est en cours de traitement.","info");
+    });
+  });
+}
+window.confirmWD = confirmWD;
+
+// ════ LOYALTY ════
+function loadLoyalty() {
+  if (!CU) { go("login"); return; }
+  var el=document.getElementById("loyaltyCt");
+  el.innerHTML='<div class="loading">Chargement...</div>';
+  getOrCreateWallet(CU.uid).then(function(w){
+    var pts=w.points||0;
+    var rewards=[
+      {pts:100,  val:"100 FCFA crédités sur votre wallet"},
+      {pts:250,  val:"250 FCFA crédités sur votre wallet"},
+      {pts:500,  val:"500 FCFA crédités sur votre wallet"},
+      {pts:1000, val:"1 000 FCFA crédités sur votre wallet"},
+      {pts:2500, val:"2 500 FCFA crédités sur votre wallet"},
+      {pts:5000, val:"5 000 FCFA crédités sur votre wallet"}
+    ];
+    el.innerHTML=
+      '<div class="ph"><h1>⭐ Programme de <span style="color:var(--p)">Fidélité</span></h1></div>'
+      +'<div style="background:linear-gradient(135deg,rgba(168,85,247,.14),rgba(59,130,246,.08));border:1px solid rgba(168,85,247,.2);border-radius:var(--rl);padding:1.7rem;margin-bottom:1.3rem;position:relative;overflow:hidden">'
+      +'<div style="position:absolute;right:1.3rem;top:50%;transform:translateY(-50%);font-size:3.5rem;opacity:.25">⭐</div>'
+      +'<div style="font-size:.82rem;color:var(--mt2);margin-bottom:.3rem">Vos points</div>'
+      +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:3.2rem;color:var(--pu);letter-spacing:2px;line-height:1">'+pts+'</div>'
+      +'<div style="font-size:.8rem;color:var(--mt);margin-top:.4rem">10 points gagnés par 1 000 FCFA dépensés</div>'
+      +'</div>'
+      +'<div class="ctitle" style="margin-bottom:.8rem">🎁 Récompenses disponibles</div>'
+      +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.75rem">'
+      +rewards.map(function(r){
+        var canRedeem=pts>=r.pts;
+        return '<div style="background:var(--dk2);border:1px solid '+(canRedeem?"rgba(168,85,247,.35)":"var(--bd)")+';border-radius:var(--rl);padding:1rem;transition:all .2s">'
+          +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:1.4rem;color:var(--pu);letter-spacing:1px">'+r.pts+' pts</div>'
+          +'<div style="font-size:.8rem;color:var(--mt2);margin:.3rem 0 .7rem">'+r.val+'</div>'
+          +'<button class="btn-p" style="width:100%;padding:.4rem;font-size:.8rem;'+(canRedeem?"":"background:var(--mt);cursor:not-allowed")+'" '
+          +(canRedeem?'onclick="redeemPoints('+r.pts+','+r.pts+\')"':'disabled')+'>'
+          +(canRedeem?'Échanger':''+pts+'/'+r.pts+' pts')
+          +'</button></div>';
+      }).join("")
+      +'</div>';
+  });
+}
+function redeemPoints(pts, fcfa) {
+  if (!CU) return;
+  openConfirm("Échanger des points",
+    "Échanger "+pts+" points contre "+fmt(fcfa)+" FCFA ?",
+    function(){
+      db.collection("wallets").doc(CU.uid).get().then(function(s){
+        var cur=s.exists?(s.data().points||0):0;
+        if (cur<pts) { toast("Points insuffisants.","err"); return; }
+        db.collection("wallets").doc(CU.uid).update({points:cur-pts})
+          .then(function(){
+            return creditWallet(CU.uid, fcfa, "Échange points fidélité ("+pts+" pts)", "");
+          }).then(function(){
+            toast(fmt(fcfa)+" FCFA crédités !","ok");
+            loadLoyalty();
+          });
+      });
+    });
+}
+window.redeemPoints = redeemPoints;
+
+// ════ NOTIFICATIONS ════
+function loadNotifs() {
+  if (!CU) { go("login"); return; }
+  var el=document.getElementById("notifList");
+  el.innerHTML='<div class="loading">Chargement...</div>';
+  db.collection("notifications").where("uid","==",CU.uid)
+    .orderBy("createdAt","desc").limit(40).get()
+    .then(function(s){
+      if (s.empty) {
+        el.innerHTML='<div class="no-res"><div class="icon">🔔</div><p>Aucune notification.</p></div>';
+        return;
+      }
+      el.innerHTML=s.docs.map(function(d){
+        var n=d.data();
+        return '<div class="notif-item'+(n.read?"":" unread")+'" onclick="markNotifRead(\''+d.id+'\')">'
+          +'<div class="nd'+(n.read?" read":"")+'"></div>'
+          +'<div style="flex:1">'
+          +'<div class="notif-txt">'+esc(n.message||"")+'</div>'
+          +'<div class="notif-time">'+timeAgo(n.createdAt)+'</div>'
+          +'</div></div>';
+      }).join("");
+    });
+}
+function markNotifRead(id) {
+  db.collection("notifications").doc(id).update({read:true}).then(function(){
+    checkUnreadNotif();
+    loadNotifs();
+  });
+}
+function markAllRead() {
+  if (!CU) return;
+  db.collection("notifications").where("uid","==",CU.uid).where("read","==",false).get()
+    .then(function(s){
+      var batch=db.batch();
+      s.docs.forEach(function(d){ batch.update(d.ref,{read:true}); });
+      return batch.commit();
+    }).then(function(){
+      toast("Tout marqué comme lu","ok");
+      checkUnreadNotif();
+      loadNotifs();
+    });
+}
+window.markNotifRead = markNotifRead;
+window.markAllRead   = markAllRead;
+
+// ════ MESSAGES ════
+function loadMessages() {
+  if (!CU) { go("login"); return; }
+  var el=document.getElementById("chatLst");
+  el.innerHTML='<div class="loading">Chargement...</div>';
+  var isAdmin = CU.email===ADMIN_EM;
+
+  if (isAdmin) {
+    // admin voit toutes les conversations
+    db.collection("conv_meta").orderBy("lastAt","desc").limit(50).get()
+      .then(function(s){
+        if (s.empty) { el.innerHTML='<div style="padding:1rem;color:var(--mt);font-size:.84rem">Aucune conversation.</div>'; return; }
+        el.innerHTML=s.docs.map(function(d){
+          var m=d.data();
+          return '<div class="chat-li" onclick="openChat(\''+d.id+'\',\''+esc(m.userName||"Utilisateur")+'\')">'
+            +'<div style="width:36px;height:36px;border-radius:50%;background:var(--dk4);display:flex;align-items:center;justify-content:center;flex-shrink:0">👤</div>'
+            +'<div style="flex:1;min-width:0">'
+            +'<div style="font-weight:700;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(m.userName||"Utilisateur")+'</div>'
+            +'<div style="font-size:.75rem;color:var(--mt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(m.lastMsg||"")+'</div>'
+            +'</div>'
+            +(m.unreadAdmin>0?'<span style="background:var(--p);color:#fff;font-size:.65rem;font-weight:900;padding:1px 6px;border-radius:99px">'+m.unreadAdmin+'</span>':'')
+            +'</div>';
+        }).join("");
+      });
+  } else {
+    // utilisateur : 1 seule conv avec admin
+    el.innerHTML='<div class="chat-li act" onclick="openChat(\''+CU.uid+'\',\'Support F2K\')">'
+      +'<div style="width:36px;height:36px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.9rem">F2K</div>'
+      +'<div style="flex:1">'
+      +'<div style="font-weight:700;font-size:.85rem">Support F2K MARKET</div>'
+      +'<div style="font-size:.75rem;color:var(--mt)">Envoyez-nous un message</div>'
+      +'</div></div>';
+    openChat(CU.uid,"Support F2K");
+    // réinitialiser badge
+    db.collection("conv_meta").doc(CU.uid).set({unreadUser:0},{merge:true});
+    var b=document.getElementById("mBdg");
+    if(b){ b.style.display="none"; }
+  }
+}
+
+function openChat(uid, name) {
+  activeChatUid = uid;
+  if (msgUnsub) { msgUnsub(); msgUnsub=null; }
+  document.getElementById("chatHdr").innerHTML=
+    '<div style="font-weight:700;font-size:.9rem">'+esc(name)+'</div>'
+    +'<div style="font-size:.75rem;color:var(--mt)">Conversation en direct</div>';
+  document.getElementById("chatInp").classList.remove("hidden");
+  document.querySelectorAll(".chat-li").forEach(function(li){ li.classList.remove("act"); });
+  var active=document.querySelector('.chat-li[onclick*="'+uid+'"]');
+  if(active) active.classList.add("act");
+
+  var msgsEl=document.getElementById("chatMsgs");
+  msgsEl.innerHTML='<div class="loading">Chargement...</div>';
+
+  msgUnsub = db.collection("messages")
+    .where("convId","==",uid)
+    .orderBy("createdAt","asc")
+    .limit(100)
+    .onSnapshot(function(s){
+      msgsEl.innerHTML = s.empty
+        ? '<div style="color:var(--mt);font-size:.84rem;text-align:center;padding:1rem">Démarrez la conversation !</div>'
+        : s.docs.map(function(d){
+            var m=d.data();
+            var isMine = CU && m.senderId===CU.uid;
+            return '<div class="cb '+(isMine?"mine":"theirs")+'">'+esc(m.text||"")+'</div>';
+          }).join("");
+      msgsEl.scrollTop=msgsEl.scrollHeight;
+    });
+}
+
+function sendMsg() {
+  if (!CU||!activeChatUid) return;
+  var inp=document.getElementById("msgIn");
+  var txt=inp.value.trim();
+  if (!txt) return;
+  inp.value="";
+  var isAdmin=CU.email===ADMIN_EM;
+  db.collection("messages").add({
+    convId:activeChatUid,
+    senderId:CU.uid,
+    senderName:UD?UD.fullname||"":"",
+    isAdmin:isAdmin,
+    text:txt,
+    createdAt:new Date().toISOString()
+  }).then(function(){
+    var meta={lastMsg:txt, lastAt:new Date().toISOString()};
+    if (!isAdmin) {
+      meta.userName=UD?UD.fullname||"":CU.email;
+      meta.unreadAdmin=firebase.firestore.FieldValue.increment(1);
+    } else {
+      meta.unreadUser=firebase.firestore.FieldValue.increment(1);
+    }
+    db.collection("conv_meta").doc(activeChatUid).set(meta,{merge:true});
+  });
+}
+window.openChat = openChat;
+window.sendMsg  = sendMsg;
+// ════ GESTION PRODUITS ════
+function apToggle() {
+  var ty=document.getElementById("apTy").value;
+  document.getElementById("apPhysF").style.display = ty==="physical"?"block":"none";
+  document.getElementById("apDigF").classList.toggle("hidden", ty!=="digital");
+  document.getElementById("apFtGrp").style.display = ty?"block":"none";
+}
+window.apToggle = apToggle;
+
+function openAddProd() {
+  if (!CU) { go("login"); return; }
+  editProdId=null;
+  document.getElementById("apTtl").textContent="Publier un produit";
+  ["apNm","apDs","apSizes","apColors","apDl"].forEach(function(id){ document.getElementById(id).value=""; });
+  ["apPr","apSale","apSk"].forEach(function(id){ document.getElementById(id).value=""; });
+  document.getElementById("apTy").value="";
+  document.getElementById("apCa").value="ebooks";
+  document.getElementById("apImg").value="";
+  document.getElementById("apFile").value="";
+  document.getElementById("apImgPv").innerHTML="";
+  document.getElementById("apFilePv").innerHTML="";
+  document.getElementById("apFt").checked=false;
+  document.getElementById("ftInfo").style.display="none";
+  document.getElementById("apErr").className="ferr";
+  document.getElementById("apPhysF").style.display="none";
+  document.getElementById("apDigF").classList.add("hidden");
+  document.getElementById("apFtGrp").style.display="none";
+  document.getElementById("addProdModal").classList.remove("hidden");
+}
+window.openAddProd = openAddProd;
+
+function editProd(id) {
+  var prod=allP.find(function(p){ return p.id===id; });
+  if (!prod) return;
+  editProdId=id;
+  document.getElementById("apTtl").textContent="Modifier le produit";
+  document.getElementById("apNm").value  = prod.name||"";
+  document.getElementById("apDs").value  = prod.description||"";
+  document.getElementById("apTy").value  = prod.type||"";
+  document.getElementById("apCa").value  = prod.category||"ebooks";
+  document.getElementById("apPr").value  = prod.price||0;
+  document.getElementById("apSale").value= prod.salePrice||"";
+  document.getElementById("apImg").value = prod.imageUrl||"";
+  document.getElementById("apSk").value  = prod.stock||"";
+  document.getElementById("apDl").value  = prod.deliveryTime||"";
+  document.getElementById("apSizes").value = prod.sizes?(prod.sizes.join(", ")):"";
+  document.getElementById("apColors").value= prod.colors?(prod.colors.join(", ")):"";
+  document.getElementById("apFile").value= prod.fileUrl||"";
+  document.getElementById("apImgPv").innerHTML = prod.imageUrl
+    ?'<img src="'+prod.imageUrl+'" style="width:100%;max-height:110px;object-fit:cover;border-radius:var(--r)"/>':"";
+  document.getElementById("apFilePv").innerHTML = prod.fileUrl
+    ?'<span style="color:var(--ok);font-size:.78rem">✅ Fichier existant</span>':"";
+  document.getElementById("apFt").checked=false;
+  document.getElementById("ftInfo").style.display="none";
+  document.getElementById("apErr").className="ferr";
+  apToggle();
+  document.getElementById("addProdModal").classList.remove("hidden");
+}
+window.editProd = editProd;
+
+function submitProd() {
+  var nm  = document.getElementById("apNm").value.trim();
+  var ty  = document.getElementById("apTy").value;
+  var ca  = document.getElementById("apCa").value;
+  var ds  = document.getElementById("apDs").value.trim();
+  var pr  = +document.getElementById("apPr").value||0;
+  var sale= +document.getElementById("apSale").value||0;
+  var img = document.getElementById("apImg").value;
+  var sk  = +document.getElementById("apSk").value||0;
+  var dl  = document.getElementById("apDl").value.trim();
+  var szRaw = document.getElementById("apSizes").value.trim();
+  var clRaw = document.getElementById("apColors").value.trim();
+  var furl= document.getElementById("apFile").value;
+  var feat= document.getElementById("apFt").checked;
+  var err = document.getElementById("apErr");
+  err.className="ferr";
+
+  if (!nm)  { err.textContent="Nom obligatoire."; err.className="ferr show"; return; }
+  if (!ty)  { err.textContent="Choisissez un type."; err.className="ferr show"; return; }
+  if (pr<0) { err.textContent="Prix invalide."; err.className="ferr show"; return; }
+  if (sale>0&&sale>=pr) { err.textContent="Le prix soldé doit être inférieur au prix normal."; err.className="ferr show"; return; }
+
+  var isAdmin = CU.email===ADMIN_EM;
+
+  // featured : débiter wallet vendeur
+  if (feat&&!isAdmin&&!editProdId) {
+    debitWallet(CU.uid, FEAT_COST, "Mise en vedette: "+nm, "").catch(function(e){
+      err.textContent=e.message; err.className="ferr show"; return;
+    });
+  }
+
+  var sizes  = szRaw ? szRaw.split(",").map(function(s){ return s.trim(); }).filter(Boolean) : [];
+  var colors = clRaw ? clRaw.split(",").map(function(s){ return s.trim(); }).filter(Boolean) : [];
+
+  var data={
+    name:nm, type:ty, category:ca, description:ds,
+    price:pr, salePrice:sale>0?sale:null,
+    imageUrl:img, stock:ty==="physical"?sk:null,
+    deliveryTime:ty==="physical"?dl:"",
+    sizes: ty==="physical"?sizes:[],
+    colors:ty==="physical"?colors:[],
+    fileUrl:ty==="digital"?furl:"",
+    sellerId:  isAdmin?"admin":CU.uid,
+    sellerName:isAdmin?"F2K MARKET":(UD?UD.shopName||UD.fullname||"":""),
+    sellerLogo:isAdmin?"":(UD?UD.logo||"":""),
+    featured:  feat||(editProdId&&allP.find(function(p){return p.id===editProdId;})?allP.find(function(p){return p.id===editProdId;}).featured:false),
+    featuredExpires: feat
+      ? new Date(Date.now()+30*24*3600*1000).toISOString()
+      : (editProdId&&allP.find(function(p){return p.id===editProdId;})
+          ?allP.find(function(p){return p.id===editProdId;}).featuredExpires||null
+          :null),
+    status: isAdmin?"active":"pending",
+    avgRating:0, reviewCount:0,
+    updatedAt:new Date().toISOString()
+  };
+  if (!editProdId) data.createdAt=new Date().toISOString();
+
+  var ref = editProdId
+    ? db.collection("products").doc(editProdId).update(data)
+    : db.collection("products").add(data);
+
+  ref.then(function(){
+    document.getElementById("addProdModal").classList.add("hidden");
+    toast(editProdId?"Produit modifié !":"Produit soumis pour validation !","ok");
+    allP=[];
+    loadDash();
+  }).catch(function(e){ err.textContent=e.message; err.className="ferr show"; });
+}
+window.submitProd = submitProd;
+
+function hideProd(id) {
+  openConfirm("Masquer le produit","Masquer ce produit de la boutique ?",function(){
+    db.collection("products").doc(id).update({status:"hidden"}).then(function(){
+      toast("Produit masqué","ok"); allP=[]; loadDash();
+    });
+  });
+}
+function deleteProd(id) {
+  openConfirm("Supprimer le produit","Supprimer définitivement ce produit ?",function(){
+    db.collection("products").doc(id).delete().then(function(){
+      toast("Produit supprimé","ok"); allP=[]; loadDash();
+    });
+  });
+}
+function boostProd(id, name) {
+  if (!CU) return;
+  openConfirm("Mettre en vedette","Débiter "+fmt(FEAT_COST)+" FCFA pour 30 jours de vedette ?",function(){
+    debitWallet(CU.uid, FEAT_COST, "Vedette: "+name, id).then(function(){
+      return db.collection("products").doc(id).update({
+        featured:true,
+        featuredExpires:new Date(Date.now()+30*24*3600*1000).toISOString(),
+        status:"active"
+      });
+    }).then(function(){
+      toast("Produit en vedette !","ok"); allP=[]; loadDash();
+    }).catch(function(e){ toast(e.message,"err"); });
+  });
+}
+window.hideProd   = hideProd;
+window.deleteProd = deleteProd;
+window.boostProd  = boostProd;
+
+// ════ CODES PROMO ════
+function openPromoMgr() {
+  document.getElementById("promoModal").classList.remove("hidden");
+  loadPromoList();
+}
+function loadPromoList() {
+  if (!CU) return;
+  var el=document.getElementById("promoList");
+  var query = CU.email===ADMIN_EM
+    ? db.collection("promo_codes").orderBy("createdAt","desc")
+    : db.collection("promo_codes").where("sellerId","==",CU.uid).orderBy("createdAt","desc");
+  query.limit(20).get().then(function(s){
+    if (s.empty) { el.innerHTML='<p style="color:var(--mt);font-size:.84rem">Aucun code.</p>'; return; }
+    el.innerHTML='<div class="tw"><table class="dtable">'
+      +'<thead><tr><th>Code</th><th>Réd.</th><th>Utilisations</th><th>Expire</th><th>Statut</th><th></th></tr></thead>'
+      +'<tbody>'
+      +s.docs.map(function(d){
+        var p=d.data();
+        return '<tr>'
+          +'<td><strong>'+esc(p.code||"")+'</strong></td>'
+          +'<td>'+esc(p.discount||0)+'%</td>'
+          +'<td>'+(p.usedCount||0)+'/'+(p.maxUses||"∞")+'</td>'
+          +'<td>'+(p.expiresAt?new Date(p.expiresAt).toLocaleDateString("fr-FR"):"∞")+'</td>'
+          +'<td><span class="badge '+(p.active?"bs":"bd")+'">'+(p.active?"Actif":"Inactif")+'</span></td>'
+          +'<td style="display:flex;gap:.3rem">'
+          +'<button class="bsm b-wa" onclick="togglePromo(\''+d.id+'\','+(p.active?'false':'true')+')">'+( p.active?"Désactiver":"Activer")+'</button>'
+          +'<button class="bsm b-dl" onclick="delPromo(\''+d.id+'\')">Suppr.</button>'
+          +'</td></tr>';
+      }).join("")
+      +'</tbody></table></div>';
+  });
+}
+function createPromo() {
+  if (!CU) return;
+  var code = (document.getElementById("pmCode").value||"").trim().toUpperCase();
+  var disc = +document.getElementById("pmDisc").value||0;
+  var max  = +document.getElementById("pmMax").value||null;
+  var exp  = document.getElementById("pmExp").value;
+  var err  = document.getElementById("pmErr");
+  err.className="ferr";
+  if (!code||!disc) { err.textContent="Code et réduction obligatoires."; err.className="ferr show"; return; }
+  db.collection("promo_codes").add({
+    code:code, discount:disc,
+    maxUses:max||null,
+    expiresAt:exp?new Date(exp).toISOString():null,
+    usedCount:0, active:true,
+    sellerId:CU.uid,
+    createdAt:new Date().toISOString()
+  }).then(function(){
+    toast("Code créé !","ok");
+    ["pmCode","pmDisc","pmMax","pmExp"].forEach(function(id){ document.getElementById(id).value=""; });
+    loadPromoList();
+  }).catch(function(e){ err.textContent=e.message; err.className="ferr show"; });
+}
+function togglePromo(id, state) {
+  db.collection("promo_codes").doc(id).update({active:state==="true"||state===true})
+    .then(function(){ loadPromoList(); });
+}
+function delPromo(id) {
+  openConfirm("Supprimer le code","Supprimer ce code promo ?",function(){
+    db.collection("promo_codes").doc(id).delete().then(function(){
+      toast("Code supprimé","ok"); loadPromoList();
+    });
+  });
+}
+window.openPromoMgr = openPromoMgr;
+window.createPromo  = createPromo;
+window.togglePromo  = togglePromo;
+window.delPromo     = delPromo;
+
+// ════ DASHBOARD ════
+function loadDash() {
+  if (!CU) { go("login"); return; }
+  var el=document.getElementById("dbCt");
+  el.innerHTML='<div class="loading">Chargement...</div>';
+  db.collection("users").doc(CU.uid).get().then(function(s){
+    UD = s.exists ? s.data() : {};
+    var role=UD.role||"client";
+    if (CU.email===ADMIN_EM) renderAdminDB(el);
+    else if (role==="seller") renderSellerDB(el);
+    else renderBuyerDB(el);
+  });
+}
+
+// ════ DASHBOARD ACHETEUR ════
+function renderBuyerDB(el) {
+  Promise.all([
+    db.collection("orders").where("buyerId","==",CU.uid).orderBy("createdAt","desc").limit(20).get(),
+    db.collection("downloads").where("uid","==",CU.uid).orderBy("createdAt","desc").limit(20).get(),
+    getOrCreateWallet(CU.uid)
+  ]).then(function(res){
+    var ords=res[0], dls=res[1], wal=res[2];
+    el.innerHTML=
+      '<div class="db-lay">'
+      +'<div class="sidebar">'
+      +'<div style="padding:.7rem .4rem 1.1rem;border-bottom:1px solid var(--bd);margin-bottom:.7rem">'
+      +'<div class="sb-shop">'+esc(UD.fullname||"Mon compte")+'</div>'
+      +'<div class="sb-role" style="color:var(--mt)">👤 Acheteur</div>'
+      +'</div>'
+      +'<button class="sb-lnk on" onclick="switchDB(\'dbOverview\')">🏠 Aperçu</button>'
+      +'<button class="sb-lnk" onclick="switchDB(\'dbOrders\')">📦 Mes commandes</button>'
+      +'<button class="sb-lnk" onclick="switchDB(\'dbDownloads\')">📥 Téléchargements</button>'
+      +'<button class="sb-lnk" onclick="go(\'wallet\')">💰 Wallet</button>'
+      +'<button class="sb-lnk" onclick="go(\'loyalty\')">⭐ Fidélité</button>'
+      +'<button class="sb-lnk" onclick="go(\'wishlist\')">❤️ Favoris</button>'
+      +'<button class="sb-lnk" onclick="go(\'notifications\')">🔔 Notifications</button>'
+      +'<button class="sb-lnk" onclick="go(\'messages\')">💬 Messages</button>'
+      +'</div>'
+      +'<div class="mc">'
+      // OVERVIEW
+      +'<div id="dbOverview">'
+      +'<div class="ph"><h1>Bonjour, <span style="color:var(--p)">'+esc(UD.fullname||"")+'</span> 👋</h1></div>'
+      +'<div class="sr">'
+      +'<div class="sc"><div class="si">📦</div><div class="sv">'+ords.size+'</div><div class="sl">Commandes</div></div>'
+      +'<div class="sc"><div class="si">📥</div><div class="sv">'+dls.size+'</div><div class="sl">Téléchargements</div></div>'
+      +'<div class="sc" onclick="go(\'wallet\')"><div class="si">💰</div><div class="sv">'+fmt(wal.balance||0)+'</div><div class="sl">FCFA Wallet</div></div>'
+      +'<div class="sc" onclick="go(\'loyalty\')"><div class="si">⭐</div><div class="sv">'+(wal.points||0)+'</div><div class="sl">Points fidélité</div></div>'
+      +'</div>'
+      +'<div class="card"><div class="ctitle">Dernières commandes</div>'
+      +(ords.empty?'<p style="color:var(--mt);font-size:.85rem">Aucune commande.</p>'
+        :'<div class="tw"><table class="dtable"><thead><tr><th>Produit</th><th>Total</th><th>Statut</th><th>Date</th></tr></thead><tbody>'
+        +ords.docs.slice(0,5).map(function(d){
+          var o=d.data();
+          var statusMap={confirmed:"bw",processing:"bi",shipped:"bp",delivered:"bs",cancelled:"bd"};
+          var statusLbl={confirmed:"Confirmé",processing:"En préparation",shipped:"Expédié",delivered:"Livré",cancelled:"Annulé"};
+          return '<tr>'
+            +'<td>'+esc((o.items&&o.items[0])?o.items[0].name:"")+'</td>'
+            +'<td>'+fmt(o.total||0)+' FCFA</td>'
+            +'<td><span class="badge '+(statusMap[o.orderStatus]||"bw")+'">'+(statusLbl[o.orderStatus]||o.orderStatus)+'</span></td>'
+            +'<td>'+timeAgo(o.createdAt)+'</td>'
+            +'</tr>';
+        }).join("")
+        +'</tbody></table></div>')
+      +'</div></div>'
+      // ORDERS
+      +'<div id="dbOrders" style="display:none">'
+      +'<div class="ph"><h1>📦 Mes <span style="color:var(--p)">Commandes</span></h1></div>'
+      +(ords.empty?'<div class="no-res"><div class="icon">📦</div><p>Aucune commande.</p></div>'
+        :ords.docs.map(function(d){
+          var o=d.data();
+          var steps=["confirmed","processing","shipped","delivered"];
+          var idx=steps.indexOf(o.orderStatus);
+          var statusLbl={confirmed:"Confirmé",processing:"En préparation",shipped:"Expédié",delivered:"Livré",cancelled:"Annulé"};
+          var stepIcons=["✅","⚙️","🚚","🏠"];
+          var stepLabels=["Confirmé","Préparation","Expédié","Livré"];
+          return '<div class="card">'
+            +'<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem">'
+            +'<div style="font-weight:700;font-size:.9rem">'+esc((o.items&&o.items[0])?o.items[0].name:"Commande")+'</div>'
+            +'<span class="badge '+(o.orderStatus==="delivered"?"bs":o.orderStatus==="cancelled"?"bd":"bw")+'">'+( statusLbl[o.orderStatus]||o.orderStatus)+'</span>'
+            +'</div>'
+            +(o.orderStatus!=="cancelled"?
+              '<div class="ord-status">'
+              +stepLabels.map(function(sl,i){
+                var cls=i<idx?"done":i===idx?"active":"";
+                return (i>0?'<div class="os-line'+(i<=idx?" done":"")+'"></div>':'')
+                  +'<div class="os-step">'
+                  +'<div class="os-circle '+cls+'">'+stepIcons[i]+'</div>'
+                  +'<div class="os-label '+cls+'">'+sl+'</div>'
+                  +'</div>';
+              }).join("")
+              +'</div>':'')
+            +'<div style="display:flex;justify-content:space-between;font-size:.84rem;color:var(--mt2)">'
+            +'<span>Total: <strong style="color:var(--p)">'+fmt(o.total||0)+' FCFA</strong></span>'
+            +'<span>'+timeAgo(o.createdAt)+'</span>'
+            +'</div>'
+            +(o.orderStatus==="delivered"?'<button class="bsm b-wa" style="margin-top:.6rem" onclick="openReview(\''+(o.items&&o.items[0]?o.items[0].id:"")+'\',\''+(o.items&&o.items[0]?esc(o.items[0].name):"")+'\')">⭐ Laisser un avis</button>':'')
+            +'</div>';
+        }).join(""))
+      +'</div>'
+      // DOWNLOADS
+      +'<div id="dbDownloads" style="display:none">'
+      +'<div class="ph"><h1>📥 Mes <span style="color:var(--p)">Téléchargements</span></h1></div>'
+      +(dls.empty?'<div class="no-res"><div class="icon">📥</div><p>Aucun téléchargement.</p></div>'
+        :'<div class="tw"><table class="dtable"><thead><tr><th>Produit</th><th>Date</th><th></th></tr></thead><tbody>'
+        +dls.docs.map(function(d){
+          var dl=d.data();
+          return '<tr>'
+            +'<td>'+esc(dl.productName||"")+'</td>'
+            +'<td>'+timeAgo(dl.createdAt)+'</td>'
+            +'<td><a href="'+esc(dl.fileUrl||"#")+'" target="_blank" class="bsm b-ok">📥 Télécharger</a></td>'
+            +'</tr>';
+        }).join("")
+        +'</tbody></table></div>')
+      +'</div>'
+      +'</div></div>';
+  });
+}
+
+// ════ DASHBOARD VENDEUR ════
+function renderSellerDB(el) {
+  if (UD.status!=="approved") {
+    el.innerHTML='<div style="max-width:500px;margin:3rem auto;text-align:center;padding:1.5rem">'
+      +'<div style="font-size:3rem;margin-bottom:1rem">⏳</div>'
+      +'<h2 style="font-family:\'Bebas Neue\',sans-serif;font-size:1.8rem;letter-spacing:2px">Compte en attente</h2>'
+      +'<p style="color:var(--mt2);margin-top:.8rem;line-height:1.65">Votre boutique est en cours de validation par notre équipe.<br/>Vous serez notifié par email dès l\'approbation.</p>'
+      +'<a href="https://wa.me/'+ADMIN_PH+'" target="_blank" class="btn-p" style="display:inline-block;margin-top:1.2rem">💬 Contacter le support</a>'
+      +'</div>';
+    return;
+  }
+  Promise.all([
+    db.collection("products").where("sellerId","==",CU.uid).orderBy("createdAt","desc").get(),
+    db.collection("orders").where("sellerId","==",CU.uid).orderBy("createdAt","desc").limit(30).get(),
+    getOrCreateWallet(CU.uid)
+  ]).then(function(res){
+    var prods=res[0], ords=res[1], wal=res[2];
+    var totRev=0;
+    ords.forEach(function(d){ totRev+=(d.data().total||0)*(1-COMM_RATE); });
+    var pendProds=0;
+    prods.forEach(function(d){ if(d.data().status==="pending") pendProds++; });
+
+    el.innerHTML=
+      '<div class="db-lay">'
+      +'<div class="sidebar">'
+      +'<div style="padding:.7rem .4rem 1.1rem;border-bottom:1px solid var(--bd);margin-bottom:.7rem">'
+      +'<div class="sb-shop">'+esc(UD.shopName||UD.fullname||"Ma boutique")+'</div>'
+      +'<div class="sb-role" style="color:var(--p)">🏪 Vendeur</div>'
+      +'</div>'
+      +'<button class="sb-lnk on" onclick="switchDB(\'selOverview\')">🏠 Aperçu</button>'
+      +'<button class="sb-lnk" onclick="switchDB(\'selProds\')">📦 Produits'
+      +(pendProds>0?'<span class="sb-bdg or">'+pendProds+'</span>':'')+'</button>'
+      +'<button class="sb-lnk" onclick="switchDB(\'selOrds\')">🛒 Commandes</button>'
+      +'<button class="sb-lnk" onclick="switchDB(\'selStats\')">📊 Statistiques</button>'
+      +'<button class="sb-lnk" onclick="go(\'wallet\')">💰 Wallet</button>'
+      +'<button class="sb-lnk" onclick="go(\'loyalty\')">⭐ Fidélité</button>'
+      +'<button class="sb-lnk" onclick="openPromoMgr()">🎟️ Promos</button>'
+      +'<button class="sb-lnk" onclick="go(\'notifications\')">🔔 Notifications</button>'
+      +'<button class="sb-lnk" onclick="go(\'messages\')">💬 Messages</button>'
+      +'</div>'
+      +'<div class="mc">'
+      // OVERVIEW
+      +'<div id="selOverview">'
+      +'<div class="ph"><h1>Ma <span style="color:var(--p)">Boutique</span></h1></div>'
+      +'<div class="sr">'
+      +'<div class="sc"><div class="si">📦</div><div class="sv">'+prods.size+'</div><div class="sl">Produits</div></div>'
+      +'<div class="sc"><div class="si">🛒</div><div class="sv">'+ords.size+'</div><div class="sl">Commandes</div></div>'
+      +'<div class="sc" onclick="go(\'wallet\')"><div class="si">💰</div><div class="sv">'+fmt(wal.balance||0)+'</div><div class="sl">FCFA wallet</div></div>'
+      +'<div class="sc"><div class="si">📈</div><div class="sv">'+fmt(Math.round(totRev))+'</div><div class="sl">FCFA gagnés</div></div>'
+      +'</div>'
+      +'<button class="btn-p" onclick="openAddProd()" style="margin-bottom:1rem">➕ Publier un produit</button>'
+      +'</div>'
+      // PRODUITS
+      +'<div id="selProds" style="display:none">'
+      +'<div class="ph" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">'
+      +'<h1>📦 Mes <span style="color:var(--p)">Produits</span></h1>'
+      +'<button class="btn-p" onclick="openAddProd()">➕ Nouveau</button>'
+      +'</div>'
+      +(prods.empty?'<div class="no-res"><div class="icon">📦</div><p>Aucun produit.</p></div>'
+        :'<div class="tw"><table class="dtable"><thead><tr><th>Produit</th><th>Prix</th><th>Soldé</th><th>Stock</th><th>Statut</th><th>Actions</th></tr></thead><tbody>'
+        +prods.docs.map(function(d){
+          var p=d.data();
+          var stMap={active:"bs",pending:"bw",hidden:"bd"};
+          var stLbl={active:"Actif",pending:"En attente",hidden:"Masqué"};
+          return '<tr>'
+            +'<td style="display:flex;align-items:center;gap:.5rem">'
+            +(p.imageUrl?'<img src="'+esc(p.imageUrl)+'" style="width:32px;height:32px;border-radius:var(--r);object-fit:cover"/>':'<span style="font-size:1.2rem">🛍</span>')
+            +'<span style="font-size:.82rem;font-weight:600">'+esc(p.name||"")+'</span></td>'
+            +'<td>'+fmt(p.price||0)+'</td>'
+            +'<td>'+(p.salePrice?'<span style="color:var(--er);font-weight:700">'+fmt(p.salePrice)+'</span>':'—')+'</td>'
+            +'<td>'+(p.type==="physical"?(p.stock||0):'∞')+'</td>'
+            +'<td><span class="badge '+(stMap[p.status]||"bw")+'">'+(stLbl[p.status]||p.status)+'</span></td>'
+            +'<td><div style="display:flex;gap:.3rem;flex-wrap:wrap">'
+            +'<button class="bsm b-if" onclick="editProd(\''+d.id+'\')">✏️</button>'
+            +'<button class="bsm b-wa" onclick="boostProd(\''+d.id+'\',\''+esc(p.name)+'\')">⭐</button>'
+            +'<button class="bsm b-dl" onclick="hideProd(\''+d.id+'\')">👁</button>'
+            +'<button class="bsm b-dl" onclick="deleteProd(\''+d.id+'\')">🗑</button>'
+            +'</div></td></tr>';
+        }).join("")
+        +'</tbody></table></div>')
+      +'</div>'
+      // COMMANDES VENDEUR
+      +'<div id="selOrds" style="display:none">'
+      +'<div class="ph"><h1>🛒 Mes <span style="color:var(--p)">Commandes</span></h1></div>'
+      +(ords.empty?'<div class="no-res"><div class="icon">🛒</div><p>Aucune commande.</p></div>'
+        :'<div class="tw"><table class="dtable"><thead><tr><th>Acheteur</th><th>Produit</th><th>Montant</th><th>Gain</th><th>Statut</th><th>Date</th></tr></thead><tbody>'
+        +ords.docs.map(function(d){
+          var o=d.data();
+          var stMap={confirmed:"bw",processing:"bi",shipped:"bp",delivered:"bs",cancelled:"bd"};
+          var stLbl={confirmed:"Confirmé",processing:"En prép.",shipped:"Expédié",delivered:"Livré",cancelled:"Annulé"};
+          return '<tr>'
+            +'<td>'+esc(o.buyerName||o.buyerEmail||"")+'</td>'
+            +'<td>'+esc((o.items&&o.items[0])?o.items[0].name:"")+'</td>'
+            +'<td>'+fmt(o.total||0)+' FCFA</td>'
+            +'<td style="color:var(--ok)">'+fmt(Math.round((o.total||0)*(1-COMM_RATE)))+' FCFA</td>'
+            +'<td><span class="badge '+(stMap[o.orderStatus]||"bw")+'">'+(stLbl[o.orderStatus]||o.orderStatus)+'</span></td>'
+            +'<td>'+timeAgo(o.createdAt)+'</td>'
+            +'</tr>';
+        }).join("")
+        +'</tbody></table></div>')
+      +'</div>'
+      // STATS
+      +'<div id="selStats" style="display:none">'
+      +'<div class="ph"><h1>📊 <span style="color:var(--p)">Statistiques</span></h1></div>'
+      +'<div class="card"><div class="ctitle">Revenus des 7 derniers jours</div>'
+      +'<div class="chart-wrap"><canvas id="selChart"></canvas></div>'
+      +'</div></div>'
+      +'</div></div>';
+
+    switchDB("selOverview");
+    setTimeout(function(){ renderSelChart(ords.docs); }, 300);
+  });
+}
+
+function renderSelChart(docs) {
+  var canvas=document.getElementById("selChart");
+  if (!canvas) return;
+  var days=[], rev=[];
+  for (var i=6;i>=0;i--) {
+    var d=new Date(); d.setDate(d.getDate()-i);
+    var lbl=d.toLocaleDateString("fr-FR",{weekday:"short"});
+    days.push(lbl);
+    var dayStr=d.toISOString().slice(0,10);
+    var tot=0;
+    docs.forEach(function(od){
+      var o=od.data();
+      if ((o.createdAt||"").slice(0,10)===dayStr) tot+=(o.total||0)*(1-COMM_RATE);
+    });
+    rev.push(Math.round(tot));
+  }
+  new Chart(canvas,{
+    type:"bar",
+    data:{labels:days,datasets:[{label:"Revenus FCFA",data:rev,
+      backgroundColor:"rgba(255,107,0,.7)",borderColor:"var(--p)",
+      borderWidth:1,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        y:{beginAtZero:true,ticks:{color:"#7878a0"},grid:{color:"rgba(255,255,255,.05)"}},
+        x:{ticks:{color:"#7878a0"},grid:{display:false}}
+      }
+    }
+  });
+}
+
+function switchDB(id) {
+  var sections=["dbOverview","dbOrders","dbDownloads",
+    "selOverview","selProds","selOrds","selStats",
+    "adOverview","adBuyers","adProds","adOrds","adPromos","adReports","adWallets","adWD"];
+  sections.forEach(function(s){
+    var el=document.getElementById(s);
+    if(el) el.style.display="none";
+  });
+  var target=document.getElementById(id);
+  if(target) target.style.display="block";
+  document.querySelectorAll(".sb-lnk").forEach(function(b){ b.classList.remove("on"); });
+}
+window.switchDB = switchDB;
+                                                  // ════ DASHBOARD ADMIN ════
+function renderAdminDB(el) {
+  Promise.all([
+    db.collection("users").get(),
+    db.collection("products").get(),
+    db.collection("orders").get(),
+    db.collection("withdrawals").where("status","==","pending").get(),
+    db.collection("reports").where("status","==","pending").get(),
+    db.collection("wallets").get()
+  ]).then(function(res){
+    var users=res[0], prods=res[1], ords=res[2], wds=res[3], reps=res[4], wals=res[5];
+    var totalRev=0, totalComm=0;
+    ords.forEach(function(d){ var o=d.data(); totalRev+=o.total||0; totalComm+=o.commission||0; });
+    var pendingSellers=0, pendingProds=0;
+    users.forEach(function(d){ var u=d.data(); if(u.role==="seller"&&u.status==="pending") pendingSellers++; });
+    prods.forEach(function(d){ if(d.data().status==="pending") pendingProds++; });
+
+    el.innerHTML=
+      '<div class="db-lay">'
+      +'<div class="sidebar">'
+      +'<div style="padding:.7rem .4rem 1.1rem;border-bottom:1px solid var(--bd);margin-bottom:.7rem">'
+      +'<div class="sb-shop">ADMIN</div>'
+      +'<div class="sb-role" style="color:var(--er)">🔐 F2K MARKET</div>'
+      +'</div>'
+      +'<button class="sb-lnk on" onclick="switchDB(\'adOverview\')">🏠 Aperçu</button>'
+      +'<button class="sb-lnk" onclick="switchDB(\'adBuyers\')">👥 Utilisateurs'
+      +(pendingSellers>0?'<span class="sb-bdg or">'+pendingSellers+'</span>':'')+'</button>'
+      +'<button class="sb-lnk" onclick="switchDB(\'adProds\')">📦 Produits'
+      +(pendingProds>0?'<span class="sb-bdg rd">'+pendingProds+'</span>':'')+'</button>'
+      +'<button class="sb-lnk" onclick="switchDB(\'adOrds\')">🛒 Commandes</button>'
+      +'<button class="sb-lnk" onclick="switchDB(\'adWD\')">💸 Retraits'
+      +(wds.size>0?'<span class="sb-bdg rd">'+wds.size+'</span>':'')+'</button>'
+      +'<button class="sb-lnk" onclick="switchDB(\'adReports\')">🚩 Signalements'
+      +(reps.size>0?'<span class="sb-bdg rd">'+reps.size+'</span>':'')+'</button>'
+      +'<button class="sb-lnk" onclick="switchDB(\'adWallets\')">💰 Wallets</button>'
+      +'<button class="sb-lnk" onclick="switchDB(\'adPromos\')">🎟️ Codes promo</button>'
+      +'<button class="sb-lnk" onclick="openAddProd()">➕ Ajouter produit</button>'
+      +'<button class="sb-lnk" onclick="document.getElementById(\'annModal\').classList.remove(\'hidden\')">📢 Bannière</button>'
+      +'<button class="sb-lnk" onclick="go(\'messages\')">💬 Messages</button>'
+      +'</div>'
+      +'<div class="mc">'
+
+      // ── OVERVIEW ──
+      +'<div id="adOverview">'
+      +'<div class="ph"><h1>🔐 Admin <span style="color:var(--p)">Dashboard</span></h1></div>'
+      +'<div class="sr">'
+      +'<div class="sc"><div class="si">👥</div><div class="sv">'+users.size+'</div><div class="sl">Utilisateurs</div></div>'
+      +'<div class="sc"><div class="si">📦</div><div class="sv">'+prods.size+'</div><div class="sl">Produits</div></div>'
+      +'<div class="sc"><div class="si">🛒</div><div class="sv">'+ords.size+'</div><div class="sl">Commandes</div></div>'
+      +'<div class="sc"><div class="si">💰</div><div class="sv">'+fmt(Math.round(totalComm))+'</div><div class="sl">FCFA commissions</div></div>'
+      +'<div class="sc"><div class="si">📈</div><div class="sv">'+fmt(Math.round(totalRev))+'</div><div class="sl">FCFA volume</div></div>'
+      +'<div class="sc"><div class="si">💸</div><div class="sv">'+wds.size+'</div><div class="sl">Retraits en attente</div></div>'
+      +'</div>'
+      +'<div class="card"><div class="ctitle">Volume des 7 derniers jours</div>'
+      +'<div class="chart-wrap"><canvas id="adChart"></canvas></div>'
+      +'</div>'
+      +'</div>'
+
+      // ── UTILISATEURS ──
+      +'<div id="adBuyers" style="display:none">'
+      +'<div class="ph"><h1>👥 <span style="color:var(--p)">Utilisateurs</span></h1></div>'
+      +'<div class="tw"><table class="dtable">'
+      +'<thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Statut</th><th>Pays</th><th>Actions</th></tr></thead>'
+      +'<tbody>'
+      +users.docs.map(function(d){
+        var u=d.data();
+        var roleBadge=u.role==="seller"?'<span class="badge bp">🏪 Vendeur</span>':'<span class="badge bi">👤 Acheteur</span>';
+        var stBadge=u.status==="approved"||u.status==="active"
+          ?'<span class="badge bs">Actif</span>'
+          :u.status==="pending"
+          ?'<span class="badge bw">En attente</span>'
+          :'<span class="badge bd">Suspendu</span>';
+        return '<tr>'
+          +'<td style="font-weight:600">'+esc(u.fullname||"")+'</td>'
+          +'<td style="font-size:.78rem;color:var(--mt2)">'+esc(u.email||"")+'</td>'
+          +'<td>'+roleBadge+'</td>'
+          +'<td>'+stBadge+'</td>'
+          +'<td>'+esc(u.country||"—")+'</td>'
+          +'<td><div style="display:flex;gap:.3rem;flex-wrap:wrap">'
+          +(u.role==="seller"&&u.status==="pending"
+            ?'<button class="bsm b-ok" onclick="approveUser(\''+d.id+'\')">✅ Approuver</button>':'')
+          +(u.status!=="suspended"&&u.email!==ADMIN_EM
+            ?'<button class="bsm b-dl" onclick="suspendUser(\''+d.id+'\')">🚫 Suspendre</button>':'')
+          +(u.status==="suspended"
+            ?'<button class="bsm b-ok" onclick="approveUser(\''+d.id+'\')">🔓 Réactiver</button>':'')
+          +'</div></td></tr>';
+      }).join("")
+      +'</tbody></table></div>'
+      +'</div>'
+
+      // ── PRODUITS ADMIN ──
+      +'<div id="adProds" style="display:none">'
+      +'<div class="ph" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">'
+      +'<h1>📦 <span style="color:var(--p)">Produits</span></h1>'
+      +'<button class="btn-p" onclick="openAddProd()">➕ Ajouter</button>'
+      +'</div>'
+      +'<div class="tw"><table class="dtable">'
+      +'<thead><tr><th>Produit</th><th>Vendeur</th><th>Prix</th><th>Soldé</th><th>Type</th><th>Statut</th><th>Actions</th></tr></thead>'
+      +'<tbody>'
+      +prods.docs.map(function(d){
+        var p=d.data();
+        var stMap={active:"bs",pending:"bw",hidden:"bd"};
+        var stLbl={active:"Actif",pending:"En attente",hidden:"Masqué"};
+        return '<tr>'
+          +'<td style="display:flex;align-items:center;gap:.5rem">'
+          +(p.imageUrl?'<img src="'+esc(p.imageUrl)+'" style="width:30px;height:30px;border-radius:var(--r);object-fit:cover"/>':'<span>🛍</span>')
+          +'<span style="font-size:.81rem;font-weight:600">'+esc(p.name||"")+'</span></td>'
+          +'<td style="font-size:.78rem">'+esc(p.sellerName||"")+'</td>'
+          +'<td>'+fmt(p.price||0)+'</td>'
+          +'<td>'+(p.salePrice?'<span style="color:var(--er);font-weight:700">'+fmt(p.salePrice)+'</span>':'—')+'</td>'
+          +'<td><span class="badge '+(p.type==="digital"?"bi":"bp")+'">'+(p.type==="digital"?"💻 Num.":"📦 Phys.")+'</span></td>'
+          +'<td><span class="badge '+(stMap[p.status]||"bw")+'">'+(stLbl[p.status]||p.status)+'</span></td>'
+          +'<td><div style="display:flex;gap:.3rem;flex-wrap:wrap">'
+          +(p.status==="pending"?'<button class="bsm b-ok" onclick="approveProd(\''+d.id+'\')">✅</button>':'')
+          +'<button class="bsm b-if" onclick="editProd(\''+d.id+'\')">✏️</button>'
+          +'<button class="bsm b-wa" onclick="boostProd(\''+d.id+'\',\''+esc(p.name)+'\')">⭐</button>'
+          +'<button class="bsm b-dl" onclick="deleteProd(\''+d.id+'\')">🗑</button>'
+          +'</div></td></tr>';
+      }).join("")
+      +'</tbody></table></div>'
+      +'</div>'
+
+      // ── COMMANDES ADMIN ──
+      +'<div id="adOrds" style="display:none">'
+      +'<div class="ph"><h1>🛒 <span style="color:var(--p)">Commandes</span></h1></div>'
+      +'<div class="tw"><table class="dtable">'
+      +'<thead><tr><th>Acheteur</th><th>Produit</th><th>Total</th><th>Commission</th><th>Paiement</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>'
+      +'<tbody>'
+      +ords.docs.map(function(d){
+        var o=d.data();
+        var stMap={confirmed:"bw",processing:"bi",shipped:"bp",delivered:"bs",cancelled:"bd"};
+        var stLbl={confirmed:"Confirmé",processing:"En prép.",shipped:"Expédié",delivered:"Livré",cancelled:"Annulé"};
+        return '<tr>'
+          +'<td style="font-size:.79rem">'+esc(o.buyerName||o.buyerEmail||"")+'</td>'
+          +'<td style="font-size:.79rem">'+esc((o.items&&o.items[0])?o.items[0].name:"")+'</td>'
+          +'<td>'+fmt(o.total||0)+'</td>'
+          +'<td style="color:var(--ok)">'+fmt(o.commission||0)+'</td>'
+          +'<td><span class="badge '+(o.paymentStatus==="paid"?"bs":"bi")+'">'+(o.paymentStatus==="paid"?"Payé":"Gratuit")+'</span></td>'
+          +'<td><span class="badge '+(stMap[o.orderStatus]||"bw")+'">'+(stLbl[o.orderStatus]||o.orderStatus)+'</span></td>'
+          +'<td style="font-size:.77rem">'+timeAgo(o.createdAt)+'</td>'
+          +'<td><select class="fsel" style="font-size:.72rem;padding:.22rem .5rem" onchange="updateOrdStatus(\''+d.id+'\',this.value,\''+esc(o.buyerId||"")+'\',\''+esc((o.items&&o.items[0])?o.items[0].name:"")+'\')"><option value="">Changer...</option>'
+          +'<option value="confirmed">Confirmé</option>'
+          +'<option value="processing">En préparation</option>'
+          +'<option value="shipped">Expédié</option>'
+          +'<option value="delivered">Livré</option>'
+          +'<option value="cancelled">Annulé</option>'
+          +'</select></td></tr>';
+      }).join("")
+      +'</tbody></table></div>'
+      +'</div>'
+
+      // ── RETRAITS ──
+      +'<div id="adWD" style="display:none">'
+      +'<div class="ph"><h1>💸 <span style="color:var(--p)">Retraits</span></h1></div>'
+      +'<div id="wdListAdmin"><div class="loading">Chargement...</div></div>'
+      +'</div>'
+
+      // ── SIGNALEMENTS ──
+      +'<div id="adReports" style="display:none">'
+      +'<div class="ph"><h1>🚩 <span style="color:var(--p)">Signalements</span></h1></div>'
+      +'<div id="repListAdmin"><div class="loading">Chargement...</div></div>'
+      +'</div>'
+
+      // ── WALLETS ──
+      +'<div id="adWallets" style="display:none">'
+      +'<div class="ph"><h1>💰 <span style="color:var(--p)">Wallets</span></h1></div>'
+      +'<div class="tw"><table class="dtable">'
+      +'<thead><tr><th>UID</th><th>Solde</th><th>Total gagné</th><th>Total retiré</th><th>Points</th><th>Actions</th></tr></thead>'
+      +'<tbody>'
+      +wals.docs.map(function(d){
+        var w=d.data();
+        return '<tr>'
+          +'<td style="font-size:.75rem;color:var(--mt)">'+d.id.slice(0,12)+'...</td>'
+          +'<td><strong style="color:var(--p)">'+fmt(w.balance||0)+'</strong> FCFA</td>'
+          +'<td>'+fmt(w.totalEarned||0)+' FCFA</td>'
+          +'<td>'+fmt(w.totalWithdrawn||0)+' FCFA</td>'
+          +'<td><span style="color:var(--pu);font-weight:700">'+(w.points||0)+'</span></td>'
+          +'<td><div style="display:flex;gap:.3rem">'
+          +'<button class="bsm b-ok" onclick="adminCreditWallet(\''+d.id+'\')">➕ Crédit</button>'
+          +'<button class="bsm b-dl" onclick="adminDebitWallet(\''+d.id+'\')">➖ Débit</button>'
+          +'</div></td></tr>';
+      }).join("")
+      +'</tbody></table></div>'
+      +'</div>'
+
+      // ── PROMOS ADMIN ──
+      +'<div id="adPromos" style="display:none">'
+      +'<div class="ph"><h1>🎟️ <span style="color:var(--p)">Codes Promo</span></h1></div>'
+      +'<div class="two-col" style="margin-bottom:1rem">'
+      +'<div class="fg"><label class="fl">Code</label><input class="fi" type="text" id="pmCode" placeholder="PROMO20" style="text-transform:uppercase"/></div>'
+      +'<div class="fg"><label class="fl">Réduction (%)</label><input class="fi" type="number" id="pmDisc" placeholder="20" min="1" max="100"/></div>'
+      +'</div>'
+      +'<div class="two-col" style="margin-bottom:1rem">'
+      +'<div class="fg"><label class="fl">Max utilisations</label><input class="fi" type="number" id="pmMax" placeholder="Illimité"/></div>'
+      +'<div class="fg"><label class="fl">Expire le</label><input class="fi" type="date" id="pmExp"/></div>'
+      +'</div>'
+      +'<div id="pmErr" class="ferr"></div>'
+      +'<button class="btn-p" style="margin-bottom:1.2rem" onclick="createPromo()">Créer le code</button>'
+      +'<div id="promoList"><div class="loading">Chargement...</div></div>'
+      +'</div>'
+
+      +'</div></div>';
+
+    switchDB("adOverview");
+    setTimeout(function(){ renderAdminChart(ords.docs); }, 300);
+    loadAdminWD();
+    loadAdminReports();
+    loadPromoList();
+  });
+}
+
+// ── GRAPHIQUE ADMIN ──
+function renderAdminChart(docs) {
+  var canvas=document.getElementById("adChart");
+  if (!canvas) return;
+  var days=[], rev=[], comm=[];
+  for (var i=6;i>=0;i--) {
+    var d=new Date(); d.setDate(d.getDate()-i);
+    days.push(d.toLocaleDateString("fr-FR",{weekday:"short"}));
+    var dayStr=d.toISOString().slice(0,10);
+    var tot=0, com=0;
+    docs.forEach(function(od){
+      var o=od.data();
+      if((o.createdAt||"").slice(0,10)===dayStr){ tot+=o.total||0; com+=o.commission||0; }
+    });
+    rev.push(Math.round(tot));
+    comm.push(Math.round(com));
+  }
+  new Chart(canvas,{
+    type:"bar",
+    data:{labels:days,datasets:[
+      {label:"Volume FCFA",data:rev,backgroundColor:"rgba(255,107,0,.6)",borderRadius:3},
+      {label:"Commissions",data:comm,backgroundColor:"rgba(34,197,94,.6)",borderRadius:3}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:"#a0a0c0",font:{size:11}}}},
+      scales:{
+        y:{beginAtZero:true,ticks:{color:"#7878a0"},grid:{color:"rgba(255,255,255,.05)"}},
+        x:{ticks:{color:"#7878a0"},grid:{display:false}}
+      }
+    }
+  });
+}
+
+// ── ACTIONS ADMIN USERS ──
+function approveUser(uid) {
+  db.collection("users").doc(uid).update({status:"approved"}).then(function(){
+    toast("Utilisateur approuvé !","ok");
+    pushNotif(uid,"🎉 Votre compte vendeur a été approuvé ! Vous pouvez publier vos produits.","ok");
+    loadDash();
+  });
+}
+function suspendUser(uid) {
+  openConfirm("Suspendre","Suspendre cet utilisateur ?",function(){
+    db.collection("users").doc(uid).update({status:"suspended"}).then(function(){
+      toast("Utilisateur suspendu","ok");
+      pushNotif(uid,"⚠️ Votre compte a été suspendu. Contactez le support.","err");
+      loadDash();
+    });
+  });
+}
+window.approveUser = approveUser;
+window.suspendUser = suspendUser;
+
+// ── ACTIONS ADMIN PRODUITS ──
+function approveProd(id) {
+  db.collection("products").doc(id).update({status:"active"}).then(function(){
+    toast("Produit approuvé !","ok");
+    allP=[];
+    loadDash();
+  });
+}
+window.approveProd = approveProd;
+
+// ── STATUT COMMANDE ──
+function updateOrdStatus(ordId, status, buyerId, prodName) {
+  if (!status) return;
+  db.collection("orders").doc(ordId).update({orderStatus:status}).then(function(){
+    toast("Statut mis à jour !","ok");
+    var msgs={
+      processing:"⚙️ Votre commande \""+prodName+"\" est en cours de préparation.",
+      shipped:"🚚 Votre commande \""+prodName+"\" a été expédiée !",
+      delivered:"🏠 Votre commande \""+prodName+"\" a été livrée. Merci !",
+      cancelled:"❌ Votre commande \""+prodName+"\" a été annulée."
+    };
+    if (buyerId&&msgs[status]) pushNotif(buyerId, msgs[status], status==="cancelled"?"err":"ok");
+  });
+}
+window.updateOrdStatus = updateOrdStatus;
+
+// ── RETRAITS ADMIN ──
+function loadAdminWD() {
+  var el=document.getElementById("wdListAdmin");
+  if (!el) return;
+  db.collection("withdrawals").orderBy("createdAt","desc").limit(50).get()
+    .then(function(s){
+      if (s.empty) { el.innerHTML='<div class="no-res"><div class="icon">💸</div><p>Aucun retrait.</p></div>'; return; }
+      el.innerHTML='<div class="tw"><table class="dtable">'
+        +'<thead><tr><th>Utilisateur</th><th>Montant</th><th>Opérateur</th><th>Numéro</th><th>Titulaire</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>'
+        +'<tbody>'
+        +s.docs.map(function(d){
+          var w=d.data();
+          var stBadge=w.status==="pending"?'<span class="badge bw">En attente</span>'
+            :w.status==="approved"?'<span class="badge bs">Approuvé</span>'
+            :'<span class="badge bd">Rejeté</span>';
+          return '<tr>'
+            +'<td style="font-size:.79rem">'+esc(w.name||w.email||"")+'</td>'
+            +'<td><strong style="color:var(--p)">'+fmt(w.amount||0)+' FCFA</strong></td>'
+            +'<td>'+esc(w.operator||"")+'</td>'
+            +'<td style="font-size:.79rem">'+esc(w.phone||"")+'</td>'
+            +'<td style="font-size:.79rem">'+esc(w.holder||"")+'</td>'
+            +'<td>'+stBadge+'</td>'
+            +'<td style="font-size:.77rem">'+timeAgo(w.createdAt)+'</td>'
+            +'<td><div style="display:flex;gap:.3rem">'
+            +(w.status==="pending"
+              ?'<button class="bsm b-ok" onclick="processWD(\''+d.id+'\',\'approved\',\''+esc(w.uid||"")+'\','+( w.amount||0)+')">✅</button>'
+               +'<button class="bsm b-dl" onclick="processWD(\''+d.id+'\',\'rejected\',\''+esc(w.uid||"")+'\',0)">❌</button>'
+              :'<span style="color:var(--mt);font-size:.78rem">Traité</span>')
+            +'</div></td></tr>';
+        }).join("")
+        +'</tbody></table></div>';
+    });
+}
+function processWD(wdId, status, uid, amount) {
+  var label = status==="approved"?"Retrait approuvé":"Retrait rejeté";
+  openConfirm(label, status==="approved"
+    ?"Approuver ce retrait de "+fmt(amount)+" FCFA ?"
+    :"Rejeter cette demande de retrait ?",
+    function(){
+      db.collection("withdrawals").doc(wdId).update({
+        status:status, processedAt:new Date().toISOString()
+      }).then(function(){
+        if (status==="approved"&&amount>0) {
+          return debitWallet(uid, amount, "Retrait approuvé", wdId).then(function(){
+            db.collection("wallets").doc(uid).update({
+              totalWithdrawn:firebase.firestore.FieldValue.increment(amount)
+            });
+          });
+        }
+      }).then(function(){
+        toast(status==="approved"?"Retrait approuvé !":"Retrait rejeté","ok");
+        pushNotif(uid,
+          status==="approved"
+            ?"✅ Votre retrait de "+fmt(amount)+" FCFA a été approuvé !"
+            :"❌ Votre demande de retrait a été rejetée. Contactez le support.",
+          status==="approved"?"ok":"err"
+        );
+        loadAdminWD();
+      }).catch(function(e){ toast(e.message,"err"); });
+    });
+}
+window.processWD = processWD;
+
+// ── SIGNALEMENTS ADMIN ──
+function loadAdminReports() {
+  var el=document.getElementById("repListAdmin");
+  if (!el) return;
+  db.collection("reports").orderBy("createdAt","desc").limit(40).get()
+    .then(function(s){
+      if (s.empty) { el.innerHTML='<div class="no-res"><div class="icon">🚩</div><p>Aucun signalement.</p></div>'; return; }
+      el.innerHTML='<div class="tw"><table class="dtable">'
+        +'<thead><tr><th>Type</th><th>Cible</th><th>Raison</th><th>Détails</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>'
+        +'<tbody>'
+        +s.docs.map(function(d){
+          var r=d.data();
+          var reasonLbl={spam:"Spam",fake:"Fraude",inappropriate:"Inapproprié",other:"Autre"};
+          return '<tr>'
+            +'<td><span class="badge '+(r.targetType==="product"?"bi":"bp")+'">'+(r.targetType==="product"?"📦":"👤")+'</span></td>'
+            +'<td style="font-size:.78rem">'+esc(r.targetId||"").slice(0,12)+'...</td>'
+            +'<td><span class="badge bd">'+esc(reasonLbl[r.reason]||r.reason||"")+'</span></td>'
+            +'<td style="font-size:.78rem;color:var(--mt2)">'+esc((r.details||"").slice(0,60))+'</td>'
+            +'<td><span class="badge '+(r.status==="pending"?"bw":"bs")+'">'+(r.status==="pending"?"En attente":"Traité")+'</span></td>'
+            +'<td style="font-size:.77rem">'+timeAgo(r.createdAt)+'</td>'
+            +'<td><div style="display:flex;gap:.3rem">'
+            +(r.status==="pending"
+              ?'<button class="bsm b-ok" onclick="resolveReport(\''+d.id+'\')">✅ Résoudre</button>'
+               +(r.targetType==="product"
+                 ?'<button class="bsm b-dl" onclick="deleteProd(\''+r.targetId+'\')">🗑 Prod.</button>'
+                 :r.targetType==="seller"
+                 ?'<button class="bsm b-dl" onclick="suspendUser(\''+r.targetId+'\')">🚫 User</button>'
+                 :'')
+              :'<span style="color:var(--mt);font-size:.78rem">Traité</span>')
+            +'</div></td></tr>';
+        }).join("")
+        +'</tbody></table></div>';
+    });
+}
+function resolveReport(id) {
+  db.collection("reports").doc(id).update({
+    status:"resolved", resolvedAt:new Date().toISOString()
+  }).then(function(){
+    toast("Signalement résolu","ok");
+    loadAdminReports();
+  });
+}
+window.resolveReport = resolveReport;
+
+// ── CREDIT / DEBIT WALLET ADMIN ──
+function adminCreditWallet(uid) {
+  var amt=+prompt("Montant à créditer (FCFA) :",0);
+  if (!amt||amt<=0) return;
+  var lbl=prompt("Libellé :","Crédit admin")||"Crédit admin";
+  creditWallet(uid, amt, lbl, "admin").then(function(){
+    toast(fmt(amt)+" FCFA crédités !","ok"); loadDash();
+  }).catch(function(e){ toast(e.message,"err"); });
+}
+function adminDebitWallet(uid) {
+  var amt=+prompt("Montant à débiter (FCFA) :",0);
+  if (!amt||amt<=0) return;
+  var lbl=prompt("Libellé :","Débit admin")||"Débit admin";
+  debitWallet(uid, amt, lbl, "admin").then(function(){
+    toast(fmt(amt)+" FCFA débités !","ok"); loadDash();
+  }).catch(function(e){ toast(e.message,"err"); });
+}
+window.adminCreditWallet = adminCreditWallet;
+window.adminDebitWallet  = adminDebitWallet;
 </script>
 </body>
 </html>
