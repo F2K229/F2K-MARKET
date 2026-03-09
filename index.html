@@ -6,11 +6,11 @@
 <title>F2K MARKET — Marketplace Internationale</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-<script src="https://checkout.fedapay.com/v1.1/static/widget-button.js" data-api-key="pk_live_ORVqn9pz6gYeLDzjeR9FEple" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://checkout.fedapay.com/v1.1/static/widget-button.js" data-api-key="pk_live_ORVqn9pz6gYeLDzjeR9FEple"></script>
 <style>
 :root{
   --p:#ff6b00;--p2:#ff8c35;--dk:#0a0a0f;--dk2:#12121a;--dk3:#1a1a26;--dk4:#22222f;
@@ -31,7 +31,7 @@ input,select,textarea{font-family:var(--font)}
 .hidden{display:none!important}
 
 /* LOADER */
-#appLoader{position:fixed;inset:0;z-index:99999;background:var(--dk);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem}
+#appLoader{position:fixed;inset:0;z-index:99999;background:var(--dk);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;transition:opacity .5s}
 .logo-txt{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:6px;color:#fff}
 .logo-txt span{color:var(--p)}
 #loaderSpinner{width:48px;height:48px;border:3px solid var(--bd2);border-top-color:var(--p);border-radius:50%;animation:spin .8s linear infinite}
@@ -314,8 +314,6 @@ select.fi{cursor:pointer}
 .bw{background:rgba(245,158,11,.1);color:var(--wn);border:1px solid rgba(245,158,11,.22)}
 .bi{background:rgba(59,130,246,.1);color:var(--if);border:1px solid rgba(59,130,246,.22)}
 .bp{background:rgba(168,85,247,.1);color:var(--pu);border:1px solid rgba(168,85,247,.22)}
-
-/* PETITS BOUTONS */
 .bsm{font-size:.77rem;font-weight:700;padding:.32rem .65rem;border-radius:var(--r);border:1px solid;cursor:pointer;transition:all .14s;white-space:nowrap}
 .b-ok{background:rgba(34,197,94,.09);border-color:rgba(34,197,94,.28);color:var(--ok)}
 .b-ok:hover{background:rgba(34,197,94,.18)}
@@ -378,8 +376,6 @@ select.fi{cursor:pointer}
 .nd.read{background:transparent;border:1.5px solid var(--mt)}
 .notif-txt{flex:1;font-size:.85rem;line-height:1.5}
 .notif-time{font-size:.71rem;color:var(--mt);white-space:nowrap;margin-top:.12rem}
-
-/* LOADING */
 .loading{text-align:center;padding:3rem;color:var(--mt);font-size:.88rem}
 
 /* FOOTER */
@@ -401,7 +397,7 @@ footer{background:var(--dk2);border-top:1px solid var(--bd);padding:2.2rem 1.2re
 <div id="appLoader">
   <div class="logo-txt">F2K <span>MARKET</span></div>
   <div id="loaderSpinner"></div>
-  <p id="loaderMsg">Connexion en cours...<br><small style="font-size:.75rem;opacity:.6">Première connexion peut prendre quelques secondes</small></p>
+  <p id="loaderMsg">Chargement...<br/><small style="font-size:.75rem;opacity:.6">Veuillez patienter</small></p>
 </div>
 
 <!-- BANNIERE ANNONCE -->
@@ -416,7 +412,8 @@ footer{background:var(--dk2);border-top:1px solid var(--bd);padding:2.2rem 1.2re
   <div class="nav-search">
     <span class="si">🔍</span>
     <input type="text" id="navSch" placeholder="Rechercher un produit..." autocomplete="off"
-      oninput="showSugg(this.value)" onkeydown="if(event.key==='Enter'){go('products',{s:this.value});hideSugg()}"/>
+      oninput="showSugg(this.value)"
+      onkeydown="if(event.key==='Enter'){go('products',{s:this.value});hideSugg()}"/>
     <div id="suggBox"></div>
   </div>
   <div class="nav-links">
@@ -706,7 +703,7 @@ footer{background:var(--dk2);border-top:1px solid var(--bd);padding:2.2rem 1.2re
 
 <!-- ═══ WISHLIST ═══ -->
 <div id="pg-wishlist" class="page">
-  <div id="wishCt">
+  <div id="wishCt" style="max-width:1200px;margin:0 auto;padding:1.5rem 1.2rem">
     <div class="ph" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
       <h1>❤️ Favoris <span id="wishCount" style="font-size:1rem;font-weight:400;color:var(--mt)"></span></h1>
     </div>
@@ -790,22 +787,20 @@ footer{background:var(--dk2);border-top:1px solid var(--bd);padding:2.2rem 1.2re
       <input type="hidden" id="apImg"/>
       <div id="apImgPv" style="margin-top:.45rem;border-radius:var(--r);overflow:hidden;max-height:115px"></div>
     </div>
-    <!-- Champs physique -->
     <div id="apPhysF">
       <div class="two-col">
         <div class="fg"><label class="fl">Stock</label><input class="fi" type="number" id="apSk" placeholder="Quantité" min="0"/></div>
         <div class="fg"><label class="fl">Délai livraison</label><input class="fi" type="text" id="apDl" placeholder="ex: 2-5 jours"/></div>
       </div>
       <div class="fg">
-        <label class="fl">Tailles disponibles <span style="color:var(--mt);font-size:.73rem">séparées par virgule</span></label>
+        <label class="fl">Tailles <span style="color:var(--mt);font-size:.73rem">séparées par virgule</span></label>
         <input class="fi" type="text" id="apSizes" placeholder="S, M, L, XL, XXL"/>
       </div>
       <div class="fg">
-        <label class="fl">Couleurs disponibles <span style="color:var(--mt);font-size:.73rem">séparées par virgule</span></label>
+        <label class="fl">Couleurs <span style="color:var(--mt);font-size:.73rem">séparées par virgule</span></label>
         <input class="fi" type="text" id="apColors" placeholder="Rouge, Bleu, Noir"/>
       </div>
     </div>
-    <!-- Champs numérique -->
     <div id="apDigF" class="hidden">
       <div class="fg">
         <label class="fl">Fichier numérique</label>
@@ -957,8 +952,8 @@ footer{background:var(--dk2);border-top:1px solid var(--bd);padding:2.2rem 1.2re
     <div id="annErr" class="ferr"></div>
     <button class="btn-p" style="width:100%" onclick="saveAnnouncement()">Sauvegarder</button>
   </div>
-            </div>
-            <script>
+        </div>
+        <script>
 // ════ VARIABLES GLOBALES ════
 var auth, db;
 var CU = null, UD = null;
@@ -987,71 +982,81 @@ var CLOUDINARY_PRESET = "f2kmarket_upload";
 // ════ FIREBASE INIT ════
 function hideLoader() {
   var l = document.getElementById("appLoader");
-  if (l) { l.style.opacity="0"; setTimeout(function(){ l.style.display="none"; },500); }
+  if (!l) return;
+  l.style.opacity = "0";
+  setTimeout(function(){ l.style.display = "none"; }, 600);
 }
 function showLoaderError(msg) {
   var m = document.getElementById("loaderMsg");
-  if (m) m.innerHTML = '<span style="color:var(--er)">'+msg+'</span><br><small style="color:var(--mt)">Vérifiez votre connexion et <span style="color:var(--p);cursor:pointer" onclick="location.reload()">rechargez</span></small>';
   var s = document.getElementById("loaderSpinner");
   if (s) s.style.display = "none";
+  if (m) m.innerHTML = '<span style="color:var(--er)">'+msg+'</span><br/>'
+    +'<small style="color:var(--mt)">Vérifiez votre connexion et '
+    +'<span style="color:var(--p);cursor:pointer" onclick="location.reload()">rechargez</span></small>';
 }
 function initFirebase() {
-  if (typeof firebase === "undefined") { showLoaderError("Firebase introuvable."); return; }
   try {
     if (!firebase.apps.length) {
       firebase.initializeApp({
         apiKey:"AIzaSyBp_oCpxYHmd3YMke04XirHpCKn0wskiiM",
         authDomain:"f2k-market.firebaseapp.com",
+        databaseURL:"https://f2k-market-default-rtdb.firebaseio.com",
         projectId:"f2k-market",
         storageBucket:"f2k-market.firebasestorage.app",
         messagingSenderId:"446238473421",
-        appId:"1:446238473421:web:f07082ace8fb1aa5e2fd84"
+        appId:"1:446238473421:web:f07082ace8fb1aa5e2fd84",
+        measurementId:"G-X9HRELH9TF"
       });
     }
     auth = firebase.auth();
     db   = firebase.firestore();
+    db.enablePersistence({synchronizeTabs:true}).catch(function(){});
+    onAuthReady();
+    updateCartBadge();
+    updateWishBadge();
+    go("home");
     hideLoader();
-    startApp();
-  } catch(e) { showLoaderError("Erreur: "+e.message); }
-}
-var fbCount = 0;
-var fbInt = setInterval(function() {
-  fbCount++;
-  if (typeof firebase !== "undefined" && firebase.initializeApp) {
-    clearInterval(fbInt); initFirebase();
-  } else if (fbCount > 600) {
-    clearInterval(fbInt); showLoaderError("Connexion trop lente. Rechargez.");
-  } else if (fbCount === 100) {
-    var m=document.getElementById("loaderMsg");
-    if(m) m.innerHTML='Connexion lente...<br><small style="opacity:.6">Veuillez patienter</small>';
-  } else if (fbCount === 300) {
-    var m=document.getElementById("loaderMsg");
-    if(m) m.innerHTML='Toujours en cours...<br><small style="opacity:.6">Encore quelques secondes</small>';
+  } catch(e) {
+    showLoaderError("Erreur Firebase : "+e.message);
   }
-}, 100);
+}
+
+// ════ DEMARRAGE — window.onload ════
+window.addEventListener("load", function() {
+  if (typeof firebase !== "undefined" && firebase.initializeApp) {
+    initFirebase();
+  } else {
+    showLoaderError("Firebase introuvable. Vérifiez votre connexion.");
+  }
+});
 
 // ════ UTILITAIRES ════
 function toast(msg, type) {
   var t = document.getElementById("toast");
   t.textContent = msg;
   t.className = "show" + (type ? " "+type : "");
-  setTimeout(function(){ t.className=""; }, 3200);
+  setTimeout(function(){ t.className = ""; }, 3200);
 }
 function esc(s) {
-  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  return String(s||"")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
 }
 function fmt(n) { return (+n||0).toLocaleString("fr-FR"); }
 function starsHtml(r) {
   var s = Math.round(r||0), h = "";
-  for (var i=1;i<=5;i++) h += '<span style="color:'+(i<=s?'var(--wn)':'var(--mt)')+'">★</span>';
+  for (var i=1;i<=5;i++)
+    h += '<span style="color:'+(i<=s?'var(--wn)':'var(--mt)')+'">★</span>';
   return h;
 }
 function timeAgo(iso) {
   var d = Date.now() - new Date(iso||0).getTime(), m = Math.floor(d/60000);
-  if (m < 1)    return "maintenant";
-  if (m < 60)   return m+"min";
-  if (m < 1440) return Math.floor(m/60)+"h";
-  if (m < 43200)return Math.floor(m/1440)+"j";
+  if (m < 1)     return "maintenant";
+  if (m < 60)    return m+"min";
+  if (m < 1440)  return Math.floor(m/60)+"h";
+  if (m < 43200) return Math.floor(m/1440)+"j";
   return new Date(iso).toLocaleDateString("fr-FR");
 }
 function openConfirm(title, msg, cb) {
@@ -1064,17 +1069,25 @@ function openConfirm(title, msg, cb) {
     if (cfCb) cfCb();
   };
 }
-function closeOrdModal() { document.getElementById("ordModal").classList.add("hidden"); }
-function toggleMob() { document.getElementById("mobMenu").classList.toggle("open"); }
+function closeOrdModal() {
+  document.getElementById("ordModal").classList.add("hidden");
+}
+function toggleMob() {
+  document.getElementById("mobMenu").classList.toggle("open");
+}
 function setLang(l) { document.documentElement.lang = l; }
-function closeAnn() { document.getElementById("annBanner").style.display="none"; }
+function closeAnn() {
+  document.getElementById("annBanner").style.display = "none";
+}
 window.closeAnn      = closeAnn;
 window.closeOrdModal = closeOrdModal;
 window.toggleMob     = toggleMob;
 
 // ════ ROUTER ════
 function go(page, params) {
-  document.querySelectorAll(".page").forEach(function(p){ p.classList.remove("active"); });
+  document.querySelectorAll(".page").forEach(function(p){
+    p.classList.remove("active");
+  });
   var pg = document.getElementById("pg-"+page);
   if (!pg) return;
   pg.classList.add("active");
@@ -1102,11 +1115,13 @@ function onAuthReady() {
     var loggedIn = !!user;
 
     ["btnLogin","btnReg","mLogin","mReg"].forEach(function(id){
-      var el=document.getElementById(id); if(el) el.classList.toggle("hidden", loggedIn);
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle("hidden", loggedIn);
     });
     ["btnDash","btnWallet","btnNotif","btnMsg","btnLogout",
      "mDash","mWallet","mNotif","mMsg","mLogout"].forEach(function(id){
-      var el=document.getElementById(id); if(el) el.classList.toggle("hidden", !loggedIn);
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle("hidden", !loggedIn);
     });
 
     if (loggedIn) {
@@ -1115,8 +1130,9 @@ function onAuthReady() {
         checkUnreadNotif();
         checkUnreadMsg();
       });
-    } else { UD = null; }
-
+    } else {
+      UD = null;
+    }
     loadAnnouncement();
   });
 }
@@ -1127,10 +1143,13 @@ function doLogin() {
   var pw  = document.getElementById("liPw").value;
   var err = document.getElementById("liErr");
   err.className = "ferr"; err.textContent = "";
-  if (!em||!pw) { err.textContent="Remplissez tous les champs."; err.className="ferr show"; return; }
+  if (!em||!pw) {
+    err.textContent = "Remplissez tous les champs.";
+    err.className = "ferr show"; return;
+  }
   auth.signInWithEmailAndPassword(em, pw)
     .then(function(){ toast("Connexion réussie !","ok"); go("home"); })
-    .catch(function(e){ err.textContent=e.message; err.className="ferr show"; });
+    .catch(function(e){ err.textContent = e.message; err.className = "ferr show"; });
 }
 function selRole(r) {
   regRole = r;
@@ -1146,9 +1165,18 @@ function doRegister() {
   var tos = document.getElementById("rgTos").checked;
   var err = document.getElementById("rgErr");
   err.className = "ferr"; err.textContent = "";
-  if (!nm||!em||!pw) { err.textContent="Remplissez tous les champs."; err.className="ferr show"; return; }
-  if (!tos) { err.textContent="Acceptez les conditions."; err.className="ferr show"; return; }
-  if (pw.length<6) { err.textContent="Mot de passe trop court."; err.className="ferr show"; return; }
+  if (!nm||!em||!pw) {
+    err.textContent = "Remplissez tous les champs.";
+    err.className = "ferr show"; return;
+  }
+  if (!tos) {
+    err.textContent = "Acceptez les conditions.";
+    err.className = "ferr show"; return;
+  }
+  if (pw.length < 6) {
+    err.textContent = "Mot de passe trop court (min. 6 caractères).";
+    err.className = "ferr show"; return;
+  }
   auth.createUserWithEmailAndPassword(em, pw).then(function(res) {
     var uid = res.user.uid;
     var data = {
@@ -1167,10 +1195,13 @@ function doRegister() {
     }
     return db.collection("users").doc(uid).set(data);
   }).then(function(){
-    toast("Compte créé !","ok");
-    if (regRole==="seller") toast("Votre compte vendeur est en attente de validation.");
+    toast("Compte créé avec succès !","ok");
+    if (regRole==="seller")
+      toast("Votre compte vendeur est en attente de validation.");
     go("home");
-  }).catch(function(e){ err.textContent=e.message; err.className="ferr show"; });
+  }).catch(function(e){
+    err.textContent = e.message; err.className = "ferr show";
+  });
 }
 function doLogout() {
   auth.signOut().then(function(){ toast("Déconnecté"); go("home"); });
@@ -1180,28 +1211,30 @@ window.selRole    = selRole;
 window.doRegister = doRegister;
 window.doLogout   = doLogout;
 
-// ════ IMAGE UPLOAD CLOUDINARY ════
+// ════ UPLOAD CLOUDINARY ════
 function uploadImg(input, hiddenId, pvId, preset) {
   var file = input.files[0]; if (!file) return;
   var pv = document.getElementById(pvId);
-  if (pv) pv.innerHTML='<span style="color:var(--mt);font-size:.78rem">Upload en cours...</span>';
+  if (pv) pv.innerHTML = '<span style="color:var(--mt);font-size:.78rem">⏳ Upload en cours...</span>';
   var fd = new FormData();
   fd.append("file", file);
   fd.append("upload_preset", CLOUDINARY_PRESET);
-  fetch("https://api.cloudinary.com/v1_1/"+CLOUDINARY_CLOUD+"/upload",{method:"POST",body:fd})
+  fetch("https://api.cloudinary.com/v1_1/"+CLOUDINARY_CLOUD+"/upload",
+    {method:"POST", body:fd})
     .then(function(r){ return r.json(); })
     .then(function(d){
-      document.getElementById(hiddenId).value = d.secure_url||"";
+      document.getElementById(hiddenId).value = d.secure_url || "";
       if (pv) {
         if (d.resource_type==="image")
-          pv.innerHTML='<img src="'+d.secure_url+'" style="width:100%;max-height:110px;object-fit:cover;border-radius:var(--r)"/>';
+          pv.innerHTML = '<img src="'+d.secure_url
+            +'" style="width:100%;max-height:110px;object-fit:cover;border-radius:var(--r)"/>';
         else
-          pv.innerHTML='<span style="color:var(--ok);font-size:.78rem">✅ Fichier uploadé</span>';
+          pv.innerHTML = '<span style="color:var(--ok);font-size:.78rem">✅ Fichier uploadé</span>';
       }
       toast("Upload réussi !","ok");
     })
     .catch(function(){
-      if(pv) pv.innerHTML='<span style="color:var(--er);font-size:.78rem">Échec upload</span>';
+      if (pv) pv.innerHTML = '<span style="color:var(--er);font-size:.78rem">❌ Échec upload</span>';
       toast("Échec upload","err");
     });
 }
@@ -1217,7 +1250,9 @@ function showSugg(q) {
   if (!res.length) { box.style.display="none"; return; }
   box.innerHTML = res.map(function(p){
     return '<div class="sugg-item" onclick="go(\'product-detail\',{id:\''+p.id+'\'});hideSugg()">'
-      +(p.imageUrl?'<img src="'+esc(p.imageUrl)+'" style="width:32px;height:32px;border-radius:var(--r);object-fit:cover;flex-shrink:0"/>':'<span style="font-size:1.1rem">🛍</span>')
+      +(p.imageUrl
+        ?'<img src="'+esc(p.imageUrl)+'" style="width:32px;height:32px;border-radius:var(--r);object-fit:cover;flex-shrink:0"/>'
+        :'<span style="font-size:1.1rem">🛍</span>')
       +'<div><div style="font-weight:700;font-size:.82rem">'+esc(p.name)+'</div>'
       +'<div style="font-size:.72rem;color:var(--mt)">'
       +(p.salePrice&&p.salePrice>0&&p.salePrice<p.price
@@ -1230,7 +1265,8 @@ function showSugg(q) {
   box.style.display = "block";
 }
 function hideSugg() {
-  var b = document.getElementById("suggBox"); if(b) b.style.display="none";
+  var b = document.getElementById("suggBox");
+  if (b) b.style.display = "none";
 }
 window.showSugg = showSugg;
 window.hideSugg = hideSugg;
@@ -1239,41 +1275,66 @@ document.addEventListener("click", function(e){
 });
 
 // ════ WISHLIST ════
-function getFavs() { try{ return JSON.parse(localStorage.getItem("f2k_favs")||"[]"); }catch(e){ return []; } }
-function saveFavs(f) { localStorage.setItem("f2k_favs", JSON.stringify(f)); }
+function getFavs() {
+  try { return JSON.parse(localStorage.getItem("f2k_favs")||"[]"); }
+  catch(e) { return []; }
+}
+function saveFavs(f) {
+  localStorage.setItem("f2k_favs", JSON.stringify(f));
+}
 function toggleFav(id, btn) {
-  var f=getFavs(), idx=f.indexOf(id);
-  if (idx>-1) { f.splice(idx,1); if(btn) btn.classList.remove("on"); toast("Retiré des favoris"); }
-  else { f.push(id); if(btn) btn.classList.add("on"); toast("Ajouté aux favoris !","ok"); }
+  var f = getFavs(), idx = f.indexOf(id);
+  if (idx>-1) {
+    f.splice(idx,1);
+    if (btn) btn.classList.remove("on");
+    toast("Retiré des favoris");
+  } else {
+    f.push(id);
+    if (btn) btn.classList.add("on");
+    toast("Ajouté aux favoris !","ok");
+  }
   saveFavs(f); updateWishBadge();
 }
 function updateWishBadge() {
-  var n=getFavs().length, b=document.getElementById("wBdg");
-  if(b){ b.textContent=n; b.style.display=n>0?"flex":"none"; }
+  var n = getFavs().length;
+  var b = document.getElementById("wBdg");
+  if (b) { b.textContent=n; b.style.display=n>0?"flex":"none"; }
 }
 window.toggleFav = toggleFav;
 
 // ════ PANIER ════
-function getCart() { try{ return JSON.parse(localStorage.getItem("f2k_cart")||"[]"); }catch(e){ return []; } }
-function saveCart(c) { localStorage.setItem("f2k_cart", JSON.stringify(c)); updateCartBadge(); }
+function getCart() {
+  try { return JSON.parse(localStorage.getItem("f2k_cart")||"[]"); }
+  catch(e) { return []; }
+}
+function saveCart(c) {
+  localStorage.setItem("f2k_cart", JSON.stringify(c));
+  updateCartBadge();
+}
 function updateCartBadge() {
-  var c=getCart(), n=c.reduce(function(s,i){ return s+(i.qty||1); },0);
-  var b=document.getElementById("cBdg");
-  if(b){ b.textContent=n; b.style.display="flex"; }
+  var c = getCart();
+  var n = c.reduce(function(s,i){ return s+(i.qty||1); },0);
+  var b = document.getElementById("cBdg");
+  if (b) { b.textContent=n; b.style.display="flex"; }
 }
 function addCart(id, name, price, salePrice, type, imgUrl, variant) {
   var c = getCart();
   var realPrice = salePrice&&salePrice>0&&salePrice<price ? salePrice : price;
   var key = id+(variant?"_"+variant:"");
   var ex  = c.find(function(x){ return x.key===key; });
-  if (ex) { ex.qty=(ex.qty||1)+1; }
-  else { c.push({key:key,id:id,name:name,price:realPrice,origPrice:price,salePrice:salePrice||null,type:type,imgUrl:imgUrl||"",variant:variant||"",qty:1}); }
+  if (ex) { ex.qty = (ex.qty||1)+1; }
+  else {
+    c.push({key:key,id:id,name:name,price:realPrice,
+      origPrice:price,salePrice:salePrice||null,
+      type:type,imgUrl:imgUrl||"",variant:variant||"",qty:1});
+  }
   saveCart(c);
   toast(realPrice===0?"Ajouté (Gratuit) !":"Ajouté au panier !","ok");
 }
 function cqty(key, delta) {
-  var c=getCart(), item=c.find(function(x){ return x.key===key; });
-  if(!item) return;
+  var c = getCart();
+  var item = c.find(function(x){ return x.key===key; });
+  if (!item) return;
   item.qty = Math.max(1,(item.qty||1)+delta);
   saveCart(c); renderCart();
 }
@@ -1287,32 +1348,58 @@ window.crem   = crem;
 
 // ════ NOTIFICATIONS ════
 function pushNotif(uid, message, type) {
+  if (!db) return;
   db.collection("notifications").add({
     uid:uid, message:message, type:type||"info",
     read:false, createdAt:new Date().toISOString()
   });
 }
 function checkUnreadNotif() {
-  if (!CU) return;
-  db.collection("notifications").where("uid","==",CU.uid).where("read","==",false).get()
-    .then(function(s){
-      var b=document.getElementById("nBdg");
-      if(b){ b.textContent=s.size>9?"9+":s.size; b.style.display=s.size>0?"flex":"none"; }
+  if (!CU||!db) return;
+  db.collection("notifications")
+    .where("uid","==",CU.uid)
+    .where("read","==",false)
+    .get().then(function(s){
+      var b = document.getElementById("nBdg");
+      if (b) { b.textContent=s.size>9?"9+":s.size; b.style.display=s.size>0?"flex":"none"; }
     });
 }
 function checkUnreadMsg() {
-  if (!CU) return;
+  if (!CU||!db) return;
   db.collection("conv_meta").doc(CU.uid).get().then(function(m){
-    var n=m.exists?(m.data().unreadUser||0):0;
-    var b=document.getElementById("mBdg");
-    if(b){ b.textContent=n>9?"9+":n; b.style.display=n>0?"flex":"none"; }
+    var n = m.exists ? (m.data().unreadUser||0) : 0;
+    var b = document.getElementById("mBdg");
+    if (b) { b.textContent=n>9?"9+":n; b.style.display=n>0?"flex":"none"; }
   });
 }
 
 // ════ CONDITIONS ════
 var TERMS = {
-  client:"<h4 style='margin-bottom:.5rem;color:var(--p)'>1. Utilisation</h4><ul style='padding-left:1.2rem;margin-bottom:.8rem'><li>Minimum 18 ans</li><li>Un seul compte par personne</li><li>Informations exactes</li></ul><h4 style='margin-bottom:.5rem;color:var(--p)'>2. Achats</h4><ul style='padding-left:1.2rem;margin-bottom:.8rem'><li>Paiement sécurisé via FedaPay</li><li>Produits numériques livrés après paiement</li></ul><h4 style='margin-bottom:.5rem;color:var(--p)'>3. Fidélité</h4><ul style='padding-left:1.2rem;margin-bottom:.8rem'><li>10 points par 1000 FCFA dépensés</li><li>Points échangeables contre des réductions</li></ul><h4 style='margin-bottom:.5rem;color:var(--p)'>4. Contact</h4><p>+229 01 99 87 87 42 | f2kmultiservice@gmail.com</p>",
-  seller:"<h4 style='margin-bottom:.5rem;color:var(--p)'>1. Inscription</h4><ul style='padding-left:1.2rem;margin-bottom:.8rem'><li>Compte validé par admin avant toute vente</li></ul><h4 style='margin-bottom:.5rem;color:var(--p)'>2. Commission</h4><ul style='padding-left:1.2rem;margin-bottom:.8rem'><li><strong>5% sur chaque vente</strong></li><li>Retrait minimum 500 FCFA</li></ul><h4 style='margin-bottom:.5rem;color:var(--p)'>3. Vedette</h4><ul style='padding-left:1.2rem;margin-bottom:.8rem'><li>2 000 FCFA / 30 jours</li><li>Non remboursable</li></ul><h4 style='margin-bottom:.5rem;color:var(--p)'>4. Sanctions</h4><p>Tout manquement peut entraîner la suspension.</p>"
+  client:"<h4 style='margin-bottom:.5rem;color:var(--p)'>1. Utilisation</h4>"
+    +"<ul style='padding-left:1.2rem;margin-bottom:.8rem'>"
+    +"<li>Minimum 18 ans</li><li>Un seul compte par personne</li><li>Informations exactes</li></ul>"
+    +"<h4 style='margin-bottom:.5rem;color:var(--p)'>2. Achats</h4>"
+    +"<ul style='padding-left:1.2rem;margin-bottom:.8rem'>"
+    +"<li>Paiement sécurisé via FedaPay</li>"
+    +"<li>Produits numériques livrés après paiement</li></ul>"
+    +"<h4 style='margin-bottom:.5rem;color:var(--p)'>3. Fidélité</h4>"
+    +"<ul style='padding-left:1.2rem;margin-bottom:.8rem'>"
+    +"<li>10 points par 1000 FCFA dépensés</li>"
+    +"<li>Points échangeables contre des réductions</li></ul>"
+    +"<h4 style='margin-bottom:.5rem;color:var(--p)'>4. Contact</h4>"
+    +"<p>+229 01 99 87 87 42 | f2kmultiservice@gmail.com</p>",
+  seller:"<h4 style='margin-bottom:.5rem;color:var(--p)'>1. Inscription</h4>"
+    +"<ul style='padding-left:1.2rem;margin-bottom:.8rem'>"
+    +"<li>Compte validé par admin avant toute vente</li></ul>"
+    +"<h4 style='margin-bottom:.5rem;color:var(--p)'>2. Commission</h4>"
+    +"<ul style='padding-left:1.2rem;margin-bottom:.8rem'>"
+    +"<li><strong>5% sur chaque vente</strong></li>"
+    +"<li>Retrait minimum 500 FCFA</li></ul>"
+    +"<h4 style='margin-bottom:.5rem;color:var(--p)'>3. Vedette</h4>"
+    +"<ul style='padding-left:1.2rem;margin-bottom:.8rem'>"
+    +"<li>2 000 FCFA / 30 jours</li><li>Non remboursable</li></ul>"
+    +"<h4 style='margin-bottom:.5rem;color:var(--p)'>4. Sanctions</h4>"
+    +"<p>Tout manquement peut entraîner la suspension.</p>"
 };
 function openTerms(type) {
   document.getElementById("termsTtl").textContent = type==="seller"?"CGU Vendeur":"CGU Client";
@@ -1323,13 +1410,16 @@ window.openTerms = openTerms;
 
 // ════ ANNONCE BANNIERE ════
 function loadAnnouncement() {
+  if (!db) return;
   db.collection("settings").doc("announcement").get().then(function(s){
     if (!s.exists) return;
-    var d=s.data(), ann=document.getElementById("annBanner");
-    if (d.text&&d.active) {
+    var d = s.data(), ann = document.getElementById("annBanner");
+    if (d.text && d.active) {
       document.getElementById("annText").textContent = d.text;
       ann.style.display = "block";
-    } else { ann.style.display="none"; }
+    } else {
+      ann.style.display = "none";
+    }
   }).catch(function(){});
 }
 function saveAnnouncement() {
@@ -1337,22 +1427,17 @@ function saveAnnouncement() {
   var err = document.getElementById("annErr");
   err.className = "ferr";
   db.collection("settings").doc("announcement").set({
-    text: txt, active: txt.length>0, updatedAt: new Date().toISOString()
+    text:txt, active:txt.length>0,
+    updatedAt:new Date().toISOString()
   }).then(function(){
     document.getElementById("annModal").classList.add("hidden");
     toast("Bannière sauvegardée !","ok");
     loadAnnouncement();
-  }).catch(function(e){ err.textContent=e.message; err.className="ferr show"; });
+  }).catch(function(e){
+    err.textContent = e.message; err.className = "ferr show";
+  });
 }
 window.saveAnnouncement = saveAnnouncement;
-
-// ════ START APP ════
-function startApp() {
-  onAuthReady();
-  updateCartBadge();
-  updateWishBadge();
-  go("home");
-}
 // ════ PRODUCT CARD ════
 function prodCard(id, p) {
   var favs = getFavs();
@@ -1374,7 +1459,10 @@ function prodCard(id, p) {
   var priceHtml = realPrice===0
     ? '<span class="price-main" style="color:var(--ok)">GRATUIT</span>'
     : '<span class="price-main">'+fmt(realPrice)+' FCFA</span>'
-      +(disc>0?'<span class="price-old">'+fmt(p.price)+' FCFA</span><span class="promo-badge">-'+disc+'%</span>':'');
+      +(disc>0
+        ?'<span class="price-old">'+fmt(p.price)+' FCFA</span>'
+         +'<span class="promo-badge">-'+disc+'%</span>'
+        :'');
 
   return '<div class="pcard" onclick="go(\'product-detail\',{id:\''+id+'\'})">'
     +'<div class="pcard-img">'
@@ -1401,6 +1489,7 @@ function prodCard(id, p) {
 
 // ════ LOAD HOME ════
 function loadHome() {
+  if (!db) return;
   Promise.all([
     db.collection("products").where("status","==","active").get(),
     db.collection("users").where("role","==","seller").where("status","==","approved").get(),
@@ -1425,29 +1514,29 @@ function loadHome() {
       return p.salePrice&&p.salePrice>0&&p.salePrice<p.price;
     }).slice(0,8);
 
-    document.getElementById("featGrid").innerHTML  = feat.length
+    document.getElementById("featGrid").innerHTML = feat.length
       ? feat.map(function(p){ return prodCard(p.id,p); }).join("")
       : '<div class="no-res"><div class="icon">⭐</div><p>Aucun produit en vedette</p></div>';
-    document.getElementById("newGrid").innerHTML   = newp.length
+    document.getElementById("newGrid").innerHTML = newp.length
       ? newp.map(function(p){ return prodCard(p.id,p); }).join("")
       : '<div class="no-res"><div class="icon">🛍</div><p>Aucun produit</p></div>';
     document.getElementById("promoGrid").innerHTML = promo.length
       ? promo.map(function(p){ return prodCard(p.id,p); }).join("")
       : '<div class="no-res"><div class="icon">🏷️</div><p>Aucune promotion en cours</p></div>';
 
-    // expirer les vedettes
     var nowIso = now.toISOString();
     allP.forEach(function(p){
       if (p.featured&&p.featuredExpires&&p.featuredExpires<nowIso)
         db.collection("products").doc(p.id).update({featured:false});
     });
-  }).catch(function(e){ console.error(e); });
+  }).catch(function(e){ console.error("loadHome:",e); });
 }
 
 // ════ LOAD PRODUCTS ════
 function loadProducts(params) {
   params = params||{};
   if (allP.length) { applyProductFilters(params); return; }
+  if (!db) return;
   db.collection("products").where("status","==","active").get().then(function(s){
     allP = [];
     s.forEach(function(d){ allP.push(Object.assign({id:d.id},d.data())); });
@@ -1456,12 +1545,21 @@ function loadProducts(params) {
 }
 function applyProductFilters(params) {
   if (params.cat)  document.getElementById("fCat").value = params.cat;
-  if (params.s)  { document.getElementById("fSch").value = params.s; document.getElementById("navSch").value = params.s; }
-  if (params.feat) document.getElementById("fSrt").value = "feat";
-  if (params.promo)document.getElementById("fSrt").value = "promo";
+  if (params.s)  {
+    document.getElementById("fSch").value = params.s;
+    document.getElementById("navSch").value = params.s;
+  }
+  if (params.feat)  document.getElementById("fSrt").value = "feat";
+  if (params.promo) document.getElementById("fSrt").value = "promo";
+  if (params.seller) {
+    // filtrer par vendeur
+    document.getElementById("fSch").value = "";
+    filterP(params.seller);
+    return;
+  }
   filterP();
 }
-function filterP() {
+function filterP(sellerFilter) {
   var type = document.getElementById("fTyp").value;
   var cat  = document.getElementById("fCat").value;
   var pmax = +document.getElementById("fPmx").value||Infinity;
@@ -1471,6 +1569,7 @@ function filterP() {
 
   var r = allP.filter(function(p){
     var rp = p.salePrice&&p.salePrice>0&&p.salePrice<p.price ? p.salePrice : p.price;
+    if (sellerFilter && p.sellerId!==sellerFilter) return false;
     if (type && p.type!==type) return false;
     if (cat  && p.category!==cat) return false;
     if (rp > pmax) return false;
@@ -1494,7 +1593,9 @@ function filterP() {
       +'<button class="btn-p" onclick="resetF()" style="margin-top:.8rem">Réinitialiser</button></div>';
 }
 function resetF() {
-  ["fTyp","fCat","fSch"].forEach(function(id){ document.getElementById(id).value=""; });
+  ["fTyp","fCat","fSch"].forEach(function(id){
+    document.getElementById(id).value="";
+  });
   document.getElementById("fSrt").value = "recent";
   document.getElementById("fRat").value = "0";
   document.getElementById("fPmx").value = "";
@@ -1505,17 +1606,20 @@ window.resetF  = resetF;
 
 // ════ LOAD SELLERS ════
 function loadSellers() {
+  if (!db) return;
   var el = document.getElementById("selGrid");
   el.innerHTML = '<div class="loading">Chargement...</div>';
-  db.collection("users").where("role","==","seller").where("status","==","approved")
+  db.collection("users").where("role","==","seller")
+    .where("status","==","approved")
     .orderBy("createdAt","desc").get()
     .then(function(s){
       if (s.empty) {
-        el.innerHTML='<div class="no-res" style="padding:3rem 1.2rem"><div class="icon">🏪</div><p>Aucun vendeur pour le moment.</p></div>';
+        el.innerHTML='<div class="no-res" style="padding:3rem 1.2rem">'
+          +'<div class="icon">🏪</div><p>Aucun vendeur pour le moment.</p></div>';
         return;
       }
       el.innerHTML = s.docs.map(function(d){
-        var v=d.data();
+        var v = d.data();
         var tb = v.shopType==="digital"
           ? '<span class="badge bi">💻 Numérique</span>'
           : v.shopType==="physical"
@@ -1523,23 +1627,29 @@ function loadSellers() {
           : '<span class="badge bw">🔀 Mixte</span>';
         return '<div class="sel-card" onclick="go(\'products\',{seller:\''+d.id+'\'})">'
           +'<div style="display:flex;align-items:center;gap:.8rem">'
-          +'<div class="sel-logo">'+(v.logo?'<img src="'+esc(v.logo)+'" loading="lazy"/>':'🏪')+'</div>'
+          +'<div class="sel-logo">'
+          +(v.logo?'<img src="'+esc(v.logo)+'" loading="lazy"/>':'🏪')
+          +'</div>'
           +'<div>'
           +'<div style="font-weight:800;font-size:.93rem">'+esc(v.shopName||v.fullname||"")+'</div>'
           +'<div style="font-size:.73rem;color:var(--mt)">'+esc(v.country||"")+'</div>'
           +'</div></div>'
-          +(v.shopDesc?'<div style="font-size:.79rem;color:var(--mt2);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+esc(v.shopDesc)+'</div>':'')
+          +(v.shopDesc
+            ?'<div style="font-size:.79rem;color:var(--mt2);line-height:1.5;overflow:hidden;'
+              +'display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'
+              +esc(v.shopDesc)+'</div>':'')
           +'<div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">'+tb
           +'<button class="bsm b-dl" style="font-size:.7rem;padding:.25rem .55rem;margin-left:auto" '
           +'onclick="event.stopPropagation();openReport(\''+d.id+'\',\'seller\',\''+esc(v.shopName||"")+'\')">🚩</button>'
           +'</div></div>';
       }).join("");
-    });
+    }).catch(function(e){ console.error("loadSellers:",e); });
 }
 
 // ════ LOAD DETAIL ════
 function loadDetail(id) {
   if (!id) { go("products"); return; }
+  if (!db) return;
   var el = document.getElementById("pdCt");
   el.innerHTML = '<div class="loading">Chargement...</div>';
   db.collection("products").doc(id).get().then(function(s){
@@ -1557,10 +1667,11 @@ function loadDetail(id) {
     var priceHtml = realPrice===0
       ? '<span class="pd-price" style="color:var(--ok)">GRATUIT</span>'
       : '<span class="pd-price">'+fmt(realPrice)+' FCFA</span>'
-        +(disc>0?'<span class="pd-price-old">'+fmt(p.price)+' FCFA</span>'
-          +'<span class="pd-promo-badge">-'+disc+'%</span>':'');
+        +(disc>0
+          ?'<span class="pd-price-old">'+fmt(p.price)+' FCFA</span>'
+           +'<span class="pd-promo-badge">-'+disc+'%</span>'
+          :'');
 
-    // variantes tailles
     var sizesHtml = "";
     if (p.type==="physical" && p.sizes && p.sizes.length) {
       sizesHtml = '<div class="var-sec">'
@@ -1571,7 +1682,6 @@ function loadDetail(id) {
         }).join("")
         +'</div></div>';
     }
-    // variantes couleurs
     var colorsHtml = "";
     if (p.type==="physical" && p.colors && p.colors.length) {
       colorsHtml = '<div class="var-sec">'
@@ -1583,7 +1693,6 @@ function loadDetail(id) {
         +'</div></div>';
     }
 
-    // stock info
     var stockInfo = "";
     if (p.type==="physical") {
       if ((p.stock||0)===0)
@@ -1603,7 +1712,9 @@ function loadDetail(id) {
       +'<button class="bsm b-if" onclick="history.back()">← Retour</button>'
       +'</div>'
       +'<div class="pd-grid">'
-      +'<div class="pd-img">'+(p.imageUrl?'<img src="'+esc(p.imageUrl)+'" alt="'+esc(p.name)+'"/>':'🛍')+'</div>'
+      +'<div class="pd-img">'
+      +(p.imageUrl?'<img src="'+esc(p.imageUrl)+'" alt="'+esc(p.name)+'"/>':'🛍')
+      +'</div>'
       +'<div class="pd-info">'
       +'<h1>'+esc(p.name)+'</h1>'
       +'<div class="pd-price-row">'+priceHtml+'</div>'
@@ -1613,7 +1724,8 @@ function loadDetail(id) {
       +stockInfo
       +'</div>'
       +'<div class="pd-seller-row">'
-      +'<div style="width:38px;height:38px;border-radius:50%;background:var(--dk3);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;overflow:hidden">'
+      +'<div style="width:38px;height:38px;border-radius:50%;background:var(--dk3);'
+      +'display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;overflow:hidden">'
       +(p.sellerLogo?'<img src="'+esc(p.sellerLogo)+'" style="width:100%;height:100%;object-fit:cover"/>':'🏪')
       +'</div>'
       +'<div><div style="font-weight:700;font-size:.86rem">'+esc(p.sellerName||"F2K MARKET")+'</div>'
@@ -1629,35 +1741,38 @@ function loadDetail(id) {
         ?'<button class="btn-p" style="background:var(--mt);cursor:not-allowed" disabled>Rupture de stock</button>'
         :'<button class="btn-p" onclick="addCartFromDetail(\''+id+'\','+JSON.stringify(p)+')">'
           +(realPrice===0?'📥 Obtenir gratuitement':'🛒 Ajouter au panier')+'</button>')
-      +'<button class="btn-o'+(isFav?' active':'')+'" id="favBtnPD" '
+      +'<button class="btn-o" id="favBtnPD" '
       +'onclick="toggleFav(\''+id+'\',this);this.textContent=getFavs().indexOf(\''+id+'\')>-1?\'❤️ Favoris\':\'🤍 Favoris\'">'
       +(isFav?'❤️ Favoris':'🤍 Favoris')+'</button>'
       +'</div>'
-      +(CU?'<div style="display:flex;gap:.5rem;flex-wrap:wrap">'
-        +'<button class="bsm b-wa" onclick="openReview(\''+id+'\',\''+esc(p.name)+'\')">⭐ Avis</button>'
-        +'<button class="bsm b-if" onclick="openQA(\''+id+'\',\''+esc(p.name)+'\')">❓ Question</button>'
-        +'<button class="bsm b-dl" onclick="openReport(\''+id+'\',\'product\',\''+esc(p.name)+'\')">🚩 Signaler</button>'
-        +'</div>':'')
+      +(CU
+        ?'<div style="display:flex;gap:.5rem;flex-wrap:wrap">'
+          +'<button class="bsm b-wa" onclick="openReview(\''+id+'\',\''+esc(p.name)+'\')">⭐ Avis</button>'
+          +'<button class="bsm b-if" onclick="openQA(\''+id+'\',\''+esc(p.name)+'\')">❓ Question</button>'
+          +'<button class="bsm b-dl" onclick="openReport(\''+id+'\',\'product\',\''+esc(p.name)+'\')">🚩 Signaler</button>'
+          +'</div>':'')
       +'</div></div>'
-      // TABS
       +'<div class="tabs" style="margin-top:2rem">'
       +'<button class="tab-btn on" onclick="switchTab(this,\'tabDesc\')">📋 Description</button>'
       +'<button class="tab-btn" onclick="switchTab(this,\'tabRevs\')">⭐ Avis</button>'
       +'<button class="tab-btn" onclick="switchTab(this,\'tabQA\')">❓ Questions</button>'
       +'</div>'
       +'<div id="tabDesc" class="tab-content on">'
-      +'<div style="color:var(--mt2);line-height:1.75;font-size:.9rem;white-space:pre-wrap">'+esc(p.description||"")+'</div>'
+      +'<div style="color:var(--mt2);line-height:1.75;font-size:.9rem;white-space:pre-wrap">'
+      +esc(p.description||"")+'</div>'
       +(p.type==="physical"&&p.deliveryTime
         ?'<div style="margin-top:1rem;display:flex;gap:.6rem;align-items:center">'
           +'<span style="color:var(--mt)">🚚 Délai:</span><strong>'+esc(p.deliveryTime)+'</strong></div>':'')
       +'</div>'
-      +'<div id="tabRevs" class="tab-content"><div id="revList"><div class="loading">Chargement...</div></div></div>'
-      +'<div id="tabQA"   class="tab-content"><div id="qaList"><div class="loading">Chargement...</div></div></div>';
+      +'<div id="tabRevs" class="tab-content">'
+      +'<div id="revList"><div class="loading">Chargement...</div></div></div>'
+      +'<div id="tabQA" class="tab-content">'
+      +'<div id="qaList"><div class="loading">Chargement...</div></div></div>';
 
     loadReviews(id);
     loadQA(id);
     selSize_=""; selColor_="";
-  });
+  }).catch(function(e){ console.error("loadDetail:",e); });
 }
 window.loadDetail = loadDetail;
 
@@ -1672,17 +1787,24 @@ function switchTab(btn, tabId) {
 window.switchTab = switchTab;
 
 function selectVariant(type, val, btn) {
-  btn.closest(".var-row").querySelectorAll(".var-btn").forEach(function(b){ b.classList.remove("on"); });
+  btn.closest(".var-row").querySelectorAll(".var-btn")
+    .forEach(function(b){ b.classList.remove("on"); });
   btn.classList.add("on");
-  if (type==="size")  { selSize_=val;  var el=document.getElementById("selSize");  if(el) el.textContent=val; }
-  if (type==="color") { selColor_=val; var el=document.getElementById("selColor"); if(el) el.textContent=val; }
+  if (type==="size")  {
+    selSize_=val;
+    var el=document.getElementById("selSize"); if(el) el.textContent=val;
+  }
+  if (type==="color") {
+    selColor_=val;
+    var el=document.getElementById("selColor"); if(el) el.textContent=val;
+  }
 }
 window.selectVariant = selectVariant;
 
 function addCartFromDetail(id, p) {
-  if (p.type==="physical" && p.sizes && p.sizes.length && !selSize_)
+  if (p.type==="physical"&&p.sizes&&p.sizes.length&&!selSize_)
     { toast("Choisissez une taille.","err"); return; }
-  if (p.type==="physical" && p.colors && p.colors.length && !selColor_)
+  if (p.type==="physical"&&p.colors&&p.colors.length&&!selColor_)
     { toast("Choisissez une couleur.","err"); return; }
   var variant = [selSize_,selColor_].filter(Boolean).join(" / ");
   addCart(id, p.name, p.price, p.salePrice, p.type, p.imageUrl, variant);
@@ -1690,136 +1812,149 @@ function addCartFromDetail(id, p) {
 }
 window.addCartFromDetail = addCartFromDetail;
 // ════ REVIEWS ════
-function loadReviews(pid) {
-  var el = document.getElementById("revList");
-  if (!el) return;
-  db.collection("reviews").where("productId","==",pid)
-    .orderBy("createdAt","desc").limit(20).get()
+function loadReviews(prodId) {
+  if (!db) return;
+  db.collection("reviews").where("productId","==",prodId)
+    .orderBy("createdAt","desc").get()
     .then(function(s){
+      var el = document.getElementById("revList");
+      if (!el) return;
       if (s.empty) {
-        el.innerHTML='<p style="color:var(--mt);font-size:.85rem;padding:.8rem 0">Aucun avis. Soyez le premier !</p>'
-          +(CU?'<button class="bsm b-wa" onclick="openReview(\''+pid+'\',\'ce produit\')">⭐ Laisser un avis</button>':'');
+        el.innerHTML='<div class="no-res" style="padding:2rem 0">'
+          +'<div class="icon">⭐</div><p>Aucun avis pour ce produit.</p></div>';
         return;
       }
-      var total=0, count=s.size;
       el.innerHTML = s.docs.map(function(d){
-        var r=d.data(); total+=r.rating||0;
+        var r = d.data();
         return '<div class="rev-item">'
-          +'<div class="rev-av">'+(r.avatar?'<img src="'+esc(r.avatar)+'"/>':'👤')+'</div>'
+          +'<div class="rev-av">'+(r.userPhoto
+            ?'<img src="'+esc(r.userPhoto)+'"/>'
+            :(r.userName||"?").charAt(0).toUpperCase())+'</div>'
           +'<div style="flex:1">'
-          +'<div class="rev-name">'+esc(r.authorName||"Anonyme")+'</div>'
-          +'<div class="rev-stars">'+starsHtml(r.rating)+'</div>'
+          +'<div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">'
+          +'<span class="rev-name">'+esc(r.userName||"Anonyme")+'</span>'
+          +'<span class="rev-stars">'+starsHtml(r.rating)+'</span>'
+          +'</div>'
           +'<div class="rev-txt">'+esc(r.text||"")+'</div>'
           +'<div class="rev-date">'+timeAgo(r.createdAt)+'</div>'
           +'</div></div>';
-      }).join("")
-      +(CU?'<button class="bsm b-wa" style="margin-top:.7rem" onclick="openReview(\''+pid+'\',\'ce produit\')">⭐ Laisser un avis</button>':'');
-      var avg = count>0 ? total/count : 0;
-      db.collection("products").doc(pid).update({avgRating:avg,reviewCount:count}).catch(function(){});
-    });
+      }).join("");
+    }).catch(function(e){ console.error("loadReviews:",e); });
 }
 
-function openReview(pid, pname) {
-  if (!CU) { go("login"); return; }
-  revProdId_ = pid;
-  document.getElementById("revProd").textContent = pname;
-  revStars = 0;
-  document.getElementById("starsRow").querySelectorAll("span").forEach(function(s){
-    s.textContent="☆"; s.style.color="var(--mt)";
-  });
+function openReview(prodId, prodName) {
+  if (!CU) { toast("Connectez-vous pour laisser un avis.","err"); go("login"); return; }
+  revProdId_  = prodId;
+  revStars    = 0;
+  document.getElementById("revProd").textContent = prodName;
   document.getElementById("revTxt").value = "";
   document.getElementById("revErr").className = "ferr";
+  var stars = document.getElementById("starsRow").children;
+  for (var i=0;i<stars.length;i++) stars[i].textContent="☆";
   document.getElementById("revModal").classList.remove("hidden");
 }
 function setStars(n) {
   revStars = n;
-  document.getElementById("starsRow").querySelectorAll("span").forEach(function(s,i){
-    s.textContent=i<n?"★":"☆";
-    s.style.color=i<n?"var(--wn)":"var(--mt)";
-  });
+  var stars = document.getElementById("starsRow").children;
+  for (var i=0;i<stars.length;i++)
+    stars[i].textContent = i<n ? "★" : "☆";
 }
 function submitReview() {
-  if (!revStars) {
-    document.getElementById("revErr").textContent="Choisissez une note.";
-    document.getElementById("revErr").className="ferr show"; return;
-  }
+  if (!CU) return;
   var txt = document.getElementById("revTxt").value.trim();
+  var err = document.getElementById("revErr");
+  err.className = "ferr";
+  if (!revStars) { err.textContent="Choisissez une note."; err.className="ferr show"; return; }
+  if (!txt)      { err.textContent="Écrivez un commentaire."; err.className="ferr show"; return; }
   db.collection("reviews").add({
-    productId:revProdId_, authorId:CU.uid,
-    authorName:UD?UD.fullname||"":"",
-    avatar:UD?UD.avatar||"":"",
+    productId:revProdId_, userId:CU.uid,
+    userName:UD&&UD.fullname?UD.fullname:"Anonyme",
     rating:revStars, text:txt,
     createdAt:new Date().toISOString()
+  }).then(function(){
+    return db.collection("reviews")
+      .where("productId","==",revProdId_).get();
+  }).then(function(s){
+    var total = 0, count = s.size;
+    s.forEach(function(d){ total += (d.data().rating||0); });
+    return db.collection("products").doc(revProdId_).update({
+      avgRating: count>0 ? +(total/count).toFixed(1) : 0,
+      reviewCount: count
+    });
   }).then(function(){
     document.getElementById("revModal").classList.add("hidden");
     toast("Avis publié !","ok");
     loadReviews(revProdId_);
+    var idx = allP.findIndex(function(p){ return p.id===revProdId_; });
+    if (idx>-1) {
+      db.collection("products").doc(revProdId_).get().then(function(d){
+        allP[idx] = Object.assign({id:revProdId_},d.data());
+      });
+    }
   }).catch(function(e){
-    document.getElementById("revErr").textContent=e.message;
-    document.getElementById("revErr").className="ferr show";
+    err.textContent=e.message; err.className="ferr show";
   });
 }
-window.openReview  = openReview;
-window.setStars    = setStars;
-window.submitReview= submitReview;
+window.openReview   = openReview;
+window.setStars     = setStars;
+window.submitReview = submitReview;
 
 // ════ Q&A ════
-function loadQA(pid) {
-  var el = document.getElementById("qaList");
-  if (!el) return;
-  db.collection("qa").where("productId","==",pid)
-    .orderBy("createdAt","desc").limit(30).get()
+function loadQA(prodId) {
+  if (!db) return;
+  db.collection("qa").where("productId","==",prodId)
+    .orderBy("createdAt","desc").get()
     .then(function(s){
+      var el = document.getElementById("qaList");
+      if (!el) return;
       if (s.empty) {
-        el.innerHTML='<p style="color:var(--mt);font-size:.85rem;padding:.8rem 0">Aucune question.</p>'
-          +(CU?'<button class="bsm b-if" onclick="openQA(\''+pid+'\',\'ce produit\')">❓ Poser une question</button>':'');
+        el.innerHTML='<div class="no-res" style="padding:2rem 0">'
+          +'<div class="icon">❓</div><p>Aucune question pour ce produit.</p></div>';
         return;
       }
       el.innerHTML = s.docs.map(function(d){
-        var q=d.data();
-        var canAnswer = CU && (CU.email===ADMIN_EM || (UD&&UD.role==="seller"&&q.sellerId===CU.uid));
+        var q = d.data();
+        var canAnswer = CU && (CU.uid===q.sellerId || (UD&&UD.email===ADMIN_EM));
         return '<div class="qa-item">'
           +'<div class="qa-q">❓ '+esc(q.question)+'</div>'
-          +'<div class="qa-meta">'+esc(q.authorName||"Anonyme")+' · '+timeAgo(q.createdAt)+'</div>'
           +(q.answer
-            ?'<div class="qa-a"><div class="qa-ans-label">✅ Réponse du vendeur :</div>'+esc(q.answer)+'</div>'
-            :(canAnswer
-              ?'<div class="qa-unanswered"><button class="bsm b-if" style="margin-top:.3rem" '
-                +'onclick="openQAAnswer(\''+d.id+'\',\''+esc(q.question)+'\')">💬 Répondre</button></div>'
-              :'<div class="qa-unanswered">En attente de réponse...</div>'))
-          +'</div>';
-      }).join("")
-      +(CU?'<button class="bsm b-if" style="margin-top:.7rem" onclick="openQA(\''+pid+'\',\'ce produit\')">❓ Poser une question</button>':'');
-    });
+            ?'<div class="qa-a"><div class="qa-ans-label">💬 Réponse :</div>'+esc(q.answer)+'</div>'
+            :'<div class="qa-unanswered">En attente de réponse...</div>')
+          +'<div class="qa-meta">'+esc(q.userName||"Anonyme")+' · '+timeAgo(q.createdAt)
+          +(canAnswer&&!q.answer
+            ?' · <span style="color:var(--p);cursor:pointer;font-weight:700" '
+             +'onclick="openQAAnswer(\''+d.id+'\',\''+esc(q.question)+'\')">Répondre</span>':'')
+          +'</div></div>';
+      }).join("");
+    }).catch(function(e){ console.error("loadQA:",e); });
 }
-
-function openQA(pid, pname) {
-  if (!CU) { go("login"); return; }
-  qaProdId = pid;
-  document.getElementById("qaProdName").textContent = "Produit : "+pname;
+function openQA(prodId, prodName) {
+  if (!CU) { toast("Connectez-vous pour poser une question.","err"); go("login"); return; }
+  qaProdId = prodId;
+  document.getElementById("qaProdName").textContent = prodName;
   document.getElementById("qaTxt").value = "";
   document.getElementById("qaErr").className = "ferr";
   document.getElementById("qaModal").classList.remove("hidden");
 }
 function submitQA() {
+  if (!CU) return;
   var txt = document.getElementById("qaTxt").value.trim();
-  if (!txt) {
-    document.getElementById("qaErr").textContent="Écrivez votre question.";
-    document.getElementById("qaErr").className="ferr show"; return;
-  }
-  db.collection("qa").add({
-    productId:qaProdId, authorId:CU.uid,
-    authorName:UD?UD.fullname||"":"",
-    question:txt, answer:null,
-    createdAt:new Date().toISOString()
+  var err = document.getElementById("qaErr");
+  err.className = "ferr";
+  if (!txt) { err.textContent="Écrivez votre question."; err.className="ferr show"; return; }
+  db.collection("products").doc(qaProdId).get().then(function(pd){
+    var sellerId = pd.exists ? pd.data().sellerId : "";
+    return db.collection("qa").add({
+      productId:qaProdId, userId:CU.uid,
+      userName:UD&&UD.fullname?UD.fullname:"Anonyme",
+      question:txt, answer:null, sellerId:sellerId,
+      createdAt:new Date().toISOString()
+    });
   }).then(function(){
     document.getElementById("qaModal").classList.add("hidden");
     toast("Question envoyée !","ok");
     loadQA(qaProdId);
-  }).catch(function(e){
-    document.getElementById("qaErr").textContent=e.message;
-    document.getElementById("qaErr").className="ferr show";
-  });
+  }).catch(function(e){ err.textContent=e.message; err.className="ferr show"; });
 }
 function openQAAnswer(qaId, question) {
   qaAnsId = qaId;
@@ -1829,466 +1964,585 @@ function openQAAnswer(qaId, question) {
   document.getElementById("qaAnsModal").classList.remove("hidden");
 }
 function submitQAAnswer() {
-  var ans = document.getElementById("qaAnsTxt").value.trim();
-  if (!ans) {
-    document.getElementById("qaAnsErr").textContent="Écrivez votre réponse.";
-    document.getElementById("qaAnsErr").className="ferr show"; return;
-  }
+  if (!CU) return;
+  var txt = document.getElementById("qaAnsTxt").value.trim();
+  var err = document.getElementById("qaAnsErr");
+  err.className = "ferr";
+  if (!txt) { err.textContent="Écrivez votre réponse."; err.className="ferr show"; return; }
   db.collection("qa").doc(qaAnsId).update({
-    answer:ans, answeredAt:new Date().toISOString(), answeredBy:CU.uid
+    answer:txt, answeredAt:new Date().toISOString()
   }).then(function(){
     document.getElementById("qaAnsModal").classList.add("hidden");
     toast("Réponse publiée !","ok");
     if (qaCurrentProdId) loadQA(qaCurrentProdId);
-  }).catch(function(e){
-    document.getElementById("qaAnsErr").textContent=e.message;
-    document.getElementById("qaAnsErr").className="ferr show";
-  });
+  }).catch(function(e){ err.textContent=e.message; err.className="ferr show"; });
 }
-window.openQA        = openQA;
-window.submitQA      = submitQA;
-window.openQAAnswer  = openQAAnswer;
-window.submitQAAnswer= submitQAAnswer;
+window.openQA         = openQA;
+window.submitQA       = submitQA;
+window.openQAAnswer   = openQAAnswer;
+window.submitQAAnswer = submitQAAnswer;
 
-// ════ REPORT ════
+// ════ SIGNALEMENT ════
 function openReport(targetId, targetType, name) {
-  repTargetId=targetId; repTargetType=targetType;
-  document.getElementById("repDtl").value="";
-  document.getElementById("repErr").className="ferr";
+  if (!CU) { toast("Connectez-vous pour signaler.","err"); go("login"); return; }
+  repTargetId   = targetId;
+  repTargetType = targetType;
+  document.getElementById("repDtl").value = "";
+  document.getElementById("repErr").className = "ferr";
   document.getElementById("repModal").classList.remove("hidden");
 }
 function submitReport() {
-  if (!CU) { go("login"); return; }
+  if (!CU) return;
   var rsn = document.getElementById("repRsn").value;
   var dtl = document.getElementById("repDtl").value.trim();
+  var err = document.getElementById("repErr");
+  err.className = "ferr";
+  if (!dtl) { err.textContent="Décrivez le problème."; err.className="ferr show"; return; }
   db.collection("reports").add({
     targetId:repTargetId, targetType:repTargetType,
-    reason:rsn, details:dtl, reportedBy:CU.uid,
+    reason:rsn, details:dtl, reporterId:CU.uid,
     status:"pending", createdAt:new Date().toISOString()
   }).then(function(){
     document.getElementById("repModal").classList.add("hidden");
-    toast("Signalement envoyé","ok");
-  }).catch(function(e){
-    document.getElementById("repErr").textContent=e.message;
-    document.getElementById("repErr").className="ferr show";
-  });
+    toast("Signalement envoyé. Merci !","ok");
+  }).catch(function(e){ err.textContent=e.message; err.className="ferr show"; });
 }
-window.openReport  = openReport;
-window.submitReport= submitReport;
+window.openReport   = openReport;
+window.submitReport = submitReport;
 
 // ════ WISHLIST ════
 function loadWishlist() {
   var favs = getFavs();
-  var ct = document.getElementById("wishCount");
-  if (ct) ct.textContent="("+favs.length+" produit"+(favs.length!==1?"s":"")+")";
-  var el = document.getElementById("wishGrid");
+  var el   = document.getElementById("wishGrid");
+  var cnt  = document.getElementById("wishCount");
+  if (cnt) cnt.textContent = "("+favs.length+")";
   if (!favs.length) {
     el.innerHTML='<div class="no-res" style="grid-column:1/-1">'
-      +'<div class="icon">💔</div>'
-      +'<p>Aucun favori.<br/><small style="color:var(--mt)">Ajoutez des produits depuis la boutique</small></p>'
+      +'<div class="icon">❤️</div><p>Aucun favori.</p>'
       +'<button class="btn-p" onclick="go(\'products\')" style="margin-top:.8rem">Explorer</button></div>';
     return;
   }
-  if (allP.length) { renderWish(favs); return; }
-  db.collection("products").where("status","==","active").get().then(function(s){
-    allP=[];
-    s.forEach(function(d){ allP.push(Object.assign({id:d.id},d.data())); });
-    renderWish(favs);
+  el.innerHTML='<div class="loading">Chargement...</div>';
+  var promises = favs.map(function(id){
+    return db.collection("products").doc(id).get();
   });
-}
-function renderWish(favs) {
-  var items = allP.filter(function(p){ return favs.indexOf(p.id)>-1; });
-  document.getElementById("wishGrid").innerHTML = items.length
-    ? items.map(function(p){ return prodCard(p.id,p); }).join("")
-    : '<div class="no-res" style="grid-column:1/-1"><div class="icon">💔</div><p>Produits favoris introuvables.</p></div>';
+  Promise.all(promises).then(function(docs){
+    var html = docs.map(function(d){
+      if (!d.exists) return "";
+      return prodCard(d.id, d.data());
+    }).join("");
+    el.innerHTML = html || '<div class="no-res" style="grid-column:1/-1">'
+      +'<div class="icon">❤️</div><p>Aucun favori.</p></div>';
+  }).catch(function(e){ console.error("wishlist:",e); });
 }
 
-// ════ CART RENDER ════
+// ════ CART ════
 function calcTots() {
-  var c=getCart(), sub=c.reduce(function(s,i){ return s+(i.price*(i.qty||1)); },0);
-  var disc=Math.round(sub*promoDisc/100);
-  return {sub:sub, disc:disc, total:sub-disc};
+  var c = getCart();
+  var sub = c.reduce(function(s,i){ return s+(i.price||0)*(i.qty||1); },0);
+  var disc_ = promoDisc>0 ? Math.round(sub*promoDisc/100) : 0;
+  return { sub:sub, disc:disc_, total:sub-disc_ };
 }
 function renderCart() {
   var el = document.getElementById("cartCt");
-  var c  = getCart();
+  if (!el) return;
+  var c = getCart();
   if (!c.length) {
-    el.innerHTML='<div class="ph"><h1>🛒 Mon Panier</h1></div>'
-      +'<div class="no-res"><div class="icon">🛒</div><p>Votre panier est vide.</p>'
-      +'<button class="btn-p" onclick="go(\'products\')" style="margin-top:.8rem">Explorer les produits</button></div>';
+    el.innerHTML='<div class="no-res" style="padding:4rem 1rem">'
+      +'<div class="icon">🛒</div><p>Votre panier est vide.</p>'
+      +'<button class="btn-p" onclick="go(\'products\')" style="margin-top:.9rem">Explorer</button></div>';
     return;
   }
-  var tots = calcTots();
-  var loyPts = CU ? Math.floor(tots.total/1000)*LOYALTY_PER_1000 : 0;
+  var t = calcTots();
+  var loyPts = CU&&UD ? Math.floor(t.total/1000)*LOYALTY_PER_1000 : 0;
 
-  el.innerHTML = '<div class="ph"><h1>🛒 Mon <span style="color:var(--p)">Panier</span></h1></div>'
+  var itemsHtml = c.map(function(it){
+    return '<div class="cart-item">'
+      +'<div class="cart-img">'
+      +(it.imgUrl?'<img src="'+esc(it.imgUrl)+'" loading="lazy"/>':'🛍')+'</div>'
+      +'<div class="cart-info">'
+      +'<div class="cart-name">'+esc(it.name)+'</div>'
+      +(it.variant?'<div class="cart-var-info">'+esc(it.variant)+'</div>':'')
+      +'<div class="cart-price">'+fmt(it.price)+' FCFA</div>'
+      +'<div class="cart-qty">'
+      +'<button class="qty-btn" onclick="cqty(\''+it.key+'\',-1)">−</button>'
+      +'<span class="qty-n">'+it.qty+'</span>'
+      +'<button class="qty-btn" onclick="cqty(\''+it.key+'\',1)">+</button>'
+      +'</div></div>'
+      +'<button class="cart-del" onclick="crem(\''+it.key+'\')">🗑</button>'
+      +'</div>';
+  }).join("");
+
+  var loyHtml = loyPts>0
+    ? '<div class="loyalty-bar">🎯 <span>Vous gagnerez </span>'
+      +'<span class="lpts">+'+loyPts+' pts</span>'
+      +'<span> de fidélité</span></div>'
+    : '';
+
+  el.innerHTML =
+    '<div class="ph"><h1 style="font-family:\'Bebas Neue\',sans-serif;font-size:1.9rem;'
+    +'letter-spacing:2px">🛒 Mon Panier</h1></div>'
     +'<div class="cart-grid">'
-    +'<div>'
-    +c.map(function(item){
-      return '<div class="cart-item">'
-        +'<div class="cart-img">'
-        +(item.imgUrl?'<img src="'+esc(item.imgUrl)+'" style="width:100%;height:100%;object-fit:cover"/>'
-          :item.type==="digital"?'💻':'📦')
-        +'</div>'
-        +'<div class="cart-info">'
-        +'<div class="cart-name">'+esc(item.name)+'</div>'
-        +(item.variant?'<div class="cart-var-info">'+esc(item.variant)+'</div>':'')
-        +'<div class="cart-price">'
-        +(item.price===0?'<span style="color:var(--ok)">GRATUIT</span>':fmt(item.price)+' FCFA')
-        +'</div>'
-        +(item.price>0?'<div class="cart-qty">'
-          +'<button class="qty-btn" onclick="cqty(\''+esc(item.key)+'\',−1)">−</button>'
-          +'<span class="qty-n">'+item.qty+'</span>'
-          +'<button class="qty-btn" onclick="cqty(\''+esc(item.key)+'\',1)">+</button>'
-          +'</div>':'')
-        +'</div>'
-        +'<button class="cart-del" onclick="crem(\''+esc(item.key)+'\')">🗑</button>'
-        +'</div>';
-    }).join("")
-    +'</div>'
+    +'<div>'+itemsHtml+'</div>'
     +'<div class="cart-sum">'
     +'<h3>Récapitulatif</h3>'
-    +(loyPts>0?'<div style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.22);border-radius:var(--r);padding:.55rem .75rem;font-size:.81rem;color:var(--pu);font-weight:700;margin-bottom:.8rem">⭐ Vous gagnerez '+loyPts+' points de fidélité</div>':'')
-    +'<div class="sum-row"><span>Sous-total</span><span>'+fmt(tots.sub)+' FCFA</span></div>'
-    +(promoDisc>0?'<div class="sum-row" style="color:var(--ok)"><span>Réduction ('+promoDisc+'%)</span><span>-'+fmt(tots.disc)+' FCFA</span></div>':'')
-    +'<div class="sum-row total"><span>Total</span><span>'+fmt(tots.total)+' FCFA</span></div>'
+    +'<div class="sum-row"><span>Sous-total</span><span>'+fmt(t.sub)+' FCFA</span></div>'
+    +(promoDisc>0
+      ?'<div class="sum-row" style="color:var(--ok)">'
+        +'<span>Promo ('+promoDisc+'%)</span><span>−'+fmt(t.disc)+' FCFA</span></div>':'')
+    +'<div class="sum-row total"><span>Total</span><span>'+fmt(t.total)+' FCFA</span></div>'
+    +loyHtml
     +'<div class="promo-row">'
-    +'<input class="promo-inp" id="promoInp" placeholder="Code promo" value="'+esc(promoCode_)+'"/>'
-    +'<button class="btn-p" style="padding:.45rem .9rem;font-size:.82rem" onclick="applyPromo()">Appliquer</button>'
+    +'<input class="promo-inp" id="promoInp" placeholder="CODE PROMO" maxlength="20"/>'
+    +'<button class="bsm b-ok" onclick="applyPromo()">Appliquer</button>'
     +'</div>'
-    +(tots.total===0
-      ?'<button class="btn-p" style="width:100%;margin-top:.5rem" onclick="placeOrder(0)">📥 Obtenir gratuitement</button>'
-      :'<button class="btn-p" style="width:100%;margin-top:.5rem" onclick="initFeda()">💳 Payer '+fmt(tots.total)+' FCFA</button>')
+    +'<div id="promoMsg" style="font-size:.79rem;margin-bottom:.6rem"></div>'
+    +(CU
+      ?'<button class="btn-p" style="width:100%" onclick="initFeda()">💳 Payer maintenant</button>'
+      :'<button class="btn-p" style="width:100%" onclick="go(\'login\')">🔐 Connectez-vous</button>')
     +'</div></div>';
 }
-window.renderCart = renderCart;
 
-// ════ PROMO ════
+// ════ PROMO CODE ════
 function applyPromo() {
-  var code=(document.getElementById("promoInp").value||"").trim().toUpperCase();
-  if (!code) { promoDisc=0; promoCode_=""; renderCart(); return; }
+  var code = (document.getElementById("promoInp")&&document.getElementById("promoInp").value||"")
+    .trim().toUpperCase();
+  var msg  = document.getElementById("promoMsg");
+  if (!msg) return;
+  if (!code) { msg.innerHTML='<span style="color:var(--er)">Entrez un code.</span>'; return; }
+  msg.innerHTML='<span style="color:var(--mt)">Vérification...</span>';
   db.collection("promo_codes").where("code","==",code).where("active","==",true).get()
     .then(function(s){
-      if (s.empty) { toast("Code invalide ou expiré.","err"); return; }
-      var d=s.docs[0].data();
-      if (d.expiresAt&&d.expiresAt<new Date().toISOString()) { toast("Code expiré.","err"); return; }
-      if (d.maxUses&&(d.usedCount||0)>=d.maxUses) { toast("Code épuisé.","err"); return; }
-      promoDisc=d.discount||0; promoCode_=code;
-      toast("Code appliqué : -"+promoDisc+"%","ok");
+      if (s.empty) {
+        promoDisc=0; promoCode_="";
+        msg.innerHTML='<span style="color:var(--er)">Code invalide ou expiré.</span>';
+        return;
+      }
+      var d = s.docs[0].data();
+      var now_ = new Date();
+      if (d.expiresAt && new Date(d.expiresAt)<now_) {
+        promoDisc=0; promoCode_="";
+        msg.innerHTML='<span style="color:var(--er)">Code expiré.</span>'; return;
+      }
+      if (d.maxUses && (d.usedCount||0)>=d.maxUses) {
+        promoDisc=0; promoCode_="";
+        msg.innerHTML='<span style="color:var(--er)">Limite d\'utilisation atteinte.</span>'; return;
+      }
+      promoDisc  = d.discount||0;
+      promoCode_ = code;
+      msg.innerHTML='<span style="color:var(--ok)">✅ -'+promoDisc+'% appliqué !</span>';
       renderCart();
+    }).catch(function(){
+      msg.innerHTML='<span style="color:var(--er)">Erreur. Réessayez.</span>';
     });
 }
 window.applyPromo = applyPromo;
 
-// ════ FEDAPAY ════
+// ════ PAIEMENT FEDAPAY ════
 function initFeda() {
   if (!CU) { go("login"); return; }
-  var tots = calcTots();
-  if (tots.total<=0) { placeOrder(0); return; }
+  var c = getCart();
+  if (!c.length) { toast("Panier vide.","err"); return; }
+  var t = calcTots();
+  var freeOnly = c.every(function(i){ return (i.price||0)===0; });
+
+  if (freeOnly) {
+    placeOrder("FREE_"+Date.now(), t);
+    return;
+  }
+  if (t.total<=0) {
+    placeOrder("PROMO_FREE_"+Date.now(), t);
+    return;
+  }
   try {
     FedaPay.init({
       public_key: FEDA_KEY,
-      transaction:{ amount:tots.total, description:"Commande F2K MARKET" },
-      customer:{ email:CU.email },
-      onComplete:function(obj){
-        if (obj.reason===FedaPay.DIALOG_DISMISSED) { toast("Paiement annulé."); return; }
-        if (obj.reason===FedaPay.CHECKOUT_COMPLETED) { placeOrder(tots.total); }
+      transaction: {
+        amount: t.total,
+        description: "Commande F2K MARKET — "+c.length+" article(s)"
+      },
+      customer: {
+        email: CU.email,
+        lastname: UD&&UD.fullname ? UD.fullname : ""
+      },
+      onComplete: function(resp) {
+        if (resp.reason===FedaPay.DIALOG_DISMISSED) {
+          toast("Paiement annulé.","err"); return;
+        }
+        placeOrder(resp.transaction&&resp.transaction.id
+          ? String(resp.transaction.id) : "FEDA_"+Date.now(), t);
       }
     }).open();
-  } catch(e) { toast("Erreur paiement: "+e.message,"err"); }
+  } catch(e) {
+    toast("Erreur FedaPay : "+e.message,"err");
+    console.error("FedaPay:",e);
+  }
 }
 window.initFeda = initFeda;
 
-// ════ PLACE ORDER ════
-function placeOrder(amount) {
-  if (!CU) { go("login"); return; }
-  var c=getCart(); if (!c.length) return;
-  var tots=calcTots();
-  var promises = c.map(function(item){
-    return db.collection("orders").add({
-      buyerEmail:CU.email, buyerName:UD?UD.fullname||CU.email:"",
-      buyerId:CU.uid, sellerId:item.id,
-      items:[{id:item.id,name:item.name,price:item.price,
-              qty:item.qty,variant:item.variant||"",type:item.type}],
-      total:item.price*(item.qty||1),
-      commission:Math.round(item.price*(item.qty||1)*COMM_RATE),
-      paymentStatus:amount>0?"paid":"free",
-      promoCode:promoCode_||"",
-      orderStatus:"confirmed",
-      createdAt:new Date().toISOString()
-    }).then(function(ref){
-      // créditer le vendeur
-      if (item.price>0) {
-        var earn=Math.round(item.price*(item.qty||1)*(1-COMM_RATE));
-        creditWallet(item.id, earn, "Vente: "+item.name, ref.id);
-      }
-      // lien téléchargement numérique
-      if (item.type==="digital") {
-        var prod=allP.find(function(p){ return p.id===item.id; });
-        if (prod&&prod.fileUrl) {
-          db.collection("downloads").add({
-            uid:CU.uid, orderId:ref.id, productId:item.id,
-            productName:item.name, fileUrl:prod.fileUrl,
-            createdAt:new Date().toISOString()
-          });
-        }
-      }
-      // réduire stock
-      if (item.type==="physical") {
-        db.collection("products").doc(item.id).get().then(function(s){
-          if(s.exists){
-            var st=Math.max(0,(s.data().stock||0)-(item.qty||1));
-            db.collection("products").doc(item.id).update({stock:st});
-          }
-        });
-      }
-      return ref;
-    });
+// ════ PLACER COMMANDE ════
+function placeOrder(txId, tots) {
+  if (!CU) return;
+  var c     = getCart();
+  var batch = db.batch();
+  var ordRef= db.collection("orders").doc();
+  var now_  = new Date().toISOString();
+
+  var items = c.map(function(i){
+    return {
+      productId:i.id, name:i.name, price:i.price,
+      qty:i.qty||1, type:i.type, variant:i.variant||"",
+      imgUrl:i.imgUrl||""
+    };
   });
 
-  Promise.all(promises).then(function(){
-    // points fidélité
-    var pts=Math.floor(tots.total/1000)*LOYALTY_PER_1000;
-    if (pts>0) addLoyaltyPoints(CU.uid, pts);
-    // incrémenter usage promo
-    if (promoCode_) {
-      db.collection("promo_codes").where("code","==",promoCode_).get()
-        .then(function(s){
-          if(!s.empty) s.docs[0].ref.update({usedCount:firebase.firestore.FieldValue.increment(1)});
+  batch.set(ordRef, {
+    buyerId:CU.uid, buyerEmail:CU.email,
+    buyerName:UD&&UD.fullname?UD.fullname:"",
+    items:items, subtotal:tots.sub,
+    discount:tots.disc, total:tots.total,
+    promoCode:promoCode_||"",
+    transactionId:txId, status:"paid",
+    createdAt:now_
+  });
+
+  // Créditer vendeurs + déduire stock
+  c.forEach(function(it){
+    var prodRef = db.collection("products").doc(it.id);
+    db.collection("products").doc(it.id).get().then(function(pd){
+      if (!pd.exists) return;
+      var data = pd.data();
+      var selId = data.sellerId;
+      var earn  = Math.round((it.price*(it.qty||1))*(1-COMM_RATE));
+      if (selId) {
+        getOrCreateWallet(selId).then(function(w){
+          var newBal = (w.balance||0)+earn;
+          db.collection("wallets").doc(selId).update({balance:newBal});
+          db.collection("wallet_tx").add({
+            uid:selId, type:"credit", amount:earn,
+            label:"Vente : "+it.name, createdAt:now_
+          });
+          pushNotif(selId,"💰 Vente de "+it.name+" — +"+fmt(earn)+" FCFA","sale");
         });
+      }
+      if (data.type==="physical" && (data.stock||0)>0) {
+        var ns = Math.max(0,(data.stock||0)-(it.qty||1));
+        prodRef.update({stock:ns});
+        if (ns<=STOK_ALERT && selId)
+          pushNotif(selId,"⚠️ Stock faible pour "+data.name+" ("+ns+" restant)","stock");
+      }
+    });
+    // Lien téléchargement pour produits numériques
+    if (it.type==="digital") {
+      db.collection("products").doc(it.id).get().then(function(pd){
+        if (pd.exists && pd.data().fileUrl) {
+          db.collection("downloads").add({
+            userId:CU.uid, productId:it.id,
+            productName:it.name, fileUrl:pd.data().fileUrl,
+            orderId:ordRef.id, createdAt:now_
+          });
+        }
+      });
     }
-    var info="Merci pour votre commande !"+(amount>0?" "+fmt(amount)+" FCFA payés.":" Produit gratuit obtenu.");
-    document.getElementById("ordInfo").textContent=info;
-    var loyDiv=document.getElementById("ordLoyalty");
-    if (pts>0&&loyDiv){ loyDiv.textContent="⭐ +"+pts+" points de fidélité crédités !"; loyDiv.style.display="block"; }
+  });
+
+  // Màj compteur promo
+  if (promoCode_) {
+    db.collection("promo_codes").where("code","==",promoCode_).get().then(function(s){
+      if (!s.empty) {
+        s.docs[0].ref.update({usedCount: firebase.firestore.FieldValue.increment(1)});
+      }
+    });
+  }
+
+  batch.commit().then(function(){
+    // Points fidélité
+    var pts = Math.floor(tots.total/1000)*LOYALTY_PER_1000;
+    addLoyaltyPoints(CU.uid, pts, "Commande #"+ordRef.id.slice(0,6).toUpperCase());
+    pushNotif(CU.uid,"✅ Commande confirmée — "+fmt(tots.total)+" FCFA","order");
+
+    saveCart([]);
+    promoDisc=0; promoCode_="";
+
+    var loyHtml = pts>0
+      ? '<div id="ordLoyalty" style="display:block;background:rgba(168,85,247,.1);'
+        +'border:1px solid rgba(168,85,247,.22);border-radius:var(--r);padding:.6rem;'
+        +'font-size:.82rem;color:var(--pu);font-weight:700;margin-bottom:1rem">'
+        +'🎯 +'+pts+' points de fidélité gagnés !</div>'
+      : '';
+    document.getElementById("ordInfo").innerHTML =
+      '<strong>Commande #'+ordRef.id.slice(0,8).toUpperCase()+'</strong><br/>'
+      +'Montant payé : <strong style="color:var(--ok)">'+fmt(tots.total)+' FCFA</strong><br/>'
+      +(promoCode_?'Code promo : <strong>'+promoCode_+'</strong><br/>':'')
+      +c.length+' article(s) commandé(s)';
     document.getElementById("ordModal").classList.remove("hidden");
-    saveCart([]); promoDisc=0; promoCode_="";
-  }).catch(function(e){ toast("Erreur: "+e.message,"err"); });
+  }).catch(function(e){ toast("Erreur commande : "+e.message,"err"); });
 }
-window.placeOrder = placeOrder;
 // ════ WALLET ════
 function getOrCreateWallet(uid) {
   return db.collection("wallets").doc(uid).get().then(function(s){
     if (s.exists) return s.data();
-    var w={balance:0,totalEarned:0,totalWithdrawn:0,points:0};
+    var w = {uid:uid, balance:0, points:0, createdAt:new Date().toISOString()};
     return db.collection("wallets").doc(uid).set(w).then(function(){ return w; });
   });
 }
-function creditWallet(uid, amount, label, refId) {
-  return db.collection("wallets").doc(uid).get().then(function(s){
-    var bal=(s.exists?s.data().balance:0)+amount;
-    var earned=(s.exists?s.data().totalEarned:0)+amount;
-    return db.collection("wallets").doc(uid).set({
-      balance:bal, totalEarned:earned,
-      totalWithdrawn:s.exists?s.data().totalWithdrawn:0,
-      points:s.exists?s.data().points||0:0
-    }).then(function(){
-      return db.collection("wallet_tx").add({
-        uid:uid, type:"credit", amount:amount,
-        label:label, refId:refId||"",
-        createdAt:new Date().toISOString()
+function creditWallet(uid, amount, label) {
+  return getOrCreateWallet(uid).then(function(w){
+    var newBal = (w.balance||0)+amount;
+    return db.collection("wallets").doc(uid).update({balance:newBal})
+      .then(function(){
+        return db.collection("wallet_tx").add({
+          uid:uid, type:"credit", amount:amount,
+          label:label||"Crédit", createdAt:new Date().toISOString()
+        });
       });
-    });
   });
 }
-function debitWallet(uid, amount, label, refId) {
-  return db.collection("wallets").doc(uid).get().then(function(s){
-    if (!s.exists||(s.data().balance||0)<amount) throw new Error("Solde insuffisant");
-    var bal=s.data().balance-amount;
-    return db.collection("wallets").doc(uid).update({balance:bal})
+function debitWallet(uid, amount, label) {
+  return getOrCreateWallet(uid).then(function(w){
+    if ((w.balance||0)<amount) throw new Error("Solde insuffisant.");
+    var newBal = (w.balance||0)-amount;
+    return db.collection("wallets").doc(uid).update({balance:newBal})
       .then(function(){
         return db.collection("wallet_tx").add({
           uid:uid, type:"debit", amount:amount,
-          label:label, refId:refId||"",
+          label:label||"Débit", createdAt:new Date().toISOString()
+        });
+      });
+  });
+}
+function addLoyaltyPoints(uid, pts, label) {
+  if (!pts||pts<=0) return Promise.resolve();
+  return getOrCreateWallet(uid).then(function(w){
+    var newPts = (w.points||0)+pts;
+    return db.collection("wallets").doc(uid).update({points:newPts})
+      .then(function(){
+        return db.collection("wallet_tx").add({
+          uid:uid, type:"points", amount:pts,
+          label:label||"Points fidélité",
           createdAt:new Date().toISOString()
         });
       });
   });
 }
-function addLoyaltyPoints(uid, pts) {
-  db.collection("wallets").doc(uid).get().then(function(s){
-    var cur=s.exists?(s.data().points||0):0;
-    db.collection("wallets").doc(uid).set(
-      {points:cur+pts},
-      {merge:true}
-    );
-  });
-}
+window.getOrCreateWallet = getOrCreateWallet;
+window.creditWallet      = creditWallet;
+window.debitWallet       = debitWallet;
+window.addLoyaltyPoints  = addLoyaltyPoints;
 
 function loadWallet() {
   if (!CU) { go("login"); return; }
-  var el=document.getElementById("walletCt");
+  var el = document.getElementById("walletCt");
+  if (!el) return;
   el.innerHTML='<div class="loading">Chargement...</div>';
   getOrCreateWallet(CU.uid).then(function(w){
-    var bal=w.balance||0, pts=w.points||0;
-    el.innerHTML=
-      '<div class="ph"><h1>💰 Mon <span style="color:var(--p)">Wallet</span></h1></div>'
+    el.innerHTML =
+      '<div class="ph"><h1 style="font-family:\'Bebas Neue\',sans-serif;'
+      +'font-size:1.9rem;letter-spacing:2px">💰 Mon Wallet</h1></div>'
       +'<div class="wallet-card">'
       +'<div style="font-size:.82rem;color:rgba(255,255,255,.6);margin-bottom:.3rem">Solde disponible</div>'
-      +'<div class="wallet-bal">'+fmt(bal)+'<span>FCFA</span></div>'
-      +'<div class="wallet-pts-pill" onclick="go(\'loyalty\')">⭐ '+pts+' points de fidélité →</div>'
-      +'<div style="display:flex;gap:.7rem;margin-top:1.2rem;flex-wrap:wrap">'
-      +'<button class="btn-p" onclick="document.getElementById(\'wdModal\').classList.remove(\'hidden\')">💸 Retirer</button>'
+      +'<div class="wallet-bal">'+fmt(w.balance||0)+'<span>FCFA</span></div>'
+      +'<button class="wallet-pts-pill" onclick="go(\'loyalty\')">'
+      +'🎯 '+(w.points||0)+' pts fidélité</button>'
+      +'<div style="display:flex;gap:.65rem;margin-top:1.2rem;flex-wrap:wrap">'
+      +(UD&&UD.role==="seller"
+        ?'<button class="btn-p" onclick="openWD()">💸 Retirer</button>':'')
       +'</div></div>'
       +'<div class="card">'
-      +'<div class="ctitle">Historique des transactions</div>'
+      +'<div class="ctitle">📊 Historique des transactions</div>'
       +'<div id="txList"><div class="loading">Chargement...</div></div>'
       +'</div>';
-    loadTxHistory();
-  });
+    loadTxHistory(CU.uid);
+  }).catch(function(e){ el.innerHTML='<div class="no-res">'+e.message+'</div>'; });
 }
-function loadTxHistory() {
-  if (!CU) return;
-  var el=document.getElementById("txList");
-  if (!el) return;
-  db.collection("wallet_tx").where("uid","==",CU.uid)
+function loadTxHistory(uid) {
+  db.collection("wallet_tx").where("uid","==",uid)
     .orderBy("createdAt","desc").limit(30).get()
     .then(function(s){
-      if (s.empty) { el.innerHTML='<p style="color:var(--mt);font-size:.85rem">Aucune transaction.</p>'; return; }
-      el.innerHTML=s.docs.map(function(d){
-        var t=d.data();
-        var isIn=t.type==="credit";
+      var el = document.getElementById("txList");
+      if (!el) return;
+      if (s.empty) {
+        el.innerHTML='<div style="color:var(--mt);font-size:.85rem;text-align:center;padding:1.5rem">Aucune transaction.</div>';
+        return;
+      }
+      el.innerHTML = s.docs.map(function(d){
+        var t = d.data();
+        var isIn  = t.type==="credit"||t.type==="points";
+        var icon  = t.type==="points"?"🎯":isIn?"📥":"📤";
+        var color = isIn?"var(--ok)":"var(--er)";
         return '<div class="tx-item">'
-          +'<div class="tx-icon '+(isIn?"in":"out")+'">'+(isIn?"📥":"📤")+'</div>'
+          +'<div class="tx-icon '+(isIn?'in':'out')+'">'+icon+'</div>'
           +'<div style="flex:1">'
-          +'<div class="tx-label">'+esc(t.label||"")+'</div>'
+          +'<div class="tx-label">'+esc(t.label||"Transaction")+'</div>'
           +'<div class="tx-sub">'+timeAgo(t.createdAt)+'</div>'
           +'</div>'
-          +'<div class="tx-amt '+(isIn?"in":"out")+'">'+(isIn?"+":"-")+fmt(t.amount)+' FCFA</div>'
-          +'</div>';
+          +'<div class="tx-amt '+(isIn?'in':'out')+'">'
+          +(isIn?'+':'-')+(t.type==="points"?t.amount+' pts':fmt(t.amount)+' FCFA')
+          +'</div></div>';
       }).join("");
-    });
+    }).catch(function(e){ console.error("txHistory:",e); });
 }
-
-// ════ RETRAIT ════
+function openWD() {
+  document.getElementById("wdAmt").value    = "";
+  document.getElementById("wdPhone").value  = "";
+  document.getElementById("wdHolder").value = "";
+  document.getElementById("wdErr").className = "ferr";
+  document.getElementById("wdModal").classList.remove("hidden");
+}
 function confirmWD() {
   if (!CU) return;
-  var amt   = +document.getElementById("wdAmt").value||0;
-  var op    = document.getElementById("wdOp").value;
-  var phone = document.getElementById("wdPhone").value.trim();
-  var holder= document.getElementById("wdHolder").value.trim();
-  var err   = document.getElementById("wdErr");
-  err.className="ferr";
-  if (amt<500) { err.textContent="Montant minimum : 500 FCFA."; err.className="ferr show"; return; }
-  if (!phone||!holder) { err.textContent="Remplissez tous les champs."; err.className="ferr show"; return; }
+  var amt    = +document.getElementById("wdAmt").value;
+  var op     = document.getElementById("wdOp").value;
+  var phone  = document.getElementById("wdPhone").value.trim();
+  var holder = document.getElementById("wdHolder").value.trim();
+  var err    = document.getElementById("wdErr");
+  err.className = "ferr";
+  if (amt<500)   { err.textContent="Minimum 500 FCFA."; err.className="ferr show"; return; }
+  if (!phone)    { err.textContent="Numéro requis.";    err.className="ferr show"; return; }
+  if (!holder)   { err.textContent="Nom requis.";       err.className="ferr show"; return; }
   getOrCreateWallet(CU.uid).then(function(w){
     if ((w.balance||0)<amt) {
-      err.textContent="Solde insuffisant ("+fmt(w.balance)+" FCFA).";
+      err.textContent="Solde insuffisant ("+fmt(w.balance||0)+" FCFA).";
       err.className="ferr show"; return;
     }
-    db.collection("withdrawals").add({
-      uid:CU.uid, email:CU.email,
-      name:UD?UD.fullname||"":"",
-      amount:amt, operator:op,
-      phone:phone, holder:holder,
-      status:"pending",
-      createdAt:new Date().toISOString()
+    return debitWallet(CU.uid, amt, "Retrait "+op).then(function(){
+      return db.collection("withdrawals").add({
+        uid:CU.uid, amount:amt, operator:op,
+        phone:phone, holder:holder,
+        status:"pending", createdAt:new Date().toISOString()
+      });
     }).then(function(){
       document.getElementById("wdModal").classList.add("hidden");
-      toast("Demande envoyée ! Traitement sous 24h.","ok");
-      pushNotif(CU.uid,"Votre demande de retrait de "+fmt(amt)+" FCFA est en cours de traitement.","info");
+      toast("Demande de retrait envoyée !","ok");
+      pushNotif(CU.uid,"💸 Retrait de "+fmt(amt)+" FCFA demandé via "+op,"withdrawal");
+      loadWallet();
     });
-  });
+  }).catch(function(e){ err.textContent=e.message; err.className="ferr show"; });
 }
+window.openWD    = openWD;
 window.confirmWD = confirmWD;
 
-// ════ LOYALTY ════
+// ════ FIDELITE ════
 function loadLoyalty() {
   if (!CU) { go("login"); return; }
-  var el=document.getElementById("loyaltyCt");
+  var el = document.getElementById("loyaltyCt");
+  if (!el) return;
   el.innerHTML='<div class="loading">Chargement...</div>';
   getOrCreateWallet(CU.uid).then(function(w){
-    var pts=w.points||0;
-    var rewards=[
-      {pts:100,  val:"100 FCFA crédités sur votre wallet"},
-      {pts:250,  val:"250 FCFA crédités sur votre wallet"},
-      {pts:500,  val:"500 FCFA crédités sur votre wallet"},
-      {pts:1000, val:"1 000 FCFA crédités sur votre wallet"},
-      {pts:2500, val:"2 500 FCFA crédités sur votre wallet"},
-      {pts:5000, val:"5 000 FCFA crédités sur votre wallet"}
-    ];
-    el.innerHTML=
-      '<div class="ph"><h1>⭐ Programme de <span style="color:var(--p)">Fidélité</span></h1></div>'
-      +'<div style="background:linear-gradient(135deg,rgba(168,85,247,.14),rgba(59,130,246,.08));border:1px solid rgba(168,85,247,.2);border-radius:var(--rl);padding:1.7rem;margin-bottom:1.3rem;position:relative;overflow:hidden">'
-      +'<div style="position:absolute;right:1.3rem;top:50%;transform:translateY(-50%);font-size:3.5rem;opacity:.25">⭐</div>'
-      +'<div style="font-size:.82rem;color:var(--mt2);margin-bottom:.3rem">Vos points</div>'
-      +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:3.2rem;color:var(--pu);letter-spacing:2px;line-height:1">'+pts+'</div>'
-      +'<div style="font-size:.8rem;color:var(--mt);margin-top:.4rem">10 points gagnés par 1 000 FCFA dépensés</div>'
+    var pts   = w.points||0;
+    var equiv = Math.floor(pts/10)*100;
+    el.innerHTML =
+      '<div class="ph"><h1 style="font-family:\'Bebas Neue\',sans-serif;'
+      +'font-size:1.9rem;letter-spacing:2px">🎯 Fidélité</h1>'
+      +'<p style="color:var(--mt2);font-size:.87rem;margin-top:.3rem">'
+      +'Gagnez 10 points par 1 000 FCFA dépensés</p></div>'
+      +'<div class="wallet-card">'
+      +'<div style="font-size:.82rem;color:rgba(255,255,255,.6);margin-bottom:.3rem">Vos points</div>'
+      +'<div class="wallet-bal" style="color:var(--pu)">'+pts+'<span style="color:var(--pu)">pts</span></div>'
+      +'<div style="font-size:.84rem;color:var(--mt2);margin-top:.5rem">'
+      +'Équivalent : <strong style="color:var(--ok)">'+fmt(equiv)+' FCFA</strong></div>'
       +'</div>'
-      +'<div class="ctitle" style="margin-bottom:.8rem">🎁 Récompenses disponibles</div>'
-      +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.75rem">'
-      +rewards.map(function(r){
-        var canRedeem=pts>=r.pts;
-        return '<div style="background:var(--dk2);border:1px solid '+(canRedeem?"rgba(168,85,247,.35)":"var(--bd)")+';border-radius:var(--rl);padding:1rem;transition:all .2s">'
-          +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:1.4rem;color:var(--pu);letter-spacing:1px">'+r.pts+' pts</div>'
-          +'<div style="font-size:.8rem;color:var(--mt2);margin:.3rem 0 .7rem">'+r.val+'</div>'
-          +'<button class="btn-p" style="width:100%;padding:.4rem;font-size:.8rem;'+(canRedeem?"":"background:var(--mt);cursor:not-allowed")+'" '
-          +(canRedeem?'onclick="redeemPoints('+r.pts+','+r.pts+\')"':'disabled')+'>'
-          +(canRedeem?'Échanger':''+pts+'/'+r.pts+' pts')
-          +'</button></div>';
-      }).join("")
-      +'</div>';
-  });
+      +'<div class="card">'
+      +'<div class="ctitle">💱 Échanger vos points</div>'
+      +'<p style="color:var(--mt2);font-size:.84rem;line-height:1.65;margin-bottom:1rem">'
+      +'10 points = 100 FCFA sur votre wallet.<br/>'
+      +'Minimum : 10 points (100 FCFA).</p>'
+      +(pts>=10
+        ?'<div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">'
+          +'<input class="fi" id="redeemPts" type="number" placeholder="Points à échanger" '
+          +'min="10" max="'+pts+'" style="max-width:200px"/>'
+          +'<button class="btn-p" onclick="redeemPoints()">Échanger</button>'
+          +'</div>'
+        :'<div class="no-res" style="padding:1.5rem 0">'
+          +'<p>Pas encore assez de points (minimum 10).</p></div>')
+      +'</div>'
+      +'<div class="card">'
+      +'<div class="ctitle">📋 Comment gagner des points ?</div>'
+      +'<div style="color:var(--mt2);font-size:.84rem;line-height:1.9">'
+      +'🛒 Achetez des produits → <strong>10 pts / 1 000 FCFA</strong><br/>'
+      +'💰 Échangez vos points → <strong>100 FCFA / 10 pts</strong><br/>'
+      +'🎯 Cumulez sans limite !'
+      +'</div></div>';
+  }).catch(function(e){ el.innerHTML='<div class="no-res">'+e.message+'</div>'; });
 }
-function redeemPoints(pts, fcfa) {
+function redeemPoints() {
   if (!CU) return;
-  openConfirm("Échanger des points",
+  var pts = +document.getElementById("redeemPts").value;
+  if (!pts||pts<10) { toast("Minimum 10 points.","err"); return; }
+  if (pts%10!==0)   { toast("Entrez un multiple de 10.","err"); return; }
+  var fcfa = Math.floor(pts/10)*100;
+  openConfirm(
+    "Échanger les points",
     "Échanger "+pts+" points contre "+fmt(fcfa)+" FCFA ?",
     function(){
-      db.collection("wallets").doc(CU.uid).get().then(function(s){
-        var cur=s.exists?(s.data().points||0):0;
-        if (cur<pts) { toast("Points insuffisants.","err"); return; }
-        db.collection("wallets").doc(CU.uid).update({points:cur-pts})
+      getOrCreateWallet(CU.uid).then(function(w){
+        if ((w.points||0)<pts) { toast("Points insuffisants.","err"); return; }
+        var newPts = (w.points||0)-pts;
+        return db.collection("wallets").doc(CU.uid)
+          .update({points:newPts, balance:(w.balance||0)+fcfa})
           .then(function(){
-            return creditWallet(CU.uid, fcfa, "Échange points fidélité ("+pts+" pts)", "");
+            return db.collection("wallet_tx").add({
+              uid:CU.uid, type:"credit", amount:fcfa,
+              label:"Échange "+pts+" pts fidélité",
+              createdAt:new Date().toISOString()
+            });
           }).then(function(){
-            toast(fmt(fcfa)+" FCFA crédités !","ok");
+            toast("+"+fmt(fcfa)+" FCFA ajoutés à votre wallet !","ok");
             loadLoyalty();
           });
-      });
-    });
+      }).catch(function(e){ toast(e.message,"err"); });
+    }
+  );
 }
 window.redeemPoints = redeemPoints;
 
 // ════ NOTIFICATIONS ════
 function loadNotifs() {
   if (!CU) { go("login"); return; }
-  var el=document.getElementById("notifList");
+  var el = document.getElementById("notifList");
+  if (!el) return;
   el.innerHTML='<div class="loading">Chargement...</div>';
   db.collection("notifications").where("uid","==",CU.uid)
-    .orderBy("createdAt","desc").limit(40).get()
+    .orderBy("createdAt","desc").limit(50).get()
     .then(function(s){
       if (s.empty) {
-        el.innerHTML='<div class="no-res"><div class="icon">🔔</div><p>Aucune notification.</p></div>';
-        return;
+        el.innerHTML='<div class="no-res"><div class="icon">🔔</div>'
+          +'<p>Aucune notification.</p></div>'; return;
       }
-      el.innerHTML=s.docs.map(function(d){
-        var n=d.data();
-        return '<div class="notif-item'+(n.read?"":" unread")+'" onclick="markNotifRead(\''+d.id+'\')">'
-          +'<div class="nd'+(n.read?" read":"")+'"></div>'
+      el.innerHTML = s.docs.map(function(d){
+        var n = d.data();
+        return '<div class="notif-item'+(n.read?'':' unread')+'" '
+          +'onclick="markNotifRead(\''+d.id+'\')" id="notif-'+d.id+'">'
+          +'<div class="nd'+(n.read?' read':'')+'"></div>'
           +'<div style="flex:1">'
           +'<div class="notif-txt">'+esc(n.message||"")+'</div>'
           +'<div class="notif-time">'+timeAgo(n.createdAt)+'</div>'
           +'</div></div>';
       }).join("");
-    });
+      checkUnreadNotif();
+    }).catch(function(e){ console.error("loadNotifs:",e); });
 }
 function markNotifRead(id) {
   db.collection("notifications").doc(id).update({read:true}).then(function(){
+    var el = document.getElementById("notif-"+id);
+    if (el) {
+      el.classList.remove("unread");
+      var dot = el.querySelector(".nd");
+      if (dot) dot.classList.add("read");
+    }
     checkUnreadNotif();
-    loadNotifs();
   });
 }
 function markAllRead() {
   if (!CU) return;
-  db.collection("notifications").where("uid","==",CU.uid).where("read","==",false).get()
+  db.collection("notifications").where("uid","==",CU.uid)
+    .where("read","==",false).get()
     .then(function(s){
-      var batch=db.batch();
-      s.docs.forEach(function(d){ batch.update(d.ref,{read:true}); });
+      var batch = db.batch();
+      s.forEach(function(d){ batch.update(d.ref,{read:true}); });
       return batch.commit();
     }).then(function(){
-      toast("Tout marqué comme lu","ok");
-      checkUnreadNotif();
+      toast("Tout marqué comme lu.","ok");
       loadNotifs();
     });
 }
@@ -2298,1021 +2552,1188 @@ window.markAllRead   = markAllRead;
 // ════ MESSAGES ════
 function loadMessages() {
   if (!CU) { go("login"); return; }
-  var el=document.getElementById("chatLst");
-  el.innerHTML='<div class="loading">Chargement...</div>';
-  var isAdmin = CU.email===ADMIN_EM;
+  var lst = document.getElementById("chatLst");
+  if (!lst) return;
+  lst.innerHTML='<div class="loading">Chargement...</div>';
+
+  var isAdmin = UD && UD.email===ADMIN_EM;
 
   if (isAdmin) {
-    // admin voit toutes les conversations
-    db.collection("conv_meta").orderBy("lastAt","desc").limit(50).get()
+    // Admin voit toutes les conversations
+    db.collection("conv_meta").orderBy("lastAt","desc").limit(30).get()
       .then(function(s){
-        if (s.empty) { el.innerHTML='<div style="padding:1rem;color:var(--mt);font-size:.84rem">Aucune conversation.</div>'; return; }
-        el.innerHTML=s.docs.map(function(d){
-          var m=d.data();
-          return '<div class="chat-li" onclick="openChat(\''+d.id+'\',\''+esc(m.userName||"Utilisateur")+'\')">'
-            +'<div style="width:36px;height:36px;border-radius:50%;background:var(--dk4);display:flex;align-items:center;justify-content:center;flex-shrink:0">👤</div>'
+        if (s.empty) {
+          lst.innerHTML='<div style="color:var(--mt);font-size:.83rem;padding:1rem;text-align:center">Aucun message.</div>';
+          return;
+        }
+        lst.innerHTML = s.docs.map(function(d){
+          var m = d.data();
+          return '<div class="chat-li" onclick="openChat(\''+d.id+'\',\''+esc(m.userName||d.id)+'\')">'
+            +'<div style="width:34px;height:34px;border-radius:50%;background:var(--dk3);'
+            +'display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">👤</div>'
             +'<div style="flex:1;min-width:0">'
-            +'<div style="font-weight:700;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(m.userName||"Utilisateur")+'</div>'
-            +'<div style="font-size:.75rem;color:var(--mt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(m.lastMsg||"")+'</div>'
+            +'<div style="font-weight:700;font-size:.84rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'
+            +esc(m.userName||d.id)+'</div>'
+            +'<div style="font-size:.73rem;color:var(--mt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'
+            +esc(m.lastMsg||"")+'</div>'
             +'</div>'
-            +(m.unreadAdmin>0?'<span style="background:var(--p);color:#fff;font-size:.65rem;font-weight:900;padding:1px 6px;border-radius:99px">'+m.unreadAdmin+'</span>':'')
+            +((m.unreadAdmin||0)>0
+              ?'<span class="sb-bdg rd">'+m.unreadAdmin+'</span>':'')
             +'</div>';
         }).join("");
       });
   } else {
-    // utilisateur : 1 seule conv avec admin
-    el.innerHTML='<div class="chat-li act" onclick="openChat(\''+CU.uid+'\',\'Support F2K\')">'
-      +'<div style="width:36px;height:36px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.9rem">F2K</div>'
-      +'<div style="flex:1">'
-      +'<div style="font-weight:700;font-size:.85rem">Support F2K MARKET</div>'
-      +'<div style="font-size:.75rem;color:var(--mt)">Envoyez-nous un message</div>'
+    // Utilisateur voit sa propre conversation avec admin
+    var meta = {userName:UD&&UD.fullname?UD.fullname:"Utilisateur"};
+    db.collection("conv_meta").doc(CU.uid).set(meta,{merge:true});
+    lst.innerHTML =
+      '<div class="chat-li act" onclick="openChat(\''+CU.uid+'\',\'Support F2K MARKET\')">'
+      +'<div style="width:34px;height:34px;border-radius:50%;background:var(--p);'
+      +'display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">🏪</div>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-weight:700;font-size:.84rem">Support F2K MARKET</div>'
+      +'<div style="font-size:.73rem;color:var(--mt)">Envoyez un message</div>'
       +'</div></div>';
-    openChat(CU.uid,"Support F2K");
-    // réinitialiser badge
-    db.collection("conv_meta").doc(CU.uid).set({unreadUser:0},{merge:true});
-    var b=document.getElementById("mBdg");
-    if(b){ b.style.display="none"; }
+    openChat(CU.uid, "Support F2K MARKET");
+
+    // Marquer messages comme lus
+    db.collection("conv_meta").doc(CU.uid).update({unreadUser:0}).catch(function(){});
+    var b2 = document.getElementById("mBdg");
+    if (b2) b2.style.display="none";
   }
 }
-
 function openChat(uid, name) {
   activeChatUid = uid;
   if (msgUnsub) { msgUnsub(); msgUnsub=null; }
-  document.getElementById("chatHdr").innerHTML=
-    '<div style="font-weight:700;font-size:.9rem">'+esc(name)+'</div>'
-    +'<div style="font-size:.75rem;color:var(--mt)">Conversation en direct</div>';
-  document.getElementById("chatInp").classList.remove("hidden");
-  document.querySelectorAll(".chat-li").forEach(function(li){ li.classList.remove("act"); });
-  var active=document.querySelector('.chat-li[onclick*="'+uid+'"]');
-  if(active) active.classList.add("act");
 
-  var msgsEl=document.getElementById("chatMsgs");
-  msgsEl.innerHTML='<div class="loading">Chargement...</div>';
+  var hdr = document.getElementById("chatHdr");
+  var inp = document.getElementById("chatInp");
+  if (hdr) hdr.innerHTML =
+    '<div style="font-weight:700;font-size:.9rem">'+esc(name)+'</div>'
+    +'<div style="font-size:.72rem;color:var(--mt)">Conversation</div>';
+  if (inp) inp.classList.remove("hidden");
+
+  var msgs = document.getElementById("chatMsgs");
+  if (!msgs) return;
+  msgs.innerHTML='<div class="loading">Chargement...</div>';
 
   msgUnsub = db.collection("messages")
     .where("convId","==",uid)
-    .orderBy("createdAt","asc")
-    .limit(100)
+    .orderBy("createdAt","asc").limit(80)
     .onSnapshot(function(s){
-      msgsEl.innerHTML = s.empty
-        ? '<div style="color:var(--mt);font-size:.84rem;text-align:center;padding:1rem">Démarrez la conversation !</div>'
-        : s.docs.map(function(d){
-            var m=d.data();
-            var isMine = CU && m.senderId===CU.uid;
-            return '<div class="cb '+(isMine?"mine":"theirs")+'">'+esc(m.text||"")+'</div>';
-          }).join("");
-      msgsEl.scrollTop=msgsEl.scrollHeight;
-    });
-}
+      msgs.innerHTML = s.docs.map(function(d){
+        var m = d.data();
+        var isAdmin = UD && UD.email===ADMIN_EM;
+        var isMine  = isAdmin ? m.sender==="admin" : m.sender==="user";
+        return '<div class="cb '+(isMine?'mine':'theirs')+'">'+esc(m.text)+'</div>';
+      }).join("");
+      msgs.scrollTop = msgs.scrollHeight;
 
+      // Marquer comme lus côté admin
+      if (UD&&UD.email===ADMIN_EM) {
+        db.collection("conv_meta").doc(uid).update({unreadAdmin:0}).catch(function(){});
+      }
+    }, function(e){ console.error("chat:",e); });
+}
 function sendMsg() {
   if (!CU||!activeChatUid) return;
-  var inp=document.getElementById("msgIn");
-  var txt=inp.value.trim();
-  if (!txt) return;
-  inp.value="";
-  var isAdmin=CU.email===ADMIN_EM;
+  var inp  = document.getElementById("msgIn");
+  var text = inp.value.trim();
+  if (!text) return;
+  var isAdmin = UD && UD.email===ADMIN_EM;
+  var sender  = isAdmin ? "admin" : "user";
+  var now_    = new Date().toISOString();
+
   db.collection("messages").add({
-    convId:activeChatUid,
-    senderId:CU.uid,
-    senderName:UD?UD.fullname||"":"",
-    isAdmin:isAdmin,
-    text:txt,
-    createdAt:new Date().toISOString()
+    convId:activeChatUid, sender:sender,
+    text:text, createdAt:now_
   }).then(function(){
-    var meta={lastMsg:txt, lastAt:new Date().toISOString()};
-    if (!isAdmin) {
-      meta.userName=UD?UD.fullname||"":CU.email;
-      meta.unreadAdmin=firebase.firestore.FieldValue.increment(1);
+    inp.value="";
+    var meta = {lastMsg:text, lastAt:now_};
+    if (isAdmin) {
+      meta.unreadUser = firebase.firestore.FieldValue.increment(1);
+      pushNotif(activeChatUid,"💬 Nouveau message du support F2K MARKET","message");
+      var b2=document.getElementById("mBdg"); if(b2) b2.style.display="none";
     } else {
-      meta.unreadUser=firebase.firestore.FieldValue.increment(1);
+      meta.unreadAdmin = firebase.firestore.FieldValue.increment(1);
+      meta.userName    = UD&&UD.fullname?UD.fullname:CU.email;
     }
-    db.collection("conv_meta").doc(activeChatUid).set(meta,{merge:true});
-  });
+    return db.collection("conv_meta").doc(activeChatUid).set(meta,{merge:true});
+  }).catch(function(e){ toast("Erreur: "+e.message,"err"); });
 }
 window.openChat = openChat;
 window.sendMsg  = sendMsg;
-// ════ GESTION PRODUITS ════
+// ════ DASHBOARD ════
+function loadDash() {
+  if (!CU) { go("login"); return; }
+  var el = document.getElementById("dbCt");
+  if (!el) return;
+  el.innerHTML='<div class="loading">Chargement...</div>';
+  if (!UD) {
+    db.collection("users").doc(CU.uid).get().then(function(s){
+      UD = s.exists ? s.data() : {};
+      renderDash();
+    });
+  } else { renderDash(); }
+}
+function renderDash() {
+  var el = document.getElementById("dbCt");
+  if (!el) return;
+  if (UD && UD.email===ADMIN_EM) { renderAdminDB(); return; }
+  if (UD && UD.role==="seller")  { renderSellerDB(); return; }
+  renderBuyerDB();
+}
+
+// ════ BUYER DASHBOARD ════
+function renderBuyerDB() {
+  var el = document.getElementById("dbCt");
+  el.innerHTML='<div class="db-lay">'
+    +'<div class="sidebar">'
+    +'<div style="margin-bottom:1.1rem">'
+    +'<div class="sb-shop">'+esc(UD&&UD.fullname||"Acheteur")+'</div>'
+    +'<div class="sb-role" style="color:var(--if)">👤 Acheteur</div>'
+    +'</div>'
+    +'<button class="sb-lnk on" onclick="switchDB(\'buyOrd\')">📦 Mes commandes</button>'
+    +'<button class="sb-lnk" onclick="switchDB(\'buyDl\')">💾 Téléchargements</button>'
+    +'<button class="sb-lnk" onclick="go(\'loyalty\')">🎯 Fidélité</button>'
+    +'<button class="sb-lnk" onclick="go(\'wallet\')">💰 Wallet</button>'
+    +'<button class="sb-lnk" onclick="go(\'wishlist\')">❤️ Favoris</button>'
+    +'<button class="sb-lnk" onclick="go(\'messages\')">💬 Support</button>'
+    +'</div>'
+    +'<div class="mc">'
+    +'<div class="ph"><h1>Mon Espace</h1>'
+    +'<p>Bienvenue, '+esc(UD&&UD.fullname||"")+'</p></div>'
+    +'<div id="dbSect"><div class="loading">Chargement...</div></div>'
+    +'</div></div>';
+  switchDB("buyOrd");
+}
+
+// ════ SELLER DASHBOARD ════
+function renderSellerDB() {
+  var el = document.getElementById("dbCt");
+  if (UD.status==="pending") {
+    el.innerHTML='<div style="max-width:540px;margin:3rem auto;padding:1.5rem 1.2rem;text-align:center">'
+      +'<div style="font-size:3rem;margin-bottom:.9rem">⏳</div>'
+      +'<h2 style="font-family:\'Bebas Neue\',sans-serif;font-size:1.8rem;letter-spacing:2px">Compte en attente</h2>'
+      +'<p style="color:var(--mt2);margin-top:.6rem;line-height:1.7">Votre compte vendeur est en cours de validation.<br/>'
+      +'Contactez-nous : <a href="https://wa.me/'+ADMIN_PH+'" target="_blank" style="color:var(--p)">WhatsApp</a></p>'
+      +'</div>'; return;
+  }
+  if (UD.status==="suspended") {
+    el.innerHTML='<div style="max-width:540px;margin:3rem auto;padding:1.5rem 1.2rem;text-align:center">'
+      +'<div style="font-size:3rem;margin-bottom:.9rem">🚫</div>'
+      +'<h2 style="font-family:\'Bebas Neue\',sans-serif;font-size:1.8rem;color:var(--er);letter-spacing:2px">Compte suspendu</h2>'
+      +'<p style="color:var(--mt2);margin-top:.6rem">Contactez le support pour plus d\'informations.</p>'
+      +'</div>'; return;
+  }
+  el.innerHTML='<div class="db-lay">'
+    +'<div class="sidebar">'
+    +'<div style="margin-bottom:1.1rem">'
+    +'<div class="sb-shop">'+esc(UD.shopName||UD.fullname||"")+'</div>'
+    +'<div class="sb-role" style="color:var(--p)">🏪 Vendeur</div>'
+    +'</div>'
+    +'<button class="sb-lnk on" onclick="switchDB(\'selProds\')">📦 Mes produits</button>'
+    +'<button class="sb-lnk" onclick="switchDB(\'selOrds\')">🛒 Commandes</button>'
+    +'<button class="sb-lnk" onclick="switchDB(\'selStats\')">📊 Statistiques</button>'
+    +'<button class="sb-lnk" onclick="go(\'wallet\')">💰 Wallet</button>'
+    +'<button class="sb-lnk" onclick="go(\'loyalty\')">🎯 Fidélité</button>'
+    +'<button class="sb-lnk" onclick="go(\'messages\')">💬 Messages</button>'
+    +'</div>'
+    +'<div class="mc">'
+    +'<div class="ph" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem">'
+    +'<div><h1>Espace Vendeur</h1>'
+    +'<p>'+esc(UD.shopName||"")+'</p></div>'
+    +'<button class="btn-p" onclick="openAddProd()">+ Publier un produit</button>'
+    +'</div>'
+    +'<div id="dbSect"><div class="loading">Chargement...</div></div>'
+    +'</div></div>';
+  switchDB("selProds");
+}
+
+// ════ SWITCH DB SECTION ════
+function switchDB(sect) {
+  document.querySelectorAll(".sb-lnk").forEach(function(b){ b.classList.remove("on"); });
+  var el = document.getElementById("dbSect");
+  if (!el) return;
+  el.innerHTML='<div class="loading">Chargement...</div>';
+
+  if (sect==="buyOrd") {
+    db.collection("orders").where("buyerId","==",CU.uid)
+      .orderBy("createdAt","desc").get()
+      .then(function(s){
+        if (s.empty) {
+          el.innerHTML='<div class="no-res"><div class="icon">📦</div>'
+            +'<p>Aucune commande.</p>'
+            +'<button class="btn-p" onclick="go(\'products\')" style="margin-top:.8rem">Explorer</button></div>';
+          return;
+        }
+        el.innerHTML='<div class="tw"><table class="dtable">'
+          +'<thead><tr><th>#</th><th>Articles</th><th>Total</th><th>Statut</th><th>Date</th></tr></thead>'
+          +'<tbody>'
+          +s.docs.map(function(d){
+            var o=d.data();
+            var stBadge = o.status==="paid"?'<span class="badge bs">✅ Payé</span>'
+              :o.status==="shipped"?'<span class="badge bi">🚚 Expédié</span>'
+              :o.status==="delivered"?'<span class="badge bs">📦 Livré</span>'
+              :'<span class="badge bw">⏳ '+esc(o.status)+'</span>';
+            return '<tr>'
+              +'<td style="font-weight:700;color:var(--p)">#'+d.id.slice(0,6).toUpperCase()+'</td>'
+              +'<td>'+(o.items||[]).map(function(i){ return esc(i.name); }).join(", ")+'</td>'
+              +'<td style="font-weight:700">'+fmt(o.total)+' FCFA</td>'
+              +'<td>'+stBadge+'</td>'
+              +'<td style="color:var(--mt)">'+timeAgo(o.createdAt)+'</td>'
+              +'</tr>';
+          }).join("")
+          +'</tbody></table></div>';
+      });
+  }
+
+  else if (sect==="buyDl") {
+    db.collection("downloads").where("userId","==",CU.uid)
+      .orderBy("createdAt","desc").get()
+      .then(function(s){
+        if (s.empty) {
+          el.innerHTML='<div class="no-res"><div class="icon">💾</div>'
+            +'<p>Aucun téléchargement.</p></div>'; return;
+        }
+        el.innerHTML='<div class="tw"><table class="dtable">'
+          +'<thead><tr><th>Produit</th><th>Date</th><th>Action</th></tr></thead>'
+          +'<tbody>'
+          +s.docs.map(function(d){
+            var dl=d.data();
+            return '<tr>'
+              +'<td style="font-weight:700">'+esc(dl.productName||"")+'</td>'
+              +'<td style="color:var(--mt)">'+timeAgo(dl.createdAt)+'</td>'
+              +'<td><a href="'+esc(dl.fileUrl||"")+'" target="_blank" class="bsm b-ok">📥 Télécharger</a></td>'
+              +'</tr>';
+          }).join("")
+          +'</tbody></table></div>';
+      });
+  }
+
+  else if (sect==="selProds") {
+    db.collection("products").where("sellerId","==",CU.uid)
+      .orderBy("createdAt","desc").get()
+      .then(function(s){
+        if (s.empty) {
+          el.innerHTML='<div class="no-res"><div class="icon">📦</div>'
+            +'<p>Aucun produit. Publiez votre premier produit !</p>'
+            +'<button class="btn-p" onclick="openAddProd()" style="margin-top:.8rem">+ Publier</button></div>';
+          return;
+        }
+        el.innerHTML='<div class="tw"><table class="dtable">'
+          +'<thead><tr><th>Produit</th><th>Prix</th><th>Stock</th><th>Statut</th><th>Actions</th></tr></thead>'
+          +'<tbody>'
+          +s.docs.map(function(d){
+            var p=d.data();
+            var realP = p.salePrice&&p.salePrice>0&&p.salePrice<p.price?p.salePrice:p.price;
+            var stBadge = p.status==="active"?'<span class="badge bs">✅ Actif</span>'
+              :p.status==="pending"?'<span class="badge bw">⏳ En attente</span>'
+              :p.status==="hidden"?'<span class="badge bd">👁 Masqué</span>'
+              :'<span class="badge bd">'+esc(p.status)+'</span>';
+            var featBadge = p.featured?'<span class="badge bw" style="margin-left:.3rem">⭐</span>':'';
+            return '<tr>'
+              +'<td>'
+              +(p.imageUrl?'<img src="'+esc(p.imageUrl)+'" style="width:30px;height:30px;'
+                +'border-radius:var(--r);object-fit:cover;margin-right:.4rem;vertical-align:middle"/>':'')
+              +'<strong>'+esc(p.name)+'</strong></td>'
+              +'<td style="color:var(--p);font-weight:700">'
+              +fmt(realP)+' FCFA'
+              +(p.salePrice&&p.salePrice>0&&p.salePrice<p.price
+                ?'<br/><small style="color:var(--mt);text-decoration:line-through">'+fmt(p.price)+'</small>':'')
+              +'</td>'
+              +'<td>'+(p.type==="physical"
+                ?((p.stock||0)<=STOK_ALERT&&(p.stock||0)>0
+                  ?'<span style="color:var(--wn);font-weight:700">⚠️ '+p.stock+'</span>'
+                  :(p.stock||0)===0
+                  ?'<span style="color:var(--er);font-weight:700">0</span>'
+                  :p.stock)
+                :'<span style="color:var(--if)">∞</span>')+'</td>'
+              +'<td>'+stBadge+featBadge+'</td>'
+              +'<td style="white-space:nowrap">'
+              +'<button class="bsm b-if" onclick="editProd(\''+d.id+'\')">✏️</button> '
+              +(p.status==="hidden"
+                ?'<button class="bsm b-ok" onclick="hideProd(\''+d.id+'\',false)">👁</button>'
+                :'<button class="bsm b-wa" onclick="hideProd(\''+d.id+'\',true)">🙈</button>')
+              +' <button class="bsm b-pu" onclick="boostProd(\''+d.id+'\',\''+esc(p.name)+'\')">⭐</button>'
+              +' <button class="bsm b-dl" onclick="deleteProd(\''+d.id+'\',\''+esc(p.name)+'\')">🗑</button>'
+              +'</td></tr>';
+          }).join("")
+          +'</tbody></table></div>'
+          +'<div style="margin-top:.9rem;display:flex;gap:.6rem;flex-wrap:wrap">'
+          +'<button class="bsm b-pu" onclick="openPromoMgr()">🎟️ Gérer mes promos</button>'
+          +'</div>';
+      });
+  }
+
+  else if (sect==="selOrds") {
+    db.collection("orders").orderBy("createdAt","desc").limit(100).get()
+      .then(function(s){
+        var myOrds = s.docs.filter(function(d){
+          var o=d.data();
+          return (o.items||[]).some(function(i){ return i.sellerId===CU.uid||false; })
+            || (o.items||[]).length>0;
+        });
+        // Filtrer les commandes contenant des produits du vendeur
+        var prodIds=[];
+        return db.collection("products").where("sellerId","==",CU.uid).get()
+          .then(function(ps){
+            ps.forEach(function(p){ prodIds.push(p.id); });
+            var filtered = s.docs.filter(function(d){
+              return (d.data().items||[]).some(function(i){ return prodIds.indexOf(i.productId)>-1; });
+            });
+            if (!filtered.length) {
+              el.innerHTML='<div class="no-res"><div class="icon">🛒</div><p>Aucune commande.</p></div>';
+              return;
+            }
+            el.innerHTML='<div class="tw"><table class="dtable">'
+              +'<thead><tr><th>#</th><th>Acheteur</th><th>Articles</th><th>Total</th><th>Statut</th><th>Date</th></tr></thead>'
+              +'<tbody>'
+              +filtered.map(function(d){
+                var o=d.data();
+                var myItems=(o.items||[]).filter(function(i){ return prodIds.indexOf(i.productId)>-1; });
+                var earn=myItems.reduce(function(s,i){ return s+(i.price||0)*(i.qty||1); },0);
+                var stBadge=o.status==="paid"?'<span class="badge bs">✅ Payé</span>'
+                  :o.status==="shipped"?'<span class="badge bi">🚚 Expédié</span>'
+                  :o.status==="delivered"?'<span class="badge bs">📦 Livré</span>'
+                  :'<span class="badge bw">⏳ '+esc(o.status)+'</span>';
+                return '<tr>'
+                  +'<td style="font-weight:700;color:var(--p)">#'+d.id.slice(0,6).toUpperCase()+'</td>'
+                  +'<td>'+esc(o.buyerName||o.buyerEmail||"")+'</td>'
+                  +'<td>'+myItems.map(function(i){ return esc(i.name)+'×'+(i.qty||1); }).join(", ")+'</td>'
+                  +'<td style="font-weight:700;color:var(--ok)">'+fmt(Math.round(earn*(1-COMM_RATE)))+' FCFA</td>'
+                  +'<td>'+stBadge+'</td>'
+                  +'<td style="color:var(--mt)">'+timeAgo(o.createdAt)+'</td>'
+                  +'</tr>';
+              }).join("")
+              +'</tbody></table></div>';
+          });
+      });
+  }
+
+  else if (sect==="selStats") {
+    renderSelChart();
+  }
+}
+window.switchDB = switchDB;
+
+// ════ STATS VENDEUR ════
+function renderSelChart() {
+  var el = document.getElementById("dbSect");
+  el.innerHTML='<div class="card">'
+    +'<div class="ctitle">📊 Ventes des 7 derniers jours</div>'
+    +'<div class="chart-wrap"><canvas id="selChart"></canvas></div>'
+    +'</div>'
+    +'<div class="sr" id="selStatCards"></div>';
+
+  db.collection("products").where("sellerId","==",CU.uid).get().then(function(ps){
+    var prodIds=[];
+    ps.forEach(function(p){ prodIds.push(p.id); });
+    return db.collection("orders").orderBy("createdAt","desc").limit(200).get()
+      .then(function(s){
+        var days={}, total=0, count=0;
+        for (var i=6;i>=0;i--) {
+          var d=new Date(); d.setDate(d.getDate()-i);
+          days[d.toLocaleDateString("fr-FR")]=0;
+        }
+        s.forEach(function(d){
+          var o=d.data();
+          var myItems=(o.items||[]).filter(function(i){ return prodIds.indexOf(i.productId)>-1; });
+          if (!myItems.length) return;
+          var earn=myItems.reduce(function(s,i){ return s+(i.price||0)*(i.qty||1); },0)*( 1-COMM_RATE);
+          var dt=new Date(o.createdAt).toLocaleDateString("fr-FR");
+          if (days[dt]!==undefined) days[dt]+=Math.round(earn);
+          total+=Math.round(earn); count++;
+        });
+        var labels=Object.keys(days), vals=Object.values(days);
+        var ctx=document.getElementById("selChart");
+        if (ctx) new Chart(ctx,{
+          type:"bar",
+          data:{
+            labels:labels,
+            datasets:[{label:"Revenus FCFA",data:vals,
+              backgroundColor:"rgba(255,107,0,.5)",
+              borderColor:"var(--p)",borderWidth:2,borderRadius:5}]
+          },
+          options:{responsive:true,maintainAspectRatio:false,
+            plugins:{legend:{display:false}},
+            scales:{y:{grid:{color:"rgba(255,255,255,.05)"},ticks:{color:"#a0a0c0"}},
+              x:{grid:{display:false},ticks:{color:"#a0a0c0"}}}}
+        });
+        var sc=document.getElementById("selStatCards");
+        if (sc) sc.innerHTML=
+          '<div class="sc"><div class="si">💰</div>'
+          +'<div class="sv">'+fmt(total)+'</div><div class="sl">FCFA (7j)</div></div>'
+          +'<div class="sc"><div class="si">🛒</div>'
+          +'<div class="sv">'+count+'</div><div class="sl">Commandes</div></div>'
+          +'<div class="sc"><div class="si">📦</div>'
+          +'<div class="sv">'+prodIds.length+'</div><div class="sl">Produits</div></div>';
+      });
+  }).catch(function(e){ console.error("selChart:",e); });
+}
+
+// ════ TOGGLE PRODUIT (FORMULAIRE) ════
 function apToggle() {
-  var ty=document.getElementById("apTy").value;
-  document.getElementById("apPhysF").style.display = ty==="physical"?"block":"none";
-  document.getElementById("apDigF").classList.toggle("hidden", ty!=="digital");
-  document.getElementById("apFtGrp").style.display = ty?"block":"none";
+  var t = document.getElementById("apTy").value;
+  document.getElementById("apPhysF").style.display  = t==="physical"?"block":"none";
+  document.getElementById("apDigF").classList.toggle("hidden", t!=="digital");
 }
 window.apToggle = apToggle;
 
+// ════ OUVRIR FORMULAIRE AJOUT PRODUIT ════
 function openAddProd() {
-  if (!CU) { go("login"); return; }
-  editProdId=null;
-  document.getElementById("apTtl").textContent="Publier un produit";
-  ["apNm","apDs","apSizes","apColors","apDl"].forEach(function(id){ document.getElementById(id).value=""; });
-  ["apPr","apSale","apSk"].forEach(function(id){ document.getElementById(id).value=""; });
-  document.getElementById("apTy").value="";
-  document.getElementById("apCa").value="ebooks";
-  document.getElementById("apImg").value="";
-  document.getElementById("apFile").value="";
-  document.getElementById("apImgPv").innerHTML="";
-  document.getElementById("apFilePv").innerHTML="";
-  document.getElementById("apFt").checked=false;
-  document.getElementById("ftInfo").style.display="none";
-  document.getElementById("apErr").className="ferr";
-  document.getElementById("apPhysF").style.display="none";
+  if (!CU||(UD&&UD.status==="pending")) {
+    toast("Compte non approuvé.","err"); return;
+  }
+  editProdId = null;
+  document.getElementById("apTtl").textContent = "Publier un produit";
+  ["apNm","apDs","apSk","apDl","apSizes","apColors"].forEach(function(id){
+    document.getElementById(id).value="";
+  });
+  document.getElementById("apTy").value   = "";
+  document.getElementById("apCa").value   = "ebooks";
+  document.getElementById("apPr").value   = "";
+  document.getElementById("apSale").value = "";
+  document.getElementById("apImg").value  = "";
+  document.getElementById("apFile").value = "";
+  document.getElementById("apImgPv").innerHTML = "";
+  document.getElementById("apFilePv").innerHTML = "";
+  document.getElementById("apFt").checked  = false;
+  document.getElementById("ftInfo").style.display = "none";
+  document.getElementById("apErr").className = "ferr";
+  document.getElementById("apPhysF").style.display = "none";
   document.getElementById("apDigF").classList.add("hidden");
-  document.getElementById("apFtGrp").style.display="none";
   document.getElementById("addProdModal").classList.remove("hidden");
 }
 window.openAddProd = openAddProd;
 
+// ════ MODIFIER PRODUIT ════
 function editProd(id) {
-  var prod=allP.find(function(p){ return p.id===id; });
-  if (!prod) return;
-  editProdId=id;
-  document.getElementById("apTtl").textContent="Modifier le produit";
-  document.getElementById("apNm").value  = prod.name||"";
-  document.getElementById("apDs").value  = prod.description||"";
-  document.getElementById("apTy").value  = prod.type||"";
-  document.getElementById("apCa").value  = prod.category||"ebooks";
-  document.getElementById("apPr").value  = prod.price||0;
-  document.getElementById("apSale").value= prod.salePrice||"";
-  document.getElementById("apImg").value = prod.imageUrl||"";
-  document.getElementById("apSk").value  = prod.stock||"";
-  document.getElementById("apDl").value  = prod.deliveryTime||"";
-  document.getElementById("apSizes").value = prod.sizes?(prod.sizes.join(", ")):"";
-  document.getElementById("apColors").value= prod.colors?(prod.colors.join(", ")):"";
-  document.getElementById("apFile").value= prod.fileUrl||"";
-  document.getElementById("apImgPv").innerHTML = prod.imageUrl
-    ?'<img src="'+prod.imageUrl+'" style="width:100%;max-height:110px;object-fit:cover;border-radius:var(--r)"/>':"";
-  document.getElementById("apFilePv").innerHTML = prod.fileUrl
-    ?'<span style="color:var(--ok);font-size:.78rem">✅ Fichier existant</span>':"";
-  document.getElementById("apFt").checked=false;
-  document.getElementById("ftInfo").style.display="none";
-  document.getElementById("apErr").className="ferr";
-  apToggle();
-  document.getElementById("addProdModal").classList.remove("hidden");
+  db.collection("products").doc(id).get().then(function(s){
+    if (!s.exists) return;
+    var p = s.data();
+    editProdId = id;
+    document.getElementById("apTtl").textContent = "Modifier le produit";
+    document.getElementById("apNm").value   = p.name||"";
+    document.getElementById("apTy").value   = p.type||"";
+    document.getElementById("apCa").value   = p.category||"ebooks";
+    document.getElementById("apDs").value   = p.description||"";
+    document.getElementById("apPr").value   = p.price||"";
+    document.getElementById("apSale").value = p.salePrice||"";
+    document.getElementById("apImg").value  = p.imageUrl||"";
+    document.getElementById("apImgPv").innerHTML = p.imageUrl
+      ?'<img src="'+esc(p.imageUrl)+'" style="width:100%;max-height:110px;object-fit:cover;border-radius:var(--r)"/>':'';
+    document.getElementById("apSk").value     = p.stock||"";
+    document.getElementById("apDl").value     = p.deliveryTime||"";
+    document.getElementById("apSizes").value  = (p.sizes||[]).join(", ");
+    document.getElementById("apColors").value = (p.colors||[]).join(", ");
+    document.getElementById("apFile").value   = p.fileUrl||"";
+    document.getElementById("apFilePv").innerHTML = p.fileUrl
+      ?'<span style="color:var(--ok);font-size:.78rem">✅ Fichier existant</span>':'';
+    document.getElementById("apFt").checked   = p.featured||false;
+    document.getElementById("ftInfo").style.display = p.featured?"block":"none";
+    document.getElementById("apErr").className = "ferr";
+    apToggle();
+    document.getElementById("addProdModal").classList.remove("hidden");
+  });
 }
 window.editProd = editProd;
 
+// ════ SOUMETTRE PRODUIT ════
 function submitProd() {
-  var nm  = document.getElementById("apNm").value.trim();
-  var ty  = document.getElementById("apTy").value;
-  var ca  = document.getElementById("apCa").value;
-  var ds  = document.getElementById("apDs").value.trim();
-  var pr  = +document.getElementById("apPr").value||0;
-  var sale= +document.getElementById("apSale").value||0;
-  var img = document.getElementById("apImg").value;
-  var sk  = +document.getElementById("apSk").value||0;
-  var dl  = document.getElementById("apDl").value.trim();
-  var szRaw = document.getElementById("apSizes").value.trim();
-  var clRaw = document.getElementById("apColors").value.trim();
-  var furl= document.getElementById("apFile").value;
-  var feat= document.getElementById("apFt").checked;
-  var err = document.getElementById("apErr");
-  err.className="ferr";
+  if (!CU) return;
+  var nm   = document.getElementById("apNm").value.trim();
+  var ty   = document.getElementById("apTy").value;
+  var ca   = document.getElementById("apCa").value;
+  var ds   = document.getElementById("apDs").value.trim();
+  var pr   = +document.getElementById("apPr").value;
+  var sale = document.getElementById("apSale").value;
+  var img  = document.getElementById("apImg").value;
+  var file = document.getElementById("apFile").value;
+  var ft   = document.getElementById("apFt").checked;
+  var err  = document.getElementById("apErr");
+  err.className = "ferr";
 
-  if (!nm)  { err.textContent="Nom obligatoire."; err.className="ferr show"; return; }
-  if (!ty)  { err.textContent="Choisissez un type."; err.className="ferr show"; return; }
-  if (pr<0) { err.textContent="Prix invalide."; err.className="ferr show"; return; }
-  if (sale>0&&sale>=pr) { err.textContent="Le prix soldé doit être inférieur au prix normal."; err.className="ferr show"; return; }
+  if (!nm)  { err.textContent="Nom requis.";  err.className="ferr show"; return; }
+  if (!ty)  { err.textContent="Type requis."; err.className="ferr show"; return; }
+  if (isNaN(pr)||pr<0) { err.textContent="Prix invalide."; err.className="ferr show"; return; }
 
-  var isAdmin = CU.email===ADMIN_EM;
+  var salePrice = sale!=='' && !isNaN(+sale) && +sale>0 ? +sale : null;
 
-  // featured : débiter wallet vendeur
-  if (feat&&!isAdmin&&!editProdId) {
-    debitWallet(CU.uid, FEAT_COST, "Mise en vedette: "+nm, "").catch(function(e){
-      err.textContent=e.message; err.className="ferr show"; return;
-    });
-  }
-
-  var sizes  = szRaw ? szRaw.split(",").map(function(s){ return s.trim(); }).filter(Boolean) : [];
-  var colors = clRaw ? clRaw.split(",").map(function(s){ return s.trim(); }).filter(Boolean) : [];
-
-  var data={
+  var data = {
     name:nm, type:ty, category:ca, description:ds,
-    price:pr, salePrice:sale>0?sale:null,
-    imageUrl:img, stock:ty==="physical"?sk:null,
-    deliveryTime:ty==="physical"?dl:"",
-    sizes: ty==="physical"?sizes:[],
-    colors:ty==="physical"?colors:[],
-    fileUrl:ty==="digital"?furl:"",
-    sellerId:  isAdmin?"admin":CU.uid,
-    sellerName:isAdmin?"F2K MARKET":(UD?UD.shopName||UD.fullname||"":""),
-    sellerLogo:isAdmin?"":(UD?UD.logo||"":""),
-    featured:  feat||(editProdId&&allP.find(function(p){return p.id===editProdId;})?allP.find(function(p){return p.id===editProdId;}).featured:false),
-    featuredExpires: feat
-      ? new Date(Date.now()+30*24*3600*1000).toISOString()
-      : (editProdId&&allP.find(function(p){return p.id===editProdId;})
-          ?allP.find(function(p){return p.id===editProdId;}).featuredExpires||null
-          :null),
-    status: isAdmin?"active":"pending",
-    avgRating:0, reviewCount:0,
+    price:pr, salePrice:salePrice,
+    imageUrl:img||"",
+    sellerId:CU.uid,
+    sellerName:UD&&(UD.shopName||UD.fullname)||"",
+    sellerLogo:UD&&UD.logo||"",
+    status:editProdId?"active":"pending",
     updatedAt:new Date().toISOString()
   };
-  if (!editProdId) data.createdAt=new Date().toISOString();
+  if (!editProdId) data.createdAt = new Date().toISOString();
+  if (ty==="physical") {
+    data.stock       = +document.getElementById("apSk").value||0;
+    data.deliveryTime= document.getElementById("apDl").value.trim();
+    data.sizes  = document.getElementById("apSizes").value.split(",").map(function(s){ return s.trim(); }).filter(Boolean);
+    data.colors = document.getElementById("apColors").value.split(",").map(function(s){ return s.trim(); }).filter(Boolean);
+  }
+  if (ty==="digital" && file) data.fileUrl = file;
 
-  var ref = editProdId
-    ? db.collection("products").doc(editProdId).update(data)
-    : db.collection("products").add(data);
+  var proceed = function() {
+    var ref = editProdId
+      ? db.collection("products").doc(editProdId).update(data)
+      : db.collection("products").add(data);
+    ref.then(function(res){
+      // Vedette
+      if (ft && !editProdId) {
+        var newId = res && res.id ? res.id : editProdId;
+        return debitWallet(CU.uid, FEAT_COST, "Mise en vedette : "+nm)
+          .then(function(){
+            var exp = new Date();
+            exp.setDate(exp.getDate()+30);
+            return db.collection("products").doc(newId).update({
+              featured:true,
+              featuredExpires:exp.toISOString()
+            });
+          }).catch(function(e){
+            toast("Produit publié mais vedette échouée: "+e.message,"err");
+          });
+      }
+      if (ft && editProdId) {
+        var exp2=new Date(); exp2.setDate(exp2.getDate()+30);
+        return db.collection("products").doc(editProdId).update({
+          featured:true, featuredExpires:exp2.toISOString()
+        });
+      }
+    }).then(function(){
+      document.getElementById("addProdModal").classList.add("hidden");
+      toast(editProdId?"Produit modifié !":"Produit soumis (en attente de validation)","ok");
+      allP=[];
+      switchDB("selProds");
+    }).catch(function(e){ err.textContent=e.message; err.className="ferr show"; });
+  };
 
-  ref.then(function(){
-    document.getElementById("addProdModal").classList.add("hidden");
-    toast(editProdId?"Produit modifié !":"Produit soumis pour validation !","ok");
-    allP=[];
-    loadDash();
-  }).catch(function(e){ err.textContent=e.message; err.className="ferr show"; });
+  if (ft && !editProdId) {
+    getOrCreateWallet(CU.uid).then(function(w){
+      if ((w.balance||0)<FEAT_COST) {
+        err.textContent="Solde insuffisant pour la mise en vedette ("+fmt(FEAT_COST)+" FCFA requis).";
+        err.className="ferr show"; return;
+      }
+      proceed();
+    });
+  } else { proceed(); }
 }
 window.submitProd = submitProd;
 
-function hideProd(id) {
-  openConfirm("Masquer le produit","Masquer ce produit de la boutique ?",function(){
-    db.collection("products").doc(id).update({status:"hidden"}).then(function(){
-      toast("Produit masqué","ok"); allP=[]; loadDash();
+// ════ MASQUER / AFFICHER PRODUIT ════
+function hideProd(id, hide) {
+  db.collection("products").doc(id).update({status:hide?"hidden":"active"})
+    .then(function(){
+      toast(hide?"Produit masqué.":"Produit visible.","ok");
+      allP=[]; switchDB("selProds");
     });
-  });
 }
-function deleteProd(id) {
-  openConfirm("Supprimer le produit","Supprimer définitivement ce produit ?",function(){
-    db.collection("products").doc(id).delete().then(function(){
-      toast("Produit supprimé","ok"); allP=[]; loadDash();
-    });
-  });
-}
-function boostProd(id, name) {
-  if (!CU) return;
-  openConfirm("Mettre en vedette","Débiter "+fmt(FEAT_COST)+" FCFA pour 30 jours de vedette ?",function(){
-    debitWallet(CU.uid, FEAT_COST, "Vedette: "+name, id).then(function(){
-      return db.collection("products").doc(id).update({
-        featured:true,
-        featuredExpires:new Date(Date.now()+30*24*3600*1000).toISOString(),
-        status:"active"
-      });
-    }).then(function(){
-      toast("Produit en vedette !","ok"); allP=[]; loadDash();
-    }).catch(function(e){ toast(e.message,"err"); });
-  });
-}
-window.hideProd   = hideProd;
-window.deleteProd = deleteProd;
-window.boostProd  = boostProd;
+window.hideProd = hideProd;
 
-// ════ CODES PROMO ════
+// ════ SUPPRIMER PRODUIT ════
+function deleteProd(id, name) {
+  openConfirm("Supprimer","Supprimer \""+name+"\" définitivement ?",function(){
+    db.collection("products").doc(id).delete().then(function(){
+      toast("Produit supprimé.","ok");
+      allP=[]; switchDB("selProds");
+    });
+  });
+}
+window.deleteProd = deleteProd;
+
+// ════ BOOSTER PRODUIT ════
+function boostProd(id, name) {
+  openConfirm("Mettre en vedette",
+    "Mettre \""+name+"\" en vedette pour 30 jours — "+fmt(FEAT_COST)+" FCFA ?",
+    function(){
+      getOrCreateWallet(CU.uid).then(function(w){
+        if ((w.balance||0)<FEAT_COST) {
+          toast("Solde insuffisant.","err"); return;
+        }
+        return debitWallet(CU.uid, FEAT_COST, "Vedette : "+name)
+          .then(function(){
+            var exp=new Date(); exp.setDate(exp.getDate()+30);
+            return db.collection("products").doc(id).update({
+              featured:true, featuredExpires:exp.toISOString()
+            });
+          }).then(function(){
+            toast("Produit en vedette pour 30 jours !","ok");
+            allP=[]; switchDB("selProds");
+          });
+      }).catch(function(e){ toast(e.message,"err"); });
+    }
+  );
+}
+window.boostProd = boostProd;
+
+// ════ GESTION CODES PROMO ════
 function openPromoMgr() {
+  document.getElementById("pmCode").value = "";
+  document.getElementById("pmDisc").value = "";
+  document.getElementById("pmMax").value  = "";
+  document.getElementById("pmExp").value  = "";
+  document.getElementById("pmErr").className = "ferr";
   document.getElementById("promoModal").classList.remove("hidden");
   loadPromoList();
 }
+window.openPromoMgr = openPromoMgr;
+
 function loadPromoList() {
   if (!CU) return;
-  var el=document.getElementById("promoList");
-  var query = CU.email===ADMIN_EM
-    ? db.collection("promo_codes").orderBy("createdAt","desc")
-    : db.collection("promo_codes").where("sellerId","==",CU.uid).orderBy("createdAt","desc");
-  query.limit(20).get().then(function(s){
-    if (s.empty) { el.innerHTML='<p style="color:var(--mt);font-size:.84rem">Aucun code.</p>'; return; }
-    el.innerHTML='<div class="tw"><table class="dtable">'
-      +'<thead><tr><th>Code</th><th>Réd.</th><th>Utilisations</th><th>Expire</th><th>Statut</th><th></th></tr></thead>'
-      +'<tbody>'
-      +s.docs.map(function(d){
-        var p=d.data();
-        return '<tr>'
-          +'<td><strong>'+esc(p.code||"")+'</strong></td>'
-          +'<td>'+esc(p.discount||0)+'%</td>'
-          +'<td>'+(p.usedCount||0)+'/'+(p.maxUses||"∞")+'</td>'
-          +'<td>'+(p.expiresAt?new Date(p.expiresAt).toLocaleDateString("fr-FR"):"∞")+'</td>'
-          +'<td><span class="badge '+(p.active?"bs":"bd")+'">'+(p.active?"Actif":"Inactif")+'</span></td>'
-          +'<td style="display:flex;gap:.3rem">'
-          +'<button class="bsm b-wa" onclick="togglePromo(\''+d.id+'\','+(p.active?'false':'true')+')">'+( p.active?"Désactiver":"Activer")+'</button>'
-          +'<button class="bsm b-dl" onclick="delPromo(\''+d.id+'\')">Suppr.</button>'
-          +'</td></tr>';
-      }).join("")
-      +'</tbody></table></div>';
-  });
+  var el = document.getElementById("promoList");
+  if (!el) return;
+  db.collection("promo_codes").where("sellerId","==",CU.uid)
+    .orderBy("createdAt","desc").get()
+    .then(function(s){
+      if (s.empty) {
+        el.innerHTML='<div style="color:var(--mt);font-size:.83rem;text-align:center;padding:1rem">Aucun code.</div>';
+        return;
+      }
+      el.innerHTML='<div class="tw"><table class="dtable">'
+        +'<thead><tr><th>Code</th><th>Réduction</th><th>Utilisations</th><th>Statut</th><th>Actions</th></tr></thead>'
+        +'<tbody>'
+        +s.docs.map(function(d){
+          var p=d.data();
+          return '<tr>'
+            +'<td style="font-weight:700;color:var(--p);font-size:.9rem">'+esc(p.code)+'</td>'
+            +'<td>-'+p.discount+'%</td>'
+            +'<td>'+(p.usedCount||0)+(p.maxUses?'/'+p.maxUses:'')+'</td>'
+            +'<td>'+(p.active?'<span class="badge bs">Actif</span>':'<span class="badge bd">Inactif</span>')+'</td>'
+            +'<td style="white-space:nowrap">'
+            +'<button class="bsm '+(p.active?'b-wa':'b-ok')+'" '
+            +'onclick="togglePromo(\''+d.id+'\','+p.active+')">'
+            +(p.active?'⏸':'▶')+'</button> '
+            +'<button class="bsm b-dl" onclick="delPromo(\''+d.id+'\')">🗑</button>'
+            +'</td></tr>';
+        }).join("")
+        +'</tbody></table></div>';
+    }).catch(function(e){ console.error("promoList:",e); });
 }
 function createPromo() {
   if (!CU) return;
-  var code = (document.getElementById("pmCode").value||"").trim().toUpperCase();
-  var disc = +document.getElementById("pmDisc").value||0;
-  var max  = +document.getElementById("pmMax").value||null;
+  var code = document.getElementById("pmCode").value.trim().toUpperCase();
+  var disc = +document.getElementById("pmDisc").value;
+  var max  = document.getElementById("pmMax").value;
   var exp  = document.getElementById("pmExp").value;
   var err  = document.getElementById("pmErr");
-  err.className="ferr";
-  if (!code||!disc) { err.textContent="Code et réduction obligatoires."; err.className="ferr show"; return; }
+  err.className = "ferr";
+  if (!code) { err.textContent="Code requis."; err.className="ferr show"; return; }
+  if (!disc||disc<1||disc>100) { err.textContent="Réduction invalide (1-100%)."; err.className="ferr show"; return; }
   db.collection("promo_codes").add({
-    code:code, discount:disc,
-    maxUses:max||null,
-    expiresAt:exp?new Date(exp).toISOString():null,
+    code:code, discount:disc, sellerId:CU.uid,
+    maxUses: max ? +max : null,
+    expiresAt: exp ? new Date(exp).toISOString() : null,
     usedCount:0, active:true,
-    sellerId:CU.uid,
     createdAt:new Date().toISOString()
   }).then(function(){
-    toast("Code créé !","ok");
-    ["pmCode","pmDisc","pmMax","pmExp"].forEach(function(id){ document.getElementById(id).value=""; });
+    toast("Code promo créé !","ok");
+    document.getElementById("pmCode").value="";
+    document.getElementById("pmDisc").value="";
+    document.getElementById("pmMax").value="";
+    document.getElementById("pmExp").value="";
     loadPromoList();
   }).catch(function(e){ err.textContent=e.message; err.className="ferr show"; });
 }
-function togglePromo(id, state) {
-  db.collection("promo_codes").doc(id).update({active:state==="true"||state===true})
+function togglePromo(id, active) {
+  db.collection("promo_codes").doc(id).update({active:!active})
     .then(function(){ loadPromoList(); });
 }
 function delPromo(id) {
-  openConfirm("Supprimer le code","Supprimer ce code promo ?",function(){
+  openConfirm("Supprimer","Supprimer ce code promo ?",function(){
     db.collection("promo_codes").doc(id).delete().then(function(){
-      toast("Code supprimé","ok"); loadPromoList();
+      toast("Code supprimé.","ok"); loadPromoList();
     });
   });
 }
-window.openPromoMgr = openPromoMgr;
 window.createPromo  = createPromo;
 window.togglePromo  = togglePromo;
 window.delPromo     = delPromo;
-
-// ════ DASHBOARD ════
-function loadDash() {
-  if (!CU) { go("login"); return; }
-  var el=document.getElementById("dbCt");
-  el.innerHTML='<div class="loading">Chargement...</div>';
-  db.collection("users").doc(CU.uid).get().then(function(s){
-    UD = s.exists ? s.data() : {};
-    var role=UD.role||"client";
-    if (CU.email===ADMIN_EM) renderAdminDB(el);
-    else if (role==="seller") renderSellerDB(el);
-    else renderBuyerDB(el);
-  });
-}
-
-// ════ DASHBOARD ACHETEUR ════
-function renderBuyerDB(el) {
-  Promise.all([
-    db.collection("orders").where("buyerId","==",CU.uid).orderBy("createdAt","desc").limit(20).get(),
-    db.collection("downloads").where("uid","==",CU.uid).orderBy("createdAt","desc").limit(20).get(),
-    getOrCreateWallet(CU.uid)
-  ]).then(function(res){
-    var ords=res[0], dls=res[1], wal=res[2];
-    el.innerHTML=
-      '<div class="db-lay">'
-      +'<div class="sidebar">'
-      +'<div style="padding:.7rem .4rem 1.1rem;border-bottom:1px solid var(--bd);margin-bottom:.7rem">'
-      +'<div class="sb-shop">'+esc(UD.fullname||"Mon compte")+'</div>'
-      +'<div class="sb-role" style="color:var(--mt)">👤 Acheteur</div>'
-      +'</div>'
-      +'<button class="sb-lnk on" onclick="switchDB(\'dbOverview\')">🏠 Aperçu</button>'
-      +'<button class="sb-lnk" onclick="switchDB(\'dbOrders\')">📦 Mes commandes</button>'
-      +'<button class="sb-lnk" onclick="switchDB(\'dbDownloads\')">📥 Téléchargements</button>'
-      +'<button class="sb-lnk" onclick="go(\'wallet\')">💰 Wallet</button>'
-      +'<button class="sb-lnk" onclick="go(\'loyalty\')">⭐ Fidélité</button>'
-      +'<button class="sb-lnk" onclick="go(\'wishlist\')">❤️ Favoris</button>'
-      +'<button class="sb-lnk" onclick="go(\'notifications\')">🔔 Notifications</button>'
-      +'<button class="sb-lnk" onclick="go(\'messages\')">💬 Messages</button>'
-      +'</div>'
-      +'<div class="mc">'
-      // OVERVIEW
-      +'<div id="dbOverview">'
-      +'<div class="ph"><h1>Bonjour, <span style="color:var(--p)">'+esc(UD.fullname||"")+'</span> 👋</h1></div>'
-      +'<div class="sr">'
-      +'<div class="sc"><div class="si">📦</div><div class="sv">'+ords.size+'</div><div class="sl">Commandes</div></div>'
-      +'<div class="sc"><div class="si">📥</div><div class="sv">'+dls.size+'</div><div class="sl">Téléchargements</div></div>'
-      +'<div class="sc" onclick="go(\'wallet\')"><div class="si">💰</div><div class="sv">'+fmt(wal.balance||0)+'</div><div class="sl">FCFA Wallet</div></div>'
-      +'<div class="sc" onclick="go(\'loyalty\')"><div class="si">⭐</div><div class="sv">'+(wal.points||0)+'</div><div class="sl">Points fidélité</div></div>'
-      +'</div>'
-      +'<div class="card"><div class="ctitle">Dernières commandes</div>'
-      +(ords.empty?'<p style="color:var(--mt);font-size:.85rem">Aucune commande.</p>'
-        :'<div class="tw"><table class="dtable"><thead><tr><th>Produit</th><th>Total</th><th>Statut</th><th>Date</th></tr></thead><tbody>'
-        +ords.docs.slice(0,5).map(function(d){
-          var o=d.data();
-          var statusMap={confirmed:"bw",processing:"bi",shipped:"bp",delivered:"bs",cancelled:"bd"};
-          var statusLbl={confirmed:"Confirmé",processing:"En préparation",shipped:"Expédié",delivered:"Livré",cancelled:"Annulé"};
-          return '<tr>'
-            +'<td>'+esc((o.items&&o.items[0])?o.items[0].name:"")+'</td>'
-            +'<td>'+fmt(o.total||0)+' FCFA</td>'
-            +'<td><span class="badge '+(statusMap[o.orderStatus]||"bw")+'">'+(statusLbl[o.orderStatus]||o.orderStatus)+'</span></td>'
-            +'<td>'+timeAgo(o.createdAt)+'</td>'
-            +'</tr>';
-        }).join("")
-        +'</tbody></table></div>')
-      +'</div></div>'
-      // ORDERS
-      +'<div id="dbOrders" style="display:none">'
-      +'<div class="ph"><h1>📦 Mes <span style="color:var(--p)">Commandes</span></h1></div>'
-      +(ords.empty?'<div class="no-res"><div class="icon">📦</div><p>Aucune commande.</p></div>'
-        :ords.docs.map(function(d){
-          var o=d.data();
-          var steps=["confirmed","processing","shipped","delivered"];
-          var idx=steps.indexOf(o.orderStatus);
-          var statusLbl={confirmed:"Confirmé",processing:"En préparation",shipped:"Expédié",delivered:"Livré",cancelled:"Annulé"};
-          var stepIcons=["✅","⚙️","🚚","🏠"];
-          var stepLabels=["Confirmé","Préparation","Expédié","Livré"];
-          return '<div class="card">'
-            +'<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem">'
-            +'<div style="font-weight:700;font-size:.9rem">'+esc((o.items&&o.items[0])?o.items[0].name:"Commande")+'</div>'
-            +'<span class="badge '+(o.orderStatus==="delivered"?"bs":o.orderStatus==="cancelled"?"bd":"bw")+'">'+( statusLbl[o.orderStatus]||o.orderStatus)+'</span>'
-            +'</div>'
-            +(o.orderStatus!=="cancelled"?
-              '<div class="ord-status">'
-              +stepLabels.map(function(sl,i){
-                var cls=i<idx?"done":i===idx?"active":"";
-                return (i>0?'<div class="os-line'+(i<=idx?" done":"")+'"></div>':'')
-                  +'<div class="os-step">'
-                  +'<div class="os-circle '+cls+'">'+stepIcons[i]+'</div>'
-                  +'<div class="os-label '+cls+'">'+sl+'</div>'
-                  +'</div>';
-              }).join("")
-              +'</div>':'')
-            +'<div style="display:flex;justify-content:space-between;font-size:.84rem;color:var(--mt2)">'
-            +'<span>Total: <strong style="color:var(--p)">'+fmt(o.total||0)+' FCFA</strong></span>'
-            +'<span>'+timeAgo(o.createdAt)+'</span>'
-            +'</div>'
-            +(o.orderStatus==="delivered"?'<button class="bsm b-wa" style="margin-top:.6rem" onclick="openReview(\''+(o.items&&o.items[0]?o.items[0].id:"")+'\',\''+(o.items&&o.items[0]?esc(o.items[0].name):"")+'\')">⭐ Laisser un avis</button>':'')
-            +'</div>';
-        }).join(""))
-      +'</div>'
-      // DOWNLOADS
-      +'<div id="dbDownloads" style="display:none">'
-      +'<div class="ph"><h1>📥 Mes <span style="color:var(--p)">Téléchargements</span></h1></div>'
-      +(dls.empty?'<div class="no-res"><div class="icon">📥</div><p>Aucun téléchargement.</p></div>'
-        :'<div class="tw"><table class="dtable"><thead><tr><th>Produit</th><th>Date</th><th></th></tr></thead><tbody>'
-        +dls.docs.map(function(d){
-          var dl=d.data();
-          return '<tr>'
-            +'<td>'+esc(dl.productName||"")+'</td>'
-            +'<td>'+timeAgo(dl.createdAt)+'</td>'
-            +'<td><a href="'+esc(dl.fileUrl||"#")+'" target="_blank" class="bsm b-ok">📥 Télécharger</a></td>'
-            +'</tr>';
-        }).join("")
-        +'</tbody></table></div>')
-      +'</div>'
-      +'</div></div>';
-  });
-}
-
-// ════ DASHBOARD VENDEUR ════
-function renderSellerDB(el) {
-  if (UD.status!=="approved") {
-    el.innerHTML='<div style="max-width:500px;margin:3rem auto;text-align:center;padding:1.5rem">'
-      +'<div style="font-size:3rem;margin-bottom:1rem">⏳</div>'
-      +'<h2 style="font-family:\'Bebas Neue\',sans-serif;font-size:1.8rem;letter-spacing:2px">Compte en attente</h2>'
-      +'<p style="color:var(--mt2);margin-top:.8rem;line-height:1.65">Votre boutique est en cours de validation par notre équipe.<br/>Vous serez notifié par email dès l\'approbation.</p>'
-      +'<a href="https://wa.me/'+ADMIN_PH+'" target="_blank" class="btn-p" style="display:inline-block;margin-top:1.2rem">💬 Contacter le support</a>'
-      +'</div>';
-    return;
-  }
-  Promise.all([
-    db.collection("products").where("sellerId","==",CU.uid).orderBy("createdAt","desc").get(),
-    db.collection("orders").where("sellerId","==",CU.uid).orderBy("createdAt","desc").limit(30).get(),
-    getOrCreateWallet(CU.uid)
-  ]).then(function(res){
-    var prods=res[0], ords=res[1], wal=res[2];
-    var totRev=0;
-    ords.forEach(function(d){ totRev+=(d.data().total||0)*(1-COMM_RATE); });
-    var pendProds=0;
-    prods.forEach(function(d){ if(d.data().status==="pending") pendProds++; });
-
-    el.innerHTML=
-      '<div class="db-lay">'
-      +'<div class="sidebar">'
-      +'<div style="padding:.7rem .4rem 1.1rem;border-bottom:1px solid var(--bd);margin-bottom:.7rem">'
-      +'<div class="sb-shop">'+esc(UD.shopName||UD.fullname||"Ma boutique")+'</div>'
-      +'<div class="sb-role" style="color:var(--p)">🏪 Vendeur</div>'
-      +'</div>'
-      +'<button class="sb-lnk on" onclick="switchDB(\'selOverview\')">🏠 Aperçu</button>'
-      +'<button class="sb-lnk" onclick="switchDB(\'selProds\')">📦 Produits'
-      +(pendProds>0?'<span class="sb-bdg or">'+pendProds+'</span>':'')+'</button>'
-      +'<button class="sb-lnk" onclick="switchDB(\'selOrds\')">🛒 Commandes</button>'
-      +'<button class="sb-lnk" onclick="switchDB(\'selStats\')">📊 Statistiques</button>'
-      +'<button class="sb-lnk" onclick="go(\'wallet\')">💰 Wallet</button>'
-      +'<button class="sb-lnk" onclick="go(\'loyalty\')">⭐ Fidélité</button>'
-      +'<button class="sb-lnk" onclick="openPromoMgr()">🎟️ Promos</button>'
-      +'<button class="sb-lnk" onclick="go(\'notifications\')">🔔 Notifications</button>'
-      +'<button class="sb-lnk" onclick="go(\'messages\')">💬 Messages</button>'
-      +'</div>'
-      +'<div class="mc">'
-      // OVERVIEW
-      +'<div id="selOverview">'
-      +'<div class="ph"><h1>Ma <span style="color:var(--p)">Boutique</span></h1></div>'
-      +'<div class="sr">'
-      +'<div class="sc"><div class="si">📦</div><div class="sv">'+prods.size+'</div><div class="sl">Produits</div></div>'
-      +'<div class="sc"><div class="si">🛒</div><div class="sv">'+ords.size+'</div><div class="sl">Commandes</div></div>'
-      +'<div class="sc" onclick="go(\'wallet\')"><div class="si">💰</div><div class="sv">'+fmt(wal.balance||0)+'</div><div class="sl">FCFA wallet</div></div>'
-      +'<div class="sc"><div class="si">📈</div><div class="sv">'+fmt(Math.round(totRev))+'</div><div class="sl">FCFA gagnés</div></div>'
-      +'</div>'
-      +'<button class="btn-p" onclick="openAddProd()" style="margin-bottom:1rem">➕ Publier un produit</button>'
-      +'</div>'
-      // PRODUITS
-      +'<div id="selProds" style="display:none">'
-      +'<div class="ph" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">'
-      +'<h1>📦 Mes <span style="color:var(--p)">Produits</span></h1>'
-      +'<button class="btn-p" onclick="openAddProd()">➕ Nouveau</button>'
-      +'</div>'
-      +(prods.empty?'<div class="no-res"><div class="icon">📦</div><p>Aucun produit.</p></div>'
-        :'<div class="tw"><table class="dtable"><thead><tr><th>Produit</th><th>Prix</th><th>Soldé</th><th>Stock</th><th>Statut</th><th>Actions</th></tr></thead><tbody>'
-        +prods.docs.map(function(d){
-          var p=d.data();
-          var stMap={active:"bs",pending:"bw",hidden:"bd"};
-          var stLbl={active:"Actif",pending:"En attente",hidden:"Masqué"};
-          return '<tr>'
-            +'<td style="display:flex;align-items:center;gap:.5rem">'
-            +(p.imageUrl?'<img src="'+esc(p.imageUrl)+'" style="width:32px;height:32px;border-radius:var(--r);object-fit:cover"/>':'<span style="font-size:1.2rem">🛍</span>')
-            +'<span style="font-size:.82rem;font-weight:600">'+esc(p.name||"")+'</span></td>'
-            +'<td>'+fmt(p.price||0)+'</td>'
-            +'<td>'+(p.salePrice?'<span style="color:var(--er);font-weight:700">'+fmt(p.salePrice)+'</span>':'—')+'</td>'
-            +'<td>'+(p.type==="physical"?(p.stock||0):'∞')+'</td>'
-            +'<td><span class="badge '+(stMap[p.status]||"bw")+'">'+(stLbl[p.status]||p.status)+'</span></td>'
-            +'<td><div style="display:flex;gap:.3rem;flex-wrap:wrap">'
-            +'<button class="bsm b-if" onclick="editProd(\''+d.id+'\')">✏️</button>'
-            +'<button class="bsm b-wa" onclick="boostProd(\''+d.id+'\',\''+esc(p.name)+'\')">⭐</button>'
-            +'<button class="bsm b-dl" onclick="hideProd(\''+d.id+'\')">👁</button>'
-            +'<button class="bsm b-dl" onclick="deleteProd(\''+d.id+'\')">🗑</button>'
-            +'</div></td></tr>';
-        }).join("")
-        +'</tbody></table></div>')
-      +'</div>'
-      // COMMANDES VENDEUR
-      +'<div id="selOrds" style="display:none">'
-      +'<div class="ph"><h1>🛒 Mes <span style="color:var(--p)">Commandes</span></h1></div>'
-      +(ords.empty?'<div class="no-res"><div class="icon">🛒</div><p>Aucune commande.</p></div>'
-        :'<div class="tw"><table class="dtable"><thead><tr><th>Acheteur</th><th>Produit</th><th>Montant</th><th>Gain</th><th>Statut</th><th>Date</th></tr></thead><tbody>'
-        +ords.docs.map(function(d){
-          var o=d.data();
-          var stMap={confirmed:"bw",processing:"bi",shipped:"bp",delivered:"bs",cancelled:"bd"};
-          var stLbl={confirmed:"Confirmé",processing:"En prép.",shipped:"Expédié",delivered:"Livré",cancelled:"Annulé"};
-          return '<tr>'
-            +'<td>'+esc(o.buyerName||o.buyerEmail||"")+'</td>'
-            +'<td>'+esc((o.items&&o.items[0])?o.items[0].name:"")+'</td>'
-            +'<td>'+fmt(o.total||0)+' FCFA</td>'
-            +'<td style="color:var(--ok)">'+fmt(Math.round((o.total||0)*(1-COMM_RATE)))+' FCFA</td>'
-            +'<td><span class="badge '+(stMap[o.orderStatus]||"bw")+'">'+(stLbl[o.orderStatus]||o.orderStatus)+'</span></td>'
-            +'<td>'+timeAgo(o.createdAt)+'</td>'
-            +'</tr>';
-        }).join("")
-        +'</tbody></table></div>')
-      +'</div>'
-      // STATS
-      +'<div id="selStats" style="display:none">'
-      +'<div class="ph"><h1>📊 <span style="color:var(--p)">Statistiques</span></h1></div>'
-      +'<div class="card"><div class="ctitle">Revenus des 7 derniers jours</div>'
-      +'<div class="chart-wrap"><canvas id="selChart"></canvas></div>'
-      +'</div></div>'
-      +'</div></div>';
-
-    switchDB("selOverview");
-    setTimeout(function(){ renderSelChart(ords.docs); }, 300);
-  });
-}
-
-function renderSelChart(docs) {
-  var canvas=document.getElementById("selChart");
-  if (!canvas) return;
-  var days=[], rev=[];
-  for (var i=6;i>=0;i--) {
-    var d=new Date(); d.setDate(d.getDate()-i);
-    var lbl=d.toLocaleDateString("fr-FR",{weekday:"short"});
-    days.push(lbl);
-    var dayStr=d.toISOString().slice(0,10);
-    var tot=0;
-    docs.forEach(function(od){
-      var o=od.data();
-      if ((o.createdAt||"").slice(0,10)===dayStr) tot+=(o.total||0)*(1-COMM_RATE);
+// ════ ADMIN DASHBOARD ════
+function renderAdminDB() {
+  var el = document.getElementById("dbCt");
+  el.innerHTML='<div class="db-lay">'
+    +'<div class="sidebar">'
+    +'<div style="margin-bottom:1.1rem">'
+    +'<div class="sb-shop">F2K MARKET</div>'
+    +'<div class="sb-role" style="color:var(--er)">⚡ Admin</div>'
+    +'</div>'
+    +'<button class="sb-lnk on" onclick="switchAdm(\'admStats\')">📊 Statistiques</button>'
+    +'<button class="sb-lnk" onclick="switchAdm(\'admUsers\')">👥 Utilisateurs</button>'
+    +'<button class="sb-lnk" onclick="switchAdm(\'admProds\')">📦 Produits</button>'
+    +'<button class="sb-lnk" onclick="switchAdm(\'admOrds\')">🛒 Commandes</button>'
+    +'<button class="sb-lnk" onclick="switchAdm(\'admWD\')">💸 Retraits<span class="sb-bdg rd" id="wdBdg"></span></button>'
+    +'<button class="sb-lnk" onclick="switchAdm(\'admRep\')">🚩 Signalements<span class="sb-bdg or" id="repBdg"></span></button>'
+    +'<button class="sb-lnk" onclick="switchAdm(\'admWallet\')">💰 Wallets</button>'
+    +'<button class="sb-lnk" onclick="document.getElementById(\'annModal\').classList.remove(\'hidden\')">📢 Bannière</button>'
+    +'<button class="sb-lnk" onclick="go(\'messages\')">💬 Messages</button>'
+    +'</div>'
+    +'<div class="mc">'
+    +'<div class="ph"><h1>Admin Panel</h1>'
+    +'<p style="color:var(--er)">⚡ Accès total</p></div>'
+    +'<div id="admSect"><div class="loading">Chargement...</div></div>'
+    +'</div></div>';
+  switchAdm("admStats");
+  // Badges
+  db.collection("withdrawals").where("status","==","pending").get()
+    .then(function(s){
+      var b=document.getElementById("wdBdg");
+      if(b&&s.size>0){b.textContent=s.size;b.style.display="inline-flex";}
     });
-    rev.push(Math.round(tot));
-  }
-  new Chart(canvas,{
-    type:"bar",
-    data:{labels:days,datasets:[{label:"Revenus FCFA",data:rev,
-      backgroundColor:"rgba(255,107,0,.7)",borderColor:"var(--p)",
-      borderWidth:1,borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{
-        y:{beginAtZero:true,ticks:{color:"#7878a0"},grid:{color:"rgba(255,255,255,.05)"}},
-        x:{ticks:{color:"#7878a0"},grid:{display:false}}
-      }
-    }
-  });
+  db.collection("reports").where("status","==","pending").get()
+    .then(function(s){
+      var b=document.getElementById("repBdg");
+      if(b&&s.size>0){b.textContent=s.size;b.style.display="inline-flex";}
+    });
 }
 
-function switchDB(id) {
-  var sections=["dbOverview","dbOrders","dbDownloads",
-    "selOverview","selProds","selOrds","selStats",
-    "adOverview","adBuyers","adProds","adOrds","adPromos","adReports","adWallets","adWD"];
-  sections.forEach(function(s){
-    var el=document.getElementById(s);
-    if(el) el.style.display="none";
-  });
-  var target=document.getElementById(id);
-  if(target) target.style.display="block";
+function switchAdm(sect) {
   document.querySelectorAll(".sb-lnk").forEach(function(b){ b.classList.remove("on"); });
+  var el = document.getElementById("admSect");
+  if (!el) return;
+  el.innerHTML='<div class="loading">Chargement...</div>';
+
+  // ── STATS ADMIN ──
+  if (sect==="admStats") {
+    renderAdminChart();
+  }
+
+  // ── UTILISATEURS ──
+  else if (sect==="admUsers") {
+    db.collection("users").orderBy("createdAt","desc").get().then(function(s){
+      el.innerHTML='<div style="margin-bottom:.8rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">'
+        +'<span style="font-weight:700">'+s.size+' utilisateurs</span>'
+        +'</div>'
+        +'<div class="tw"><table class="dtable">'
+        +'<thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Pays</th><th>Statut</th><th>Actions</th></tr></thead>'
+        +'<tbody>'
+        +s.docs.map(function(d){
+          var u=d.data();
+          var roleBadge = u.role==="seller"
+            ?'<span class="badge bp">🏪 Vendeur</span>'
+            :'<span class="badge bi">👤 Acheteur</span>';
+          var stBadge = u.status==="active"||u.status==="approved"
+            ?'<span class="badge bs">✅ Actif</span>'
+            :u.status==="pending"
+            ?'<span class="badge bw">⏳ En attente</span>'
+            :u.status==="suspended"
+            ?'<span class="badge bd">🚫 Suspendu</span>'
+            :'<span class="badge bw">'+esc(u.status||"—")+'</span>';
+          return '<tr>'
+            +'<td style="font-weight:700">'+esc(u.fullname||u.shopName||"—")+'</td>'
+            +'<td style="color:var(--mt);font-size:.79rem">'+esc(u.email||"")+'</td>'
+            +'<td>'+roleBadge+'</td>'
+            +'<td style="color:var(--mt)">'+esc(u.country||"—")+'</td>'
+            +'<td>'+stBadge+'</td>'
+            +'<td style="white-space:nowrap">'
+            +(u.role==="seller"&&u.status==="pending"
+              ?'<button class="bsm b-ok" onclick="approveUser(\''+d.id+'\')">✅ Approuver</button> ':'')
+            +(u.status!=="suspended"
+              ?'<button class="bsm b-dl" onclick="suspendUser(\''+d.id+'\',true)">🚫</button>'
+              :'<button class="bsm b-ok" onclick="suspendUser(\''+d.id+'\',false)">♻️</button>')
+            +'</td></tr>';
+        }).join("")
+        +'</tbody></table></div>';
+    });
+  }
+
+  // ── PRODUITS ──
+  else if (sect==="admProds") {
+    db.collection("products").orderBy("createdAt","desc").get().then(function(s){
+      el.innerHTML='<div style="margin-bottom:.8rem">'
+        +'<span style="font-weight:700">'+s.size+' produits</span></div>'
+        +'<div class="tw"><table class="dtable">'
+        +'<thead><tr><th>Produit</th><th>Vendeur</th><th>Prix</th><th>Type</th><th>Statut</th><th>Actions</th></tr></thead>'
+        +'<tbody>'
+        +s.docs.map(function(d){
+          var p=d.data();
+          var realP=p.salePrice&&p.salePrice>0&&p.salePrice<p.price?p.salePrice:p.price;
+          var stBadge=p.status==="active"
+            ?'<span class="badge bs">✅ Actif</span>'
+            :p.status==="pending"
+            ?'<span class="badge bw">⏳ En attente</span>'
+            :p.status==="hidden"
+            ?'<span class="badge bd">👁 Masqué</span>'
+            :'<span class="badge bd">'+esc(p.status)+'</span>';
+          return '<tr>'
+            +'<td>'
+            +(p.imageUrl?'<img src="'+esc(p.imageUrl)+'" style="width:28px;height:28px;border-radius:4px;'
+              +'object-fit:cover;margin-right:.35rem;vertical-align:middle"/>':'')
+            +'<strong>'+esc(p.name)+'</strong></td>'
+            +'<td style="color:var(--mt);font-size:.79rem">'+esc(p.sellerName||"—")+'</td>'
+            +'<td style="color:var(--p);font-weight:700">'+fmt(realP)+' FCFA</td>'
+            +'<td><span class="badge '+(p.type==="digital"?'bi':'bp')+'">'
+            +(p.type==="digital"?'💻 Num.':'📦 Phys.')+'</span></td>'
+            +'<td>'+stBadge+'</td>'
+            +'<td style="white-space:nowrap">'
+            +(p.status==="pending"
+              ?'<button class="bsm b-ok" onclick="approveProd(\''+d.id+'\')">✅</button> ':'')
+            +'<button class="bsm b-dl" onclick="admDeleteProd(\''+d.id+'\',\''+esc(p.name)+'\')">🗑</button>'
+            +'</td></tr>';
+        }).join("")
+        +'</tbody></table></div>';
+    });
+  }
+
+  // ── COMMANDES ──
+  else if (sect==="admOrds") {
+    db.collection("orders").orderBy("createdAt","desc").limit(100).get().then(function(s){
+      el.innerHTML='<div style="margin-bottom:.8rem">'
+        +'<span style="font-weight:700">'+s.size+' commandes</span></div>'
+        +'<div class="tw"><table class="dtable">'
+        +'<thead><tr><th>#</th><th>Acheteur</th><th>Total</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>'
+        +'<tbody>'
+        +s.docs.map(function(d){
+          var o=d.data();
+          var stBadge=o.status==="paid"?'<span class="badge bs">✅ Payé</span>'
+            :o.status==="shipped"?'<span class="badge bi">🚚 Expédié</span>'
+            :o.status==="delivered"?'<span class="badge bs">📦 Livré</span>'
+            :o.status==="cancelled"?'<span class="badge bd">❌ Annulé</span>'
+            :'<span class="badge bw">⏳ '+esc(o.status)+'</span>';
+          return '<tr>'
+            +'<td style="font-weight:700;color:var(--p)">#'+d.id.slice(0,6).toUpperCase()+'</td>'
+            +'<td style="font-size:.79rem">'+esc(o.buyerName||o.buyerEmail||"—")+'</td>'
+            +'<td style="font-weight:700">'+fmt(o.total)+' FCFA</td>'
+            +'<td>'+stBadge+'</td>'
+            +'<td style="color:var(--mt)">'+timeAgo(o.createdAt)+'</td>'
+            +'<td>'
+            +'<select class="fsel" style="font-size:.73rem;padding:.25rem .4rem" '
+            +'onchange="updateOrdStatus(\''+d.id+'\',this.value)">'
+            +'<option value="">Changer...</option>'
+            +'<option value="paid">Payé</option>'
+            +'<option value="shipped">Expédié</option>'
+            +'<option value="delivered">Livré</option>'
+            +'<option value="cancelled">Annulé</option>'
+            +'</select>'
+            +'</td></tr>';
+        }).join("")
+        +'</tbody></table></div>';
+    });
+  }
+
+  // ── RETRAITS ──
+  else if (sect==="admWD") {
+    loadAdminWD(el);
+  }
+
+  // ── SIGNALEMENTS ──
+  else if (sect==="admRep") {
+    loadAdminReports(el);
+  }
+
+  // ── WALLETS ──
+  else if (sect==="admWallet") {
+    db.collection("users").orderBy("fullname").get().then(function(s){
+      el.innerHTML='<div class="card">'
+        +'<div class="ctitle">💰 Gestion des Wallets</div>'
+        +'<div class="two-col" style="margin-bottom:.9rem">'
+        +'<div class="fg"><label class="fl">Utilisateur (UID ou email)</label>'
+        +'<input class="fi" id="admWUid" placeholder="UID utilisateur"/></div>'
+        +'<div class="fg"><label class="fl">Montant FCFA</label>'
+        +'<input class="fi" type="number" id="admWAmt" placeholder="1000"/></div>'
+        +'</div>'
+        +'<div style="display:flex;gap:.6rem;flex-wrap:wrap">'
+        +'<button class="bsm b-ok" onclick="adminCreditWallet()">➕ Créditer</button>'
+        +'<button class="bsm b-dl" onclick="adminDebitWallet()">➖ Débiter</button>'
+        +'</div>'
+        +'</div>'
+        +'<div class="tw"><table class="dtable">'
+        +'<thead><tr><th>Utilisateur</th><th>Solde</th><th>Points</th></tr></thead>'
+        +'<tbody id="walletTbl"><tr><td colspan="3" style="text-align:center;color:var(--mt)">Chargement...</td></tr></tbody>'
+        +'</table></div>';
+      db.collection("wallets").orderBy("balance","desc").limit(50).get().then(function(ws){
+        var rows="";
+        var uids=ws.docs.map(function(w){ return w.id; });
+        Promise.all(uids.map(function(uid){
+          return db.collection("users").doc(uid).get();
+        })).then(function(udocs){
+          ws.docs.forEach(function(w,i){
+            var u=udocs[i];
+            var udat=u&&u.exists?u.data():{};
+            rows+='<tr>'
+              +'<td style="font-weight:700">'+esc(udat.fullname||udat.shopName||w.id.slice(0,8))+'</td>'
+              +'<td style="color:var(--ok);font-weight:700">'+fmt(w.data().balance||0)+' FCFA</td>'
+              +'<td style="color:var(--pu);font-weight:700">'+(w.data().points||0)+' pts</td>'
+              +'</tr>';
+          });
+          var tb=document.getElementById("walletTbl");
+          if(tb) tb.innerHTML=rows||'<tr><td colspan="3" style="text-align:center;color:var(--mt)">Aucun wallet.</td></tr>';
+        });
+      });
+    });
+  }
 }
-window.switchDB = switchDB;
-              // ════ DASHBOARD ADMIN ════
-function renderAdminDB(el) {
+window.switchAdm = switchAdm;
+
+// ════ STATS ADMIN ════
+function renderAdminChart() {
+  var el = document.getElementById("admSect");
+  el.innerHTML='<div class="sr" id="admCards"></div>'
+    +'<div class="card">'
+    +'<div class="ctitle">📊 Revenus des 7 derniers jours</div>'
+    +'<div class="chart-wrap"><canvas id="admChart"></canvas></div>'
+    +'</div>';
+
   Promise.all([
     db.collection("users").get(),
     db.collection("products").get(),
     db.collection("orders").get(),
-    db.collection("withdrawals").where("status","==","pending").get(),
-    db.collection("reports").where("status","==","pending").get(),
-    db.collection("wallets").get()
+    db.collection("withdrawals").where("status","==","pending").get()
   ]).then(function(res){
-    var users=res[0], prods=res[1], ords=res[2], wds=res[3], reps=res[4], wals=res[5];
-    var totalRev=0, totalComm=0;
-    ords.forEach(function(d){ var o=d.data(); totalRev+=o.total||0; totalComm+=o.commission||0; });
-    var pendingSellers=0, pendingProds=0;
-    users.forEach(function(d){ var u=d.data(); if(u.role==="seller"&&u.status==="pending") pendingSellers++; });
-    prods.forEach(function(d){ if(d.data().status==="pending") pendingProds++; });
+    var users=res[0],prods=res[1],ords=res[2],wds=res[3];
+    var totalRev=0;
+    ords.forEach(function(d){ totalRev+=(d.data().total||0); });
+    var comm=Math.round(totalRev*COMM_RATE);
 
-    el.innerHTML=
-      '<div class="db-lay">'
-      +'<div class="sidebar">'
-      +'<div style="padding:.7rem .4rem 1.1rem;border-bottom:1px solid var(--bd);margin-bottom:.7rem">'
-      +'<div class="sb-shop">ADMIN</div>'
-      +'<div class="sb-role" style="color:var(--er)">🔐 F2K MARKET</div>'
-      +'</div>'
-      +'<button class="sb-lnk on" onclick="switchDB(\'adOverview\')">🏠 Aperçu</button>'
-      +'<button class="sb-lnk" onclick="switchDB(\'adBuyers\')">👥 Utilisateurs'
-      +(pendingSellers>0?'<span class="sb-bdg or">'+pendingSellers+'</span>':'')+'</button>'
-      +'<button class="sb-lnk" onclick="switchDB(\'adProds\')">📦 Produits'
-      +(pendingProds>0?'<span class="sb-bdg rd">'+pendingProds+'</span>':'')+'</button>'
-      +'<button class="sb-lnk" onclick="switchDB(\'adOrds\')">🛒 Commandes</button>'
-      +'<button class="sb-lnk" onclick="switchDB(\'adWD\')">💸 Retraits'
-      +(wds.size>0?'<span class="sb-bdg rd">'+wds.size+'</span>':'')+'</button>'
-      +'<button class="sb-lnk" onclick="switchDB(\'adReports\')">🚩 Signalements'
-      +(reps.size>0?'<span class="sb-bdg rd">'+reps.size+'</span>':'')+'</button>'
-      +'<button class="sb-lnk" onclick="switchDB(\'adWallets\')">💰 Wallets</button>'
-      +'<button class="sb-lnk" onclick="switchDB(\'adPromos\')">🎟️ Codes promo</button>'
-      +'<button class="sb-lnk" onclick="openAddProd()">➕ Ajouter produit</button>'
-      +'<button class="sb-lnk" onclick="document.getElementById(\'annModal\').classList.remove(\'hidden\')">📢 Bannière</button>'
-      +'<button class="sb-lnk" onclick="go(\'messages\')">💬 Messages</button>'
-      +'</div>'
-      +'<div class="mc">'
-
-      // ── OVERVIEW ──
-      +'<div id="adOverview">'
-      +'<div class="ph"><h1>🔐 Admin <span style="color:var(--p)">Dashboard</span></h1></div>'
-      +'<div class="sr">'
-      +'<div class="sc"><div class="si">👥</div><div class="sv">'+users.size+'</div><div class="sl">Utilisateurs</div></div>'
+    var ac=document.getElementById("admCards");
+    if(ac) ac.innerHTML=
+      '<div class="sc"><div class="si">👥</div><div class="sv">'+users.size+'</div><div class="sl">Utilisateurs</div></div>'
       +'<div class="sc"><div class="si">📦</div><div class="sv">'+prods.size+'</div><div class="sl">Produits</div></div>'
       +'<div class="sc"><div class="si">🛒</div><div class="sv">'+ords.size+'</div><div class="sl">Commandes</div></div>'
-      +'<div class="sc"><div class="si">💰</div><div class="sv">'+fmt(Math.round(totalComm))+'</div><div class="sl">FCFA commissions</div></div>'
-      +'<div class="sc"><div class="si">📈</div><div class="sv">'+fmt(Math.round(totalRev))+'</div><div class="sl">FCFA volume</div></div>'
-      +'<div class="sc"><div class="si">💸</div><div class="sv">'+wds.size+'</div><div class="sl">Retraits en attente</div></div>'
-      +'</div>'
-      +'<div class="card"><div class="ctitle">Volume des 7 derniers jours</div>'
-      +'<div class="chart-wrap"><canvas id="adChart"></canvas></div>'
-      +'</div>'
-      +'</div>'
+      +'<div class="sc"><div class="si">💰</div><div class="sv">'+fmt(comm)+'</div><div class="sl">FCFA commissions</div></div>'
+      +'<div class="sc"><div class="si">💸</div><div class="sv">'+wds.size+'</div><div class="sl">Retraits en attente</div></div>';
 
-      // ── UTILISATEURS ──
-      +'<div id="adBuyers" style="display:none">'
-      +'<div class="ph"><h1>👥 <span style="color:var(--p)">Utilisateurs</span></h1></div>'
-      +'<div class="tw"><table class="dtable">'
-      +'<thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Statut</th><th>Pays</th><th>Actions</th></tr></thead>'
-      +'<tbody>'
-      +users.docs.map(function(d){
-        var u=d.data();
-        var roleBadge=u.role==="seller"?'<span class="badge bp">🏪 Vendeur</span>':'<span class="badge bi">👤 Acheteur</span>';
-        var stBadge=u.status==="approved"||u.status==="active"
-          ?'<span class="badge bs">Actif</span>'
-          :u.status==="pending"
-          ?'<span class="badge bw">En attente</span>'
-          :'<span class="badge bd">Suspendu</span>';
-        return '<tr>'
-          +'<td style="font-weight:600">'+esc(u.fullname||"")+'</td>'
-          +'<td style="font-size:.78rem;color:var(--mt2)">'+esc(u.email||"")+'</td>'
-          +'<td>'+roleBadge+'</td>'
-          +'<td>'+stBadge+'</td>'
-          +'<td>'+esc(u.country||"—")+'</td>'
-          +'<td><div style="display:flex;gap:.3rem;flex-wrap:wrap">'
-          +(u.role==="seller"&&u.status==="pending"
-            ?'<button class="bsm b-ok" onclick="approveUser(\''+d.id+'\')">✅ Approuver</button>':'')
-          +(u.status!=="suspended"&&u.email!==ADMIN_EM
-            ?'<button class="bsm b-dl" onclick="suspendUser(\''+d.id+'\')">🚫 Suspendre</button>':'')
-          +(u.status==="suspended"
-            ?'<button class="bsm b-ok" onclick="approveUser(\''+d.id+'\')">🔓 Réactiver</button>':'')
-          +'</div></td></tr>';
-      }).join("")
-      +'</tbody></table></div>'
-      +'</div>'
-
-      // ── PRODUITS ADMIN ──
-      +'<div id="adProds" style="display:none">'
-      +'<div class="ph" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">'
-      +'<h1>📦 <span style="color:var(--p)">Produits</span></h1>'
-      +'<button class="btn-p" onclick="openAddProd()">➕ Ajouter</button>'
-      +'</div>'
-      +'<div class="tw"><table class="dtable">'
-      +'<thead><tr><th>Produit</th><th>Vendeur</th><th>Prix</th><th>Soldé</th><th>Type</th><th>Statut</th><th>Actions</th></tr></thead>'
-      +'<tbody>'
-      +prods.docs.map(function(d){
-        var p=d.data();
-        var stMap={active:"bs",pending:"bw",hidden:"bd"};
-        var stLbl={active:"Actif",pending:"En attente",hidden:"Masqué"};
-        return '<tr>'
-          +'<td style="display:flex;align-items:center;gap:.5rem">'
-          +(p.imageUrl?'<img src="'+esc(p.imageUrl)+'" style="width:30px;height:30px;border-radius:var(--r);object-fit:cover"/>':'<span>🛍</span>')
-          +'<span style="font-size:.81rem;font-weight:600">'+esc(p.name||"")+'</span></td>'
-          +'<td style="font-size:.78rem">'+esc(p.sellerName||"")+'</td>'
-          +'<td>'+fmt(p.price||0)+'</td>'
-          +'<td>'+(p.salePrice?'<span style="color:var(--er);font-weight:700">'+fmt(p.salePrice)+'</span>':'—')+'</td>'
-          +'<td><span class="badge '+(p.type==="digital"?"bi":"bp")+'">'+(p.type==="digital"?"💻 Num.":"📦 Phys.")+'</span></td>'
-          +'<td><span class="badge '+(stMap[p.status]||"bw")+'">'+(stLbl[p.status]||p.status)+'</span></td>'
-          +'<td><div style="display:flex;gap:.3rem;flex-wrap:wrap">'
-          +(p.status==="pending"?'<button class="bsm b-ok" onclick="approveProd(\''+d.id+'\')">✅</button>':'')
-          +'<button class="bsm b-if" onclick="editProd(\''+d.id+'\')">✏️</button>'
-          +'<button class="bsm b-wa" onclick="boostProd(\''+d.id+'\',\''+esc(p.name)+'\')">⭐</button>'
-          +'<button class="bsm b-dl" onclick="deleteProd(\''+d.id+'\')">🗑</button>'
-          +'</div></td></tr>';
-      }).join("")
-      +'</tbody></table></div>'
-      +'</div>'
-
-      // ── COMMANDES ADMIN ──
-      +'<div id="adOrds" style="display:none">'
-      +'<div class="ph"><h1>🛒 <span style="color:var(--p)">Commandes</span></h1></div>'
-      +'<div class="tw"><table class="dtable">'
-      +'<thead><tr><th>Acheteur</th><th>Produit</th><th>Total</th><th>Commission</th><th>Paiement</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>'
-      +'<tbody>'
-      +ords.docs.map(function(d){
-        var o=d.data();
-        var stMap={confirmed:"bw",processing:"bi",shipped:"bp",delivered:"bs",cancelled:"bd"};
-        var stLbl={confirmed:"Confirmé",processing:"En prép.",shipped:"Expédié",delivered:"Livré",cancelled:"Annulé"};
-        return '<tr>'
-          +'<td style="font-size:.79rem">'+esc(o.buyerName||o.buyerEmail||"")+'</td>'
-          +'<td style="font-size:.79rem">'+esc((o.items&&o.items[0])?o.items[0].name:"")+'</td>'
-          +'<td>'+fmt(o.total||0)+'</td>'
-          +'<td style="color:var(--ok)">'+fmt(o.commission||0)+'</td>'
-          +'<td><span class="badge '+(o.paymentStatus==="paid"?"bs":"bi")+'">'+(o.paymentStatus==="paid"?"Payé":"Gratuit")+'</span></td>'
-          +'<td><span class="badge '+(stMap[o.orderStatus]||"bw")+'">'+(stLbl[o.orderStatus]||o.orderStatus)+'</span></td>'
-          +'<td style="font-size:.77rem">'+timeAgo(o.createdAt)+'</td>'
-          +'<td><select class="fsel" style="font-size:.72rem;padding:.22rem .5rem" onchange="updateOrdStatus(\''+d.id+'\',this.value,\''+esc(o.buyerId||"")+'\',\''+esc((o.items&&o.items[0])?o.items[0].name:"")+'\')"><option value="">Changer...</option>'
-          +'<option value="confirmed">Confirmé</option>'
-          +'<option value="processing">En préparation</option>'
-          +'<option value="shipped">Expédié</option>'
-          +'<option value="delivered">Livré</option>'
-          +'<option value="cancelled">Annulé</option>'
-          +'</select></td></tr>';
-      }).join("")
-      +'</tbody></table></div>'
-      +'</div>'
-
-      // ── RETRAITS ──
-      +'<div id="adWD" style="display:none">'
-      +'<div class="ph"><h1>💸 <span style="color:var(--p)">Retraits</span></h1></div>'
-      +'<div id="wdListAdmin"><div class="loading">Chargement...</div></div>'
-      +'</div>'
-
-      // ── SIGNALEMENTS ──
-      +'<div id="adReports" style="display:none">'
-      +'<div class="ph"><h1>🚩 <span style="color:var(--p)">Signalements</span></h1></div>'
-      +'<div id="repListAdmin"><div class="loading">Chargement...</div></div>'
-      +'</div>'
-
-      // ── WALLETS ──
-      +'<div id="adWallets" style="display:none">'
-      +'<div class="ph"><h1>💰 <span style="color:var(--p)">Wallets</span></h1></div>'
-      +'<div class="tw"><table class="dtable">'
-      +'<thead><tr><th>UID</th><th>Solde</th><th>Total gagné</th><th>Total retiré</th><th>Points</th><th>Actions</th></tr></thead>'
-      +'<tbody>'
-      +wals.docs.map(function(d){
-        var w=d.data();
-        return '<tr>'
-          +'<td style="font-size:.75rem;color:var(--mt)">'+d.id.slice(0,12)+'...</td>'
-          +'<td><strong style="color:var(--p)">'+fmt(w.balance||0)+'</strong> FCFA</td>'
-          +'<td>'+fmt(w.totalEarned||0)+' FCFA</td>'
-          +'<td>'+fmt(w.totalWithdrawn||0)+' FCFA</td>'
-          +'<td><span style="color:var(--pu);font-weight:700">'+(w.points||0)+'</span></td>'
-          +'<td><div style="display:flex;gap:.3rem">'
-          +'<button class="bsm b-ok" onclick="adminCreditWallet(\''+d.id+'\')">➕ Crédit</button>'
-          +'<button class="bsm b-dl" onclick="adminDebitWallet(\''+d.id+'\')">➖ Débit</button>'
-          +'</div></td></tr>';
-      }).join("")
-      +'</tbody></table></div>'
-      +'</div>'
-
-      // ── PROMOS ADMIN ──
-      +'<div id="adPromos" style="display:none">'
-      +'<div class="ph"><h1>🎟️ <span style="color:var(--p)">Codes Promo</span></h1></div>'
-      +'<div class="two-col" style="margin-bottom:1rem">'
-      +'<div class="fg"><label class="fl">Code</label><input class="fi" type="text" id="pmCode" placeholder="PROMO20" style="text-transform:uppercase"/></div>'
-      +'<div class="fg"><label class="fl">Réduction (%)</label><input class="fi" type="number" id="pmDisc" placeholder="20" min="1" max="100"/></div>'
-      +'</div>'
-      +'<div class="two-col" style="margin-bottom:1rem">'
-      +'<div class="fg"><label class="fl">Max utilisations</label><input class="fi" type="number" id="pmMax" placeholder="Illimité"/></div>'
-      +'<div class="fg"><label class="fl">Expire le</label><input class="fi" type="date" id="pmExp"/></div>'
-      +'</div>'
-      +'<div id="pmErr" class="ferr"></div>'
-      +'<button class="btn-p" style="margin-bottom:1.2rem" onclick="createPromo()">Créer le code</button>'
-      +'<div id="promoList"><div class="loading">Chargement...</div></div>'
-      +'</div>'
-
-      +'</div></div>';
-
-    switchDB("adOverview");
-    setTimeout(function(){ renderAdminChart(ords.docs); }, 300);
-    loadAdminWD();
-    loadAdminReports();
-    loadPromoList();
-  });
-}
-
-// ── GRAPHIQUE ADMIN ──
-function renderAdminChart(docs) {
-  var canvas=document.getElementById("adChart");
-  if (!canvas) return;
-  var days=[], rev=[], comm=[];
-  for (var i=6;i>=0;i--) {
-    var d=new Date(); d.setDate(d.getDate()-i);
-    days.push(d.toLocaleDateString("fr-FR",{weekday:"short"}));
-    var dayStr=d.toISOString().slice(0,10);
-    var tot=0, com=0;
-    docs.forEach(function(od){
-      var o=od.data();
-      if((o.createdAt||"").slice(0,10)===dayStr){ tot+=o.total||0; com+=o.commission||0; }
-    });
-    rev.push(Math.round(tot));
-    comm.push(Math.round(com));
-  }
-  new Chart(canvas,{
-    type:"bar",
-    data:{labels:days,datasets:[
-      {label:"Volume FCFA",data:rev,backgroundColor:"rgba(255,107,0,.6)",borderRadius:3},
-      {label:"Commissions",data:comm,backgroundColor:"rgba(34,197,94,.6)",borderRadius:3}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{labels:{color:"#a0a0c0",font:{size:11}}}},
-      scales:{
-        y:{beginAtZero:true,ticks:{color:"#7878a0"},grid:{color:"rgba(255,255,255,.05)"}},
-        x:{ticks:{color:"#7878a0"},grid:{display:false}}
-      }
+    // Graphique
+    var days={};
+    for(var i=6;i>=0;i--){
+      var d=new Date(); d.setDate(d.getDate()-i);
+      days[d.toLocaleDateString("fr-FR")]=0;
     }
-  });
+    ords.forEach(function(d){
+      var o=d.data();
+      var dt=new Date(o.createdAt).toLocaleDateString("fr-FR");
+      if(days[dt]!==undefined) days[dt]+=Math.round((o.total||0)*COMM_RATE);
+    });
+    var ctx=document.getElementById("admChart");
+    if(ctx) new Chart(ctx,{
+      type:"line",
+      data:{
+        labels:Object.keys(days),
+        datasets:[{
+          label:"Commissions FCFA",
+          data:Object.values(days),
+          borderColor:"var(--p)",
+          backgroundColor:"rgba(255,107,0,.08)",
+          borderWidth:2.5,pointRadius:4,
+          pointBackgroundColor:"var(--p)",fill:true,tension:.35
+        }]
+      },
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          y:{grid:{color:"rgba(255,255,255,.05)"},ticks:{color:"#a0a0c0"}},
+          x:{grid:{display:false},ticks:{color:"#a0a0c0"}}
+        }
+      }
+    });
+  }).catch(function(e){ console.error("admChart:",e); });
 }
 
-// ── ACTIONS ADMIN USERS ──
+// ════ ACTIONS ADMIN ════
 function approveUser(uid) {
-  db.collection("users").doc(uid).update({status:"approved"}).then(function(){
-    toast("Utilisateur approuvé !","ok");
-    pushNotif(uid,"🎉 Votre compte vendeur a été approuvé ! Vous pouvez publier vos produits.","ok");
-    loadDash();
+  openConfirm("Approuver","Approuver ce vendeur ?",function(){
+    db.collection("users").doc(uid).update({status:"approved"})
+      .then(function(){
+        toast("Vendeur approuvé !","ok");
+        pushNotif(uid,"🎉 Votre compte vendeur a été approuvé ! Vous pouvez maintenant publier.","approval");
+        switchAdm("admUsers");
+      });
   });
 }
-function suspendUser(uid) {
-  openConfirm("Suspendre","Suspendre cet utilisateur ?",function(){
-    db.collection("users").doc(uid).update({status:"suspended"}).then(function(){
-      toast("Utilisateur suspendu","ok");
-      pushNotif(uid,"⚠️ Votre compte a été suspendu. Contactez le support.","err");
-      loadDash();
+function suspendUser(uid, suspend) {
+  openConfirm(
+    suspend?"Suspendre":"Réactiver",
+    suspend?"Suspendre cet utilisateur ?":"Réactiver cet utilisateur ?",
+    function(){
+      db.collection("users").doc(uid).update({status:suspend?"suspended":"active"})
+        .then(function(){
+          toast(suspend?"Utilisateur suspendu.":"Utilisateur réactivé.","ok");
+          if(suspend) pushNotif(uid,"🚫 Votre compte a été suspendu. Contactez le support.","suspension");
+          switchAdm("admUsers");
+        });
+    }
+  );
+}
+function approveProd(id) {
+  openConfirm("Approuver","Approuver et publier ce produit ?",function(){
+    db.collection("products").doc(id).get().then(function(s){
+      if(!s.exists) return;
+      var p=s.data();
+      return db.collection("products").doc(id).update({status:"active"})
+        .then(function(){
+          toast("Produit approuvé !","ok");
+          pushNotif(p.sellerId,"✅ Votre produit \""+p.name+"\" a été approuvé !","product");
+          allP=[];
+          switchAdm("admProds");
+        });
     });
   });
 }
-window.approveUser = approveUser;
-window.suspendUser = suspendUser;
-
-// ── ACTIONS ADMIN PRODUITS ──
-function approveProd(id) {
-  db.collection("products").doc(id).update({status:"active"}).then(function(){
-    toast("Produit approuvé !","ok");
-    allP=[];
-    loadDash();
+function admDeleteProd(id, name) {
+  openConfirm("Supprimer","Supprimer \""+name+"\" définitivement ?",function(){
+    db.collection("products").doc(id).delete().then(function(){
+      toast("Produit supprimé.","ok"); allP=[]; switchAdm("admProds");
+    });
   });
 }
-window.approveProd = approveProd;
-
-// ── STATUT COMMANDE ──
-function updateOrdStatus(ordId, status, buyerId, prodName) {
-  if (!status) return;
-  db.collection("orders").doc(ordId).update({orderStatus:status}).then(function(){
-    toast("Statut mis à jour !","ok");
-    var msgs={
-      processing:"⚙️ Votre commande \""+prodName+"\" est en cours de préparation.",
-      shipped:"🚚 Votre commande \""+prodName+"\" a été expédiée !",
-      delivered:"🏠 Votre commande \""+prodName+"\" a été livrée. Merci !",
-      cancelled:"❌ Votre commande \""+prodName+"\" a été annulée."
-    };
-    if (buyerId&&msgs[status]) pushNotif(buyerId, msgs[status], status==="cancelled"?"err":"ok");
-  });
+function updateOrdStatus(id, status) {
+  if(!status) return;
+  db.collection("orders").doc(id).update({status:status})
+    .then(function(){
+      toast("Statut mis à jour : "+status,"ok");
+      db.collection("orders").doc(id).get().then(function(s){
+        if(s.exists) pushNotif(s.data().buyerId,
+          "📦 Votre commande #"+id.slice(0,6).toUpperCase()+" : "+status,"order");
+      });
+    });
 }
+window.approveUser   = approveUser;
+window.suspendUser   = suspendUser;
+window.approveProd   = approveProd;
+window.admDeleteProd = admDeleteProd;
 window.updateOrdStatus = updateOrdStatus;
 
-// ── RETRAITS ADMIN ──
-function loadAdminWD() {
-  var el=document.getElementById("wdListAdmin");
-  if (!el) return;
-  db.collection("withdrawals").orderBy("createdAt","desc").limit(50).get()
-    .then(function(s){
-      if (s.empty) { el.innerHTML='<div class="no-res"><div class="icon">💸</div><p>Aucun retrait.</p></div>'; return; }
-      el.innerHTML='<div class="tw"><table class="dtable">'
-        +'<thead><tr><th>Utilisateur</th><th>Montant</th><th>Opérateur</th><th>Numéro</th><th>Titulaire</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>'
-        +'<tbody>'
-        +s.docs.map(function(d){
-          var w=d.data();
-          var stBadge=w.status==="pending"?'<span class="badge bw">En attente</span>'
-            :w.status==="approved"?'<span class="badge bs">Approuvé</span>'
-            :'<span class="badge bd">Rejeté</span>';
-          return '<tr>'
-            +'<td style="font-size:.79rem">'+esc(w.name||w.email||"")+'</td>'
-            +'<td><strong style="color:var(--p)">'+fmt(w.amount||0)+' FCFA</strong></td>'
-            +'<td>'+esc(w.operator||"")+'</td>'
-            +'<td style="font-size:.79rem">'+esc(w.phone||"")+'</td>'
-            +'<td style="font-size:.79rem">'+esc(w.holder||"")+'</td>'
-            +'<td>'+stBadge+'</td>'
-            +'<td style="font-size:.77rem">'+timeAgo(w.createdAt)+'</td>'
-            +'<td><div style="display:flex;gap:.3rem">'
-            +(w.status==="pending"
-              ?'<button class="bsm b-ok" onclick="processWD(\''+d.id+'\',\'approved\',\''+esc(w.uid||"")+'\','+( w.amount||0)+')">✅</button>'
-               +'<button class="bsm b-dl" onclick="processWD(\''+d.id+'\',\'rejected\',\''+esc(w.uid||"")+'\',0)">❌</button>'
-              :'<span style="color:var(--mt);font-size:.78rem">Traité</span>')
-            +'</div></td></tr>';
-        }).join("")
-        +'</tbody></table></div>';
-    });
+// ════ RETRAITS ADMIN ════
+function loadAdminWD(el) {
+  db.collection("withdrawals").orderBy("createdAt","desc").get().then(function(s){
+    if(s.empty){
+      el.innerHTML='<div class="no-res"><div class="icon">💸</div><p>Aucun retrait.</p></div>';
+      return;
+    }
+    el.innerHTML='<div class="tw"><table class="dtable">'
+      +'<thead><tr><th>Vendeur</th><th>Montant</th><th>Opérateur</th><th>Numéro</th><th>Titulaire</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>'
+      +'<tbody>'
+      +s.docs.map(function(d){
+        var w=d.data();
+        var stBadge=w.status==="pending"
+          ?'<span class="badge bw">⏳ En attente</span>'
+          :w.status==="done"
+          ?'<span class="badge bs">✅ Traité</span>'
+          :'<span class="badge bd">❌ Rejeté</span>';
+        return '<tr>'
+          +'<td style="font-size:.78rem;color:var(--mt)">'+w.uid.slice(0,8)+'...</td>'
+          +'<td style="font-weight:700;color:var(--ok)">'+fmt(w.amount)+' FCFA</td>'
+          +'<td>'+esc(w.operator||"")+'</td>'
+          +'<td style="font-size:.79rem">'+esc(w.phone||"")+'</td>'
+          +'<td style="font-size:.79rem">'+esc(w.holder||"")+'</td>'
+          +'<td>'+stBadge+'</td>'
+          +'<td style="color:var(--mt)">'+timeAgo(w.createdAt)+'</td>'
+          +'<td style="white-space:nowrap">'
+          +(w.status==="pending"
+            ?'<button class="bsm b-ok" onclick="processWD(\''+d.id+'\',\''+w.uid+'\','+w.amount+',true)">✅</button> '
+             +'<button class="bsm b-dl" onclick="processWD(\''+d.id+'\',\''+w.uid+'\','+w.amount+',false)">❌</button>'
+            :'—')
+          +'</td></tr>';
+      }).join("")
+      +'</tbody></table></div>';
+  }).catch(function(e){ console.error("adminWD:",e); });
 }
-function processWD(wdId, status, uid, amount) {
-  var label = status==="approved"?"Retrait approuvé":"Retrait rejeté";
-  openConfirm(label, status==="approved"
-    ?"Approuver ce retrait de "+fmt(amount)+" FCFA ?"
-    :"Rejeter cette demande de retrait ?",
+function processWD(id, uid, amount, approve) {
+  openConfirm(
+    approve?"Confirmer retrait":"Rejeter retrait",
+    approve
+      ?"Confirmer le paiement de "+fmt(amount)+" FCFA ?"
+      :"Rejeter et rembourser "+fmt(amount)+" FCFA ?",
     function(){
-      db.collection("withdrawals").doc(wdId).update({
-        status:status, processedAt:new Date().toISOString()
-      }).then(function(){
-        if (status==="approved"&&amount>0) {
-          return debitWallet(uid, amount, "Retrait approuvé", wdId).then(function(){
-            db.collection("wallets").doc(uid).update({
-              totalWithdrawn:firebase.firestore.FieldValue.increment(amount)
+      var updates = {
+        status: approve?"done":"rejected",
+        processedAt: new Date().toISOString()
+      };
+      db.collection("withdrawals").doc(id).update(updates).then(function(){
+        if(!approve){
+          // Rembourser si rejeté
+          return creditWallet(uid, amount, "Retrait rejeté — remboursement")
+            .then(function(){
+              pushNotif(uid,"❌ Votre retrait de "+fmt(amount)+" FCFA a été rejeté. Montant remboursé.","withdrawal");
             });
-          });
+        } else {
+          pushNotif(uid,"✅ Votre retrait de "+fmt(amount)+" FCFA a été traité !","withdrawal");
         }
       }).then(function(){
-        toast(status==="approved"?"Retrait approuvé !":"Retrait rejeté","ok");
-        pushNotif(uid,
-          status==="approved"
-            ?"✅ Votre retrait de "+fmt(amount)+" FCFA a été approuvé !"
-            :"❌ Votre demande de retrait a été rejetée. Contactez le support.",
-          status==="approved"?"ok":"err"
-        );
-        loadAdminWD();
+        toast(approve?"Retrait confirmé !":"Retrait rejeté, remboursé.","ok");
+        loadAdminWD(document.getElementById("admSect"));
       }).catch(function(e){ toast(e.message,"err"); });
-    });
+    }
+  );
 }
 window.processWD = processWD;
 
-// ── SIGNALEMENTS ADMIN ──
-function loadAdminReports() {
-  var el=document.getElementById("repListAdmin");
-  if (!el) return;
-  db.collection("reports").orderBy("createdAt","desc").limit(40).get()
-    .then(function(s){
-      if (s.empty) { el.innerHTML='<div class="no-res"><div class="icon">🚩</div><p>Aucun signalement.</p></div>'; return; }
-      el.innerHTML='<div class="tw"><table class="dtable">'
-        +'<thead><tr><th>Type</th><th>Cible</th><th>Raison</th><th>Détails</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>'
-        +'<tbody>'
-        +s.docs.map(function(d){
-          var r=d.data();
-          var reasonLbl={spam:"Spam",fake:"Fraude",inappropriate:"Inapproprié",other:"Autre"};
-          return '<tr>'
-            +'<td><span class="badge '+(r.targetType==="product"?"bi":"bp")+'">'+(r.targetType==="product"?"📦":"👤")+'</span></td>'
-            +'<td style="font-size:.78rem">'+esc(r.targetId||"").slice(0,12)+'...</td>'
-            +'<td><span class="badge bd">'+esc(reasonLbl[r.reason]||r.reason||"")+'</span></td>'
-            +'<td style="font-size:.78rem;color:var(--mt2)">'+esc((r.details||"").slice(0,60))+'</td>'
-            +'<td><span class="badge '+(r.status==="pending"?"bw":"bs")+'">'+(r.status==="pending"?"En attente":"Traité")+'</span></td>'
-            +'<td style="font-size:.77rem">'+timeAgo(r.createdAt)+'</td>'
-            +'<td><div style="display:flex;gap:.3rem">'
-            +(r.status==="pending"
-              ?'<button class="bsm b-ok" onclick="resolveReport(\''+d.id+'\')">✅ Résoudre</button>'
-               +(r.targetType==="product"
-                 ?'<button class="bsm b-dl" onclick="deleteProd(\''+r.targetId+'\')">🗑 Prod.</button>'
-                 :r.targetType==="seller"
-                 ?'<button class="bsm b-dl" onclick="suspendUser(\''+r.targetId+'\')">🚫 User</button>'
-                 :'')
-              :'<span style="color:var(--mt);font-size:.78rem">Traité</span>')
-            +'</div></td></tr>';
-        }).join("")
-        +'</tbody></table></div>';
-    });
+// ════ SIGNALEMENTS ADMIN ════
+function loadAdminReports(el) {
+  db.collection("reports").orderBy("createdAt","desc").get().then(function(s){
+    if(s.empty){
+      el.innerHTML='<div class="no-res"><div class="icon">🚩</div><p>Aucun signalement.</p></div>';
+      return;
+    }
+    el.innerHTML='<div class="tw"><table class="dtable">'
+      +'<thead><tr><th>Type</th><th>Raison</th><th>Détails</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>'
+      +'<tbody>'
+      +s.docs.map(function(d){
+        var r=d.data();
+        var stBadge=r.status==="pending"
+          ?'<span class="badge bw">⏳ En attente</span>'
+          :'<span class="badge bs">✅ Résolu</span>';
+        return '<tr>'
+          +'<td><span class="badge '+(r.targetType==="product"?"bi":"bp")+'">'
+          +(r.targetType==="product"?"📦":"👤")+'</span></td>'
+          +'<td style="font-weight:700">'+esc(r.reason||"")+'</td>'
+          +'<td style="color:var(--mt2);font-size:.79rem;max-width:200px;overflow:hidden;'
+          +'text-overflow:ellipsis;white-space:nowrap">'+esc(r.details||"")+'</td>'
+          +'<td>'+stBadge+'</td>'
+          +'<td style="color:var(--mt)">'+timeAgo(r.createdAt)+'</td>'
+          +'<td>'
+          +(r.status==="pending"
+            ?'<button class="bsm b-ok" onclick="resolveReport(\''+d.id+'\')">✅ Résoudre</button>'
+            :'—')
+          +'</td></tr>';
+      }).join("")
+      +'</tbody></table></div>';
+  }).catch(function(e){ console.error("adminReports:",e); });
 }
 function resolveReport(id) {
   db.collection("reports").doc(id).update({
     status:"resolved", resolvedAt:new Date().toISOString()
   }).then(function(){
-    toast("Signalement résolu","ok");
-    loadAdminReports();
+    toast("Signalement résolu.","ok");
+    loadAdminReports(document.getElementById("admSect"));
+    var b=document.getElementById("repBdg");
+    if(b) b.style.display="none";
   });
 }
 window.resolveReport = resolveReport;
 
-// ── CREDIT / DEBIT WALLET ADMIN ──
-function adminCreditWallet(uid) {
-  var amt=+prompt("Montant à créditer (FCFA) :",0);
-  if (!amt||amt<=0) return;
-  var lbl=prompt("Libellé :","Crédit admin")||"Crédit admin";
-  creditWallet(uid, amt, lbl, "admin").then(function(){
-    toast(fmt(amt)+" FCFA crédités !","ok"); loadDash();
-  }).catch(function(e){ toast(e.message,"err"); });
+// ════ WALLET ADMIN ════
+function adminCreditWallet() {
+  var uid = document.getElementById("admWUid").value.trim();
+  var amt = +document.getElementById("admWAmt").value;
+  if(!uid||!amt||amt<=0){ toast("UID et montant requis.","err"); return; }
+  openConfirm("Créditer wallet","Créditer "+fmt(amt)+" FCFA à "+uid+" ?",function(){
+    creditWallet(uid, amt, "Crédit admin")
+      .then(function(){
+        toast("Wallet crédité !","ok");
+        pushNotif(uid,"💰 +"+fmt(amt)+" FCFA ajoutés à votre wallet par l'admin.","wallet");
+        document.getElementById("admWUid").value="";
+        document.getElementById("admWAmt").value="";
+      }).catch(function(e){ toast(e.message,"err"); });
+  });
 }
-function adminDebitWallet(uid) {
-  var amt=+prompt("Montant à débiter (FCFA) :",0);
-  if (!amt||amt<=0) return;
-  var lbl=prompt("Libellé :","Débit admin")||"Débit admin";
-  debitWallet(uid, amt, lbl, "admin").then(function(){
-    toast(fmt(amt)+" FCFA débités !","ok"); loadDash();
-  }).catch(function(e){ toast(e.message,"err"); });
+function adminDebitWallet() {
+  var uid = document.getElementById("admWUid").value.trim();
+  var amt = +document.getElementById("admWAmt").value;
+  if(!uid||!amt||amt<=0){ toast("UID et montant requis.","err"); return; }
+  openConfirm("Débiter wallet","Débiter "+fmt(amt)+" FCFA de "+uid+" ?",function(){
+    debitWallet(uid, amt, "Débit admin")
+      .then(function(){
+        toast("Wallet débité !","ok");
+        pushNotif(uid,"💸 -"+fmt(amt)+" FCFA débités de votre wallet par l'admin.","wallet");
+        document.getElementById("admWUid").value="";
+        document.getElementById("admWAmt").value="";
+      }).catch(function(e){ toast(e.message,"err"); });
+  });
 }
 window.adminCreditWallet = adminCreditWallet;
 window.adminDebitWallet  = adminDebitWallet;
