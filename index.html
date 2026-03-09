@@ -397,7 +397,7 @@ footer{background:var(--dk2);border-top:1px solid var(--bd);padding:2.2rem 1.2re
 </style>
 </head>
 <body>
-<!-- LOADER -->
+  <!-- LOADER -->
 <div id="appLoader">
   <div class="logo-txt">F2K <span>MARKET</span></div>
   <div id="loaderSpinner"></div>
@@ -957,8 +957,8 @@ footer{background:var(--dk2);border-top:1px solid var(--bd);padding:2.2rem 1.2re
     <div id="annErr" class="ferr"></div>
     <button class="btn-p" style="width:100%" onclick="saveAnnouncement()">Sauvegarder</button>
   </div>
-                                                   </div>
-                                                   <script>
+            </div>
+            <script>
 // ════ VARIABLES GLOBALES ════
 var auth, db;
 var CU = null, UD = null;
@@ -2900,7 +2900,7 @@ function switchDB(id) {
   document.querySelectorAll(".sb-lnk").forEach(function(b){ b.classList.remove("on"); });
 }
 window.switchDB = switchDB;
-                                                  // ════ DASHBOARD ADMIN ════
+              // ════ DASHBOARD ADMIN ════
 function renderAdminDB(el) {
   Promise.all([
     db.collection("users").get(),
