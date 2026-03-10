@@ -2669,13 +2669,50 @@ function loadDash() {
   var el = document.getElementById("dbCt");
   if (!el) return;
   el.innerHTML='<div class="loading">Chargement...</div>';
-  if (!UD) {
-    db.collection("users").doc(CU.uid).get().then(function(s){
-      UD = s.exists ? s.data() : {};
-      renderDash();
-    });
-  } else { renderDash(); }
+  // Toujours recharger UD depuis Firestore
+  db.collection("users").doc(CU.uid).get().then(function(s){
+    if (s.exists) {
+      UD = s.data();
+      UD.email = CU.email; // forcer l'email depuis Auth
+    } else {
+      // Document n'existe pas — créer automatiquement
+      UD = {
+        email: CU.email,
+        fullname: CU.email.split("@")[0],
+        role: CU.email===ADMIN_EM ? "seller" : "client",
+        status: CU.email===ADMIN_EM ? "approved" : "active",
+        shopName: CU.email===ADMIN_EM ? "F2K MARKET Official" : "",
+        shopType: "mixed",
+        country: "Bénin",
+        createdAt: new Date().toISOString()
+      };
+      db.collection("users").doc(CU.uid).set(UD);
+    }
+    renderDash();
+  }).catch(function(e){
+    console.error("loadDash error:", e);
+    el.innerHTML='<div class="no-res"><div class="icon">❌</div>'
+      +'<p>Erreur : '+e.message+'</p>'
+      +'<button class="btn-p" onclick="loadDash()" style="margin-top:.8rem">Réessayer</button></div>';
+  });
 }
+```
+
+---
+
+## 🔧 Vérifiez aussi les règles Firestore
+
+1. Firebase Console → Firestore → onglet **"Sécurité"**
+2. Vérifiez que les règles sont :
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+          }
 function renderDash() {
   var el = document.getElementById("dbCt");
   if (!el) return;
