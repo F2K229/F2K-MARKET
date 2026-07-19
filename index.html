@@ -615,6 +615,7 @@ footer{background:var(--dk2);border-top:1px solid var(--bd);padding:2.2rem 1.2re
       </div>
       <div class="fg"><label class="fl">Nom complet</label><input class="fi" type="text" id="rgNm" placeholder="Votre nom"/></div>
       <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="rgEm" placeholder="votre@email.com"/></div>
+      <div class="fg"><label class="fl">Téléphone / WhatsApp</label><input class="fi" type="tel" id="rgPhone" placeholder="+229 XX XX XX XX"/></div>
       <div class="fg"><label class="fl">Mot de passe</label><input class="fi" type="password" id="rgPw" placeholder="Min. 6 caractères"/></div>
       <div id="sellerFields" class="hidden">
         <div class="fg"><label class="fl">Nom de la boutique</label><input class="fi" type="text" id="rgShop" placeholder="Ma Super Boutique"/></div>
@@ -889,6 +890,15 @@ footer{background:var(--dk2);border-top:1px solid var(--bd);padding:2.2rem 1.2re
   </div>
 </div>
 
+<!-- FICHE PROFIL (ADMIN) -->
+<div id="userProfModal" class="modal hidden">
+  <div class="modal-box" style="max-width:460px">
+    <button class="modal-close" onclick="document.getElementById('userProfModal').classList.add('hidden')">✕</button>
+    <h2>👁 Fiche profil</h2>
+    <div id="userProfCt"><div class="loading">Chargement...</div></div>
+  </div>
+</div>
+
 <!-- CODES PROMO -->
 <div id="promoModal" class="modal hidden">
   <div class="modal-box">
@@ -968,6 +978,7 @@ var cfCb = null;
 var selSize_ = "", selColor_ = "";
 var promoDisc = 0, promoCode_ = "";
 var regRole = "client";
+var admUsersCache = {};
 
 var ADMIN_EM  = "f2kmultiservice@gmail.com";
 var ADMIN_PH  = "22901998787 42";
@@ -1045,6 +1056,15 @@ function esc(s) {
     .replace(/"/g,"&quot;");
 }
 function fmt(n) { return (+n||0).toLocaleString("fr-FR"); }
+function qErr(el, e, label) {
+  console.error(label+":", e);
+  if (!el) return;
+  var needsIndex = e && e.message && /index/i.test(e.message);
+  el.innerHTML = '<div class="no-res"><div class="icon">⚠️</div>'
+    + '<p>'+(needsIndex
+      ? "Erreur : un index Firestore est manquant pour cette page. Contactez l'administrateur technique."
+      : "Erreur de chargement. Réessayez.")+'</p></div>';
+}
 function starsHtml(r) {
   var s = Math.round(r||0), h = "";
   for (var i=1;i<=5;i++)
@@ -1159,13 +1179,14 @@ function selRole(r) {
   document.getElementById("coCntry").classList.toggle("hidden", r==="seller");
 }
 function doRegister() {
-  var nm  = document.getElementById("rgNm").value.trim();
-  var em  = document.getElementById("rgEm").value.trim();
-  var pw  = document.getElementById("rgPw").value;
-  var tos = document.getElementById("rgTos").checked;
-  var err = document.getElementById("rgErr");
+  var nm    = document.getElementById("rgNm").value.trim();
+  var em    = document.getElementById("rgEm").value.trim();
+  var phone = document.getElementById("rgPhone").value.trim();
+  var pw    = document.getElementById("rgPw").value;
+  var tos   = document.getElementById("rgTos").checked;
+  var err   = document.getElementById("rgErr");
   err.className = "ferr"; err.textContent = "";
-  if (!nm||!em||!pw) {
+  if (!nm||!em||!phone||!pw) {
     err.textContent = "Remplissez tous les champs.";
     err.className = "ferr show"; return;
   }
@@ -1180,7 +1201,7 @@ function doRegister() {
   auth.createUserWithEmailAndPassword(em, pw).then(function(res) {
     var uid = res.user.uid;
     var data = {
-      fullname: nm, email: em, role: regRole,
+      fullname: nm, email: em, phone: phone, role: regRole,
       country: regRole==="seller"
         ? document.getElementById("rgCo2").value.trim()
         : document.getElementById("rgCo").value.trim(),
@@ -1643,7 +1664,7 @@ function loadSellers() {
           +'onclick="event.stopPropagation();openReport(\''+d.id+'\',\'seller\',\''+esc(v.shopName||"")+'\')">🚩</button>'
           +'</div></div>';
       }).join("");
-    }).catch(function(e){ console.error("loadSellers:",e); });
+    }).catch(function(e){ qErr(el, e, "loadSellers"); });
 }
 
 // ════ LOAD DETAIL ════
@@ -1839,7 +1860,7 @@ function loadReviews(prodId) {
           +'<div class="rev-date">'+timeAgo(r.createdAt)+'</div>'
           +'</div></div>';
       }).join("");
-    }).catch(function(e){ console.error("loadReviews:",e); });
+    }).catch(function(e){ qErr(document.getElementById("revList"), e, "loadReviews"); });
 }
 
 function openReview(prodId, prodName) {
@@ -1926,7 +1947,7 @@ function loadQA(prodId) {
              +'onclick="openQAAnswer(\''+d.id+'\',\''+esc(q.question)+'\')">Répondre</span>':'')
           +'</div></div>';
       }).join("");
-    }).catch(function(e){ console.error("loadQA:",e); });
+    }).catch(function(e){ qErr(document.getElementById("qaList"), e, "loadQA"); });
 }
 function openQA(prodId, prodName) {
   if (!CU) { toast("Connectez-vous pour poser une question.","err"); go("login"); return; }
@@ -2380,7 +2401,7 @@ function loadTxHistory(uid) {
           +(isIn?'+':'-')+(t.type==="points"?t.amount+' pts':fmt(t.amount)+' FCFA')
           +'</div></div>';
       }).join("");
-    }).catch(function(e){ console.error("txHistory:",e); });
+    }).catch(function(e){ qErr(document.getElementById("txList"), e, "txHistory"); });
 }
 function openWD() {
   document.getElementById("wdAmt").value    = "";
@@ -2520,7 +2541,7 @@ function loadNotifs() {
           +'</div></div>';
       }).join("");
       checkUnreadNotif();
-    }).catch(function(e){ console.error("loadNotifs:",e); });
+    }).catch(function(e){ qErr(el, e, "loadNotifs"); });
 }
 function markNotifRead(id) {
   db.collection("notifications").doc(id).update({read:true}).then(function(){
@@ -2736,8 +2757,12 @@ function renderSellerDB() {
       +'<div style="font-size:3rem;margin-bottom:.9rem">⏳</div>'
       +'<h2 style="font-family:\'Bebas Neue\',sans-serif;font-size:1.8rem;letter-spacing:2px">Compte en attente</h2>'
       +'<p style="color:var(--mt2);margin-top:.6rem;line-height:1.7">Votre compte vendeur est en cours de validation.<br/>'
+      +'Complétez votre profil boutique ci-dessous pour aider l\'admin à valider votre compte plus vite.<br/>'
       +'Contactez-nous : <a href="https://wa.me/'+ADMIN_PH+'" target="_blank" style="color:var(--p)">WhatsApp</a></p>'
-      +'</div>'; return;
+      +'</div>'
+      +'<div id="dbSect" style="max-width:520px;margin:0 auto"></div>';
+    renderSelProfile();
+    return;
   }
   if (UD.status==="suspended") {
     el.innerHTML='<div style="max-width:540px;margin:3rem auto;padding:1.5rem 1.2rem;text-align:center">'
@@ -2755,6 +2780,7 @@ function renderSellerDB() {
     +'<button class="sb-lnk on" onclick="switchDB(\'selProds\')">📦 Mes produits</button>'
     +'<button class="sb-lnk" onclick="switchDB(\'selOrds\')">🛒 Commandes</button>'
     +'<button class="sb-lnk" onclick="switchDB(\'selStats\')">📊 Statistiques</button>'
+    +'<button class="sb-lnk" onclick="switchDB(\'selProfile\')">🏪 Mon profil</button>'
     +'<button class="sb-lnk" onclick="go(\'wallet\')">💰 Wallet</button>'
     +'<button class="sb-lnk" onclick="go(\'loyalty\')">🎯 Fidélité</button>'
     +'<button class="sb-lnk" onclick="go(\'messages\')">💬 Messages</button>'
@@ -2805,7 +2831,7 @@ function switchDB(sect) {
               +'</tr>';
           }).join("")
           +'</tbody></table></div>';
-      });
+      }).catch(function(e){ qErr(el, e, "buyOrd"); });
   }
 
   else if (sect==="buyDl") {
@@ -2828,7 +2854,7 @@ function switchDB(sect) {
               +'</tr>';
           }).join("")
           +'</tbody></table></div>';
-      });
+      }).catch(function(e){ qErr(el, e, "buyDl"); });
   }
 
   else if (sect==="selProds") {
@@ -2883,7 +2909,7 @@ function switchDB(sect) {
           +'<div style="margin-top:.9rem;display:flex;gap:.6rem;flex-wrap:wrap">'
           +'<button class="bsm b-pu" onclick="openPromoMgr()">🎟️ Gérer mes promos</button>'
           +'</div>';
-      });
+      }).catch(function(e){ qErr(el, e, "selProds"); });
   }
 
   else if (sect==="selOrds") {
@@ -2933,6 +2959,10 @@ function switchDB(sect) {
 
   else if (sect==="selStats") {
     renderSelChart();
+  }
+
+  else if (sect==="selProfile") {
+    renderSelProfile();
   }
 }
 window.switchDB = switchDB;
@@ -2991,6 +3021,67 @@ function renderSelChart() {
       });
   }).catch(function(e){ console.error("selChart:",e); });
 }
+
+// ════ PROFIL BOUTIQUE VENDEUR ════
+function renderSelProfile() {
+  var el = document.getElementById("dbSect");
+  var u = UD||{};
+  var stBadge = u.status==="active"||u.status==="approved"
+    ?'<span class="badge bs">✅ Compte approuvé</span>'
+    :u.status==="pending"
+    ?'<span class="badge bw">⏳ En attente de validation par l\'admin</span>'
+    :u.status==="suspended"
+    ?'<span class="badge bd">🚫 Compte suspendu</span>'
+    :'';
+  el.innerHTML='<div class="card" style="max-width:520px">'
+    +'<div class="ctitle">🏪 Profil de ma boutique</div>'
+    +'<div style="margin-bottom:.9rem">'+stBadge+'</div>'
+    +'<div class="fg">'
+    +'<label class="fl">Logo boutique</label>'
+    +'<div style="margin-bottom:.4rem">'+(u.logo?'<img src="'+esc(u.logo)+'" style="width:64px;height:64px;object-fit:cover;border-radius:50%"/>':'')+'</div>'
+    +'<input type="file" id="spLogoFile" accept="image/*" onchange="uploadImg(this,\'spLogo\',\'spLogoPv\',\'logo\')"/>'
+    +'<input type="hidden" id="spLogo" value="'+esc(u.logo||"")+'"/>'
+    +'<div id="spLogoPv" style="margin-top:.4rem;font-size:.77rem;color:var(--mt)"></div>'
+    +'</div>'
+    +'<div class="fg"><label class="fl">Nom de la boutique</label><input class="fi" type="text" id="spNm" value="'+esc(u.shopName||"")+'"/></div>'
+    +'<div class="fg"><label class="fl">Type boutique</label>'
+    +'<select class="fi" id="spType">'
+    +'<option value="digital"'+(u.shopType==="digital"?" selected":"")+'>Numérique</option>'
+    +'<option value="physical"'+(u.shopType==="physical"?" selected":"")+'>Physique</option>'
+    +'<option value="mixed"'+(u.shopType==="mixed"?" selected":"")+'>Mixte</option>'
+    +'</select></div>'
+    +'<div class="fg"><label class="fl">Description boutique</label><textarea class="fi" id="spDesc" rows="3">'+esc(u.shopDesc||"")+'</textarea></div>'
+    +'<div class="fg"><label class="fl">Téléphone / WhatsApp</label><input class="fi" type="tel" id="spPhone" value="'+esc(u.phone||"")+'"/></div>'
+    +'<div class="fg"><label class="fl">Pays</label><input class="fi" type="text" id="spCo" value="'+esc(u.country||"")+'"/></div>'
+    +'<div id="spErr" class="ferr"></div>'
+    +'<button class="btn-p" style="width:100%" onclick="saveSelProfile()">Enregistrer</button>'
+    +'</div>';
+}
+function saveSelProfile() {
+  if (!CU) return;
+  var nm    = document.getElementById("spNm").value.trim();
+  var phone = document.getElementById("spPhone").value.trim();
+  var err   = document.getElementById("spErr");
+  err.className="ferr";
+  if (!nm||!phone) {
+    err.textContent="Nom de boutique et téléphone requis.";
+    err.className="ferr show"; return;
+  }
+  var data = {
+    shopName: nm,
+    shopType: document.getElementById("spType").value,
+    shopDesc: document.getElementById("spDesc").value.trim(),
+    phone: phone,
+    country: document.getElementById("spCo").value.trim(),
+    logo: document.getElementById("spLogo").value || ""
+  };
+  db.collection("users").doc(CU.uid).update(data).then(function(){
+    UD = Object.assign({}, UD, data);
+    toast("Profil boutique mis à jour !","ok");
+    switchDB("selProfile");
+  }).catch(function(e){ err.textContent=e.message; err.className="ferr show"; });
+}
+window.saveSelProfile = saveSelProfile;
 
 // ════ TOGGLE PRODUIT (FORMULAIRE) ════
 function apToggle() {
@@ -3232,7 +3323,7 @@ function loadPromoList() {
             +'</td></tr>';
         }).join("")
         +'</tbody></table></div>';
-    }).catch(function(e){ console.error("promoList:",e); });
+    }).catch(function(e){ qErr(el, e, "promoList"); });
 }
 function createPromo() {
   if (!CU) return;
@@ -3325,11 +3416,13 @@ function switchAdm(sect) {
   // ── UTILISATEURS ──
   else if (sect==="admUsers") {
     db.collection("users").orderBy("createdAt","desc").get().then(function(s){
+      admUsersCache = {};
+      s.docs.forEach(function(d){ admUsersCache[d.id]=d.data(); });
       el.innerHTML='<div style="margin-bottom:.8rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">'
         +'<span style="font-weight:700">'+s.size+' utilisateurs</span>'
         +'</div>'
         +'<div class="tw"><table class="dtable">'
-        +'<thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Pays</th><th>Statut</th><th>Actions</th></tr></thead>'
+        +'<thead><tr><th>Nom</th><th>Boutique</th><th>Contact</th><th>Rôle</th><th>Pays</th><th>Statut</th><th>Actions</th></tr></thead>'
         +'<tbody>'
         +s.docs.map(function(d){
           var u=d.data();
@@ -3343,13 +3436,21 @@ function switchAdm(sect) {
             :u.status==="suspended"
             ?'<span class="badge bd">🚫 Suspendu</span>'
             :'<span class="badge bw">'+esc(u.status||"—")+'</span>';
+          var shopTypeLbl = {digital:"Numérique",physical:"Physique",mixed:"Mixte"}[u.shopType]||"";
           return '<tr>'
-            +'<td style="font-weight:700">'+esc(u.fullname||u.shopName||"—")+'</td>'
-            +'<td style="color:var(--mt);font-size:.79rem">'+esc(u.email||"")+'</td>'
+            +'<td style="font-weight:700">'+esc(u.fullname||"—")+'</td>'
+            +'<td style="color:var(--mt2);font-size:.79rem">'
+            +(u.role==="seller"
+              ?esc(u.shopName||"—")+(shopTypeLbl?'<br/><small style="color:var(--mt)">'+shopTypeLbl+'</small>':'')
+              :'—')
+            +'</td>'
+            +'<td style="font-size:.78rem">'+esc(u.email||"")
+            +(u.phone?'<br/><span style="color:var(--mt)">'+esc(u.phone)+'</span>':'')+'</td>'
             +'<td>'+roleBadge+'</td>'
             +'<td style="color:var(--mt)">'+esc(u.country||"—")+'</td>'
             +'<td>'+stBadge+'</td>'
             +'<td style="white-space:nowrap">'
+            +'<button class="bsm b-if" onclick="viewUserProfile(\''+d.id+'\')">👁 Voir</button> '
             +(u.role==="seller"&&u.status==="pending"
               ?'<button class="bsm b-ok" onclick="approveUser(\''+d.id+'\')">✅ Approuver</button> ':'')
             +(u.status!=="suspended"
@@ -3552,6 +3653,52 @@ function renderAdminChart() {
     });
   }).catch(function(e){ console.error("admChart:",e); });
 }
+
+// ════ FICHE PROFIL (ADMIN) ════
+function viewUserProfile(uid) {
+  var modal = document.getElementById("userProfModal");
+  var ct    = document.getElementById("userProfCt");
+  ct.innerHTML='<div class="loading">Chargement...</div>';
+  modal.classList.remove("hidden");
+  var cached = admUsersCache[uid];
+  var p = cached ? Promise.resolve(cached) : db.collection("users").doc(uid).get().then(function(s){ return s.exists?s.data():null; });
+  p.then(function(u){
+    if (!u) { ct.innerHTML='<div class="no-res">Profil introuvable.</div>'; return; }
+    var shopTypeLbl = {digital:"Numérique",physical:"Physique",mixed:"Mixte"}[u.shopType]||"—";
+    var stBadge = u.status==="active"||u.status==="approved"
+      ?'<span class="badge bs">✅ Actif</span>'
+      :u.status==="pending"
+      ?'<span class="badge bw">⏳ En attente</span>'
+      :u.status==="suspended"
+      ?'<span class="badge bd">🚫 Suspendu</span>'
+      :'<span class="badge bw">'+esc(u.status||"—")+'</span>';
+    ct.innerHTML =
+      '<div style="display:flex;gap:.9rem;align-items:center;margin-bottom:1rem">'
+      +'<div class="sel-logo" style="width:64px;height:64px;font-size:1.7rem">'
+      +(u.logo?'<img src="'+esc(u.logo)+'"/>':(u.role==="seller"?"🏪":"👤"))
+      +'</div>'
+      +'<div><div style="font-weight:800;font-size:1.05rem">'+esc(u.role==="seller"?(u.shopName||u.fullname||"—"):(u.fullname||"—"))+'</div>'
+      +'<div style="color:var(--mt);font-size:.82rem">'+stBadge+'</div></div>'
+      +'</div>'
+      +'<div class="fg"><label class="fl">Responsable</label><div style="font-size:.88rem">'+esc(u.fullname||"—")+'</div></div>'
+      +'<div class="fg"><label class="fl">Email</label><div style="font-size:.88rem">'+esc(u.email||"—")+'</div></div>'
+      +'<div class="fg"><label class="fl">Téléphone / WhatsApp</label><div style="font-size:.88rem">'
+      +(u.phone?esc(u.phone)+' — <a href="https://wa.me/'+esc((u.phone||"").replace(/[^0-9]/g,""))+'" target="_blank" style="color:var(--p)">WhatsApp</a>':'—')+'</div></div>'
+      +'<div class="fg"><label class="fl">Pays</label><div style="font-size:.88rem">'+esc(u.country||"—")+'</div></div>'
+      +(u.role==="seller"
+        ?'<div class="fg"><label class="fl">Type de boutique</label><div style="font-size:.88rem">'+shopTypeLbl+'</div></div>'
+          +'<div class="fg"><label class="fl">Description boutique</label><div style="font-size:.85rem;color:var(--mt2);line-height:1.6">'+esc(u.shopDesc||"—")+'</div></div>'
+        :'')
+      +'<div style="display:flex;gap:.6rem;margin-top:1.1rem;flex-wrap:wrap">'
+      +(u.role==="seller"&&u.status==="pending"
+        ?'<button class="btn-p" onclick="document.getElementById(\'userProfModal\').classList.add(\'hidden\');approveUser(\''+uid+'\')">✅ Approuver</button>':'')
+      +(u.status!=="suspended"
+        ?'<button class="btn-o" onclick="document.getElementById(\'userProfModal\').classList.add(\'hidden\');suspendUser(\''+uid+'\',true)">🚫 Suspendre</button>'
+        :'<button class="btn-o" onclick="document.getElementById(\'userProfModal\').classList.add(\'hidden\');suspendUser(\''+uid+'\',false)">♻️ Réactiver</button>')
+      +'</div>';
+  }).catch(function(e){ ct.innerHTML='<div class="no-res">'+e.message+'</div>'; });
+}
+window.viewUserProfile = viewUserProfile;
 
 // ════ ACTIONS ADMIN ════
 function approveUser(uid) {
